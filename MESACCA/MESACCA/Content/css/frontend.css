@@ -1,0 +1,137 @@
+
+/*
+ * TODO: Sass this stuff, use gulp
+ *
+ */
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    font-weight: 300;
+    font-size: 16px;
+    /* Margin bottom by footer height */
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+/* Header Styles
+-------------------------------------------------- */
+.header-image {
+    height:450px;
+    -webkit-background-size: cover;
+    background-size: cover;
+}
+
+.navbar-collapse {
+    color: #f2f2f2;
+    border: 0px;
+}
+
+.navbar, .navbar-default {
+    color: #f2f2f2;
+    background: #353636;
+    border-radius: 0px;
+    border: 0px;
+    margin-bottom: 0px;
+}
+
+
+#navpage-primary {
+
+}
+
+.navbar-default .navbar-nav>li>a,.navbar-default .navbar-nav>li>a:hover,.navbar-default .navbar-nav>li>a:active {
+    color: #f2f2f2;
+}
+
+.navbar-default .navbar-brand {
+    color: #f2f2f2;
+    box-shadow: rgba(0, 0, 0, 0.11765) 0px 1px 3px;
+}
+
+.navbar-sacmesa {
+
+    color: #fff;
+}
+/*.navbar-top-links {*/
+    /*padding-right: 12px;*/
+
+/*}*/
+.navbar-inverse .navbar-nav > li > a {
+    color: #fff;
+}
+
+.navbar-inverse .navbar-brand {
+    color:#fff;
+}
+
+.navbar-inverse .navbar-toggle .icon-bar{
+    background-color:#333;
+}
+.navbar-inverse .navbar-toggle:hover{
+    background-color:#fff;
+}
+.navbar-inverse .navbar-toggle:focus{
+    background-color:#fff;
+}
+
+.footer-wrap {
+    margin-top: 50px;
+}
+
+/* Core Stuff
+-------------------------------------------------- */
+.core-wrapper {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.dark-wrap {
+    background-color: #e0e1e4;
+    color: #757983;
+}
+
+.light-wrap {
+    color: #5d6068;
+}
+
+.dark-wrap h4, .light-wrap h4 {
+    text-align: center;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+.footer {
+    color: #f2f2f2;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 350px;
+    background-color: #353636;
+}
+
+.vertical-center {
+    min-height: 50%;  /* Fallback for browsers do NOT support vh unit */
+    min-height: 50vh; /* These two lines are counted as one :-)       */
+
+    display: flex;
+    align-items: center;
+}
+
+.panel-news {
+    border-radius: 2px;
+}
+
+.post-info {
+    padding: 5px 0px 5px 0px;
+    color: #777;
+}
+
+.post-info > span {
+    padding-right: 10px;
+}
+
+.div20 {
+    min-height: 20px;
+}

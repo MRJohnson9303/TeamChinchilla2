@@ -1,0 +1,101 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model MESACCA.ViewModels.Admin.AddCenterViewModel
+@{
+    ViewData["Title"] = "Add Center";
+}
+<h2>Add Center</h2>
+<form method="post" class="form-horizontal">
+    @*Adding center name textfield*@
+    <div class="form-group">
+        <label asp-for="Name" class="col-sm-3">First Name:</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    @*Adding center address textfield*@
+    <div class="form-group">
+        <label asp-for="Address" class="col-sm-3">Address:</label>
+        <input asp-for="Address" class="form-control" />
+        <div class="col-sm-offset-3">
+            <small class="text-muted">Example: 6000 J Street, Sacramento, CA 95819</small>
+        </div>
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+    @*Adding center location on campus textfield*@
+    <div class="form-group">
+        <label asp-for="Location" class="col-sm-3">Location:</label>
+        <input asp-for="Location" class="form-control" />
+        <div class="col-sm-offset-3">
+            <small class="text-muted">Example: Lassen Hall 2001 </small>
+        </div>
+        <span asp-validation-for="Location" class="text-danger"></span>
+    </div>
+    @*Adding a inline center dropbox*@
+    <div class="form-group">
+        <div class="form-inline">
+            <label asp-for="CenterType" class="col-sm-3">Center Type:</label>
+            <select asp-for="CenterType" class="form-control">
+                <option></option>
+                <option>MEP</option>
+                <option>MCCP</option>
+                <option>MSP</option>
+            </select>
+        </div>
+        <div class="col-sm-offset-3">
+            <small class="text-muted">Example: MEP, MCCP or MSP</small>
+        </div>
+        <span asp-validation-for="CenterType" class="text-danger"></span>
+    </div>
+    @*Adding director name textfield*@
+    <div class="form-group">
+        <label asp-for="DirectorName" class="col-sm-3">Director Name:</label>
+        <input asp-for="DirectorName" class="form-control" />
+        <span asp-validation-for="DirectorName" class="text-danger"></span>
+    </div>
+    @*Adding director office number textfield*@
+    <div class="form-group">
+        <label asp-for="OfficeNumber" class="col-sm-3">Office Number:</label>
+        <input asp-for="OfficeNumber" class="form-control" />
+        <div class="col-sm-offset-3">
+            <small class="text-muted">Example: 916-555-5555</small>
+        </div>
+        <span asp-validation-for="OfficeNumber" class="text-danger"></span>
+    </div>
+    @*Adding center URL textfield*@
+    <div class="form-group">
+        <label asp-for="URL" class="col-sm-3">URL:</label>
+        <input asp-for="URL" class="form-control" />
+        <div class="col-sm-offset-3">
+            <small class="text-muted">Example: www.mesa.edu</small>
+        </div>
+        <span asp-validation-for="URL" class="text-danger"></span>
+    </div>
+    @*Adding center description textblock*@
+    <div class="form-group">
+            <label asp-for="Description" class="col-sm-3">Description:</label>
+            <textarea rows="4" input asp-for="Description" class="form-control"> </textarea>
+            <div class="col-sm-offset-3">
+                <small class="text-muted">Any information you want to share about the center such as statistical information.</small>
+            </div>
+            <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Picture" class="col-sm-3">Center Logo:</label>
+        <input asp-for="Picture" type="file" class="form-control" />
+        <span asp-validation-for="Picture" class="text-danger"></span>
+    </div>
+    <fieldset style="margin-bottom:30px">
+        @*<label for="File">Center Logo Image:</label>*@
+        @*<input type="file" name="File" id="File">*@
+        @*<button type="submit" name="attachPicture" value=true class="btn btn-primary">Attach Center Logo</button>*@
+        @*<input type="text" name="test" size="50">*@
+    </fieldset>
+    @*Adding a submit button that adds new center information to the database and add the new center to the Center page*@
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

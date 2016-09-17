@@ -1,0 +1,68 @@
+﻿@model MESACCA.ViewModels.Admin.ManagePersonalAccountViewModel
+@{
+    ViewData["Title"] = "Manage Personal Account";
+}
+<h2>Manage Personal Account</h2>
+<form method="post" class="form-horizontal">
+    @*Adding a first name textfield*@
+    <div class="form-group">
+        <label asp-for="FirstName" class="col-sm-3">First Name:</label>
+        <input asp-for="FirstName" class="form-control" value="@Model.FirstName"/>
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+    @*Adding a last name textfield*@
+    <div class="form-group">
+        <label asp-for="LastName" class="col-sm-3">Last Name:</label>
+        <input asp-for="LastName" class="form-control" value="@Model.LastName"/>
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+    @*@Adding a account type textfield*@
+    <div class="form-group">
+        <label asp-for="AccountType" class="col-sm-3">Account Type:</label>
+        <input asp-for="AccountType" class="form-control" value="@Model.AccountType" style="background-color:#999" disabled/>
+    </div>
+    @*Adding center textfield*@
+    <div class="form-group">
+        <label asp-for="Center" class="col-sm-3">Center:</label>
+        <input asp-for="Center" class="form-control" value="@Model.Center"/>
+        <span asp-validation-for="Center" class="text-danger"></span>
+    </div>
+    @*Adding a email textfield*@
+    <div class="form-group">
+        <label asp-for="Email" class="col-sm-3">Email:</label>
+        <input asp-for="Email" class="form-control" value="@Model.Email"/>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    @*Adding a phone number textfield*@
+    <div class="form-group">
+        <label asp-for="PhoneNumber" class="col-sm-3">Phone Number:</label>
+        <input asp-for="PhoneNumber" class="form-control" value="@Model.PhoneNumber"/>
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+    @*Adding a username textfield*@
+    <div class="form-group">
+        <label asp-for="Username" class="col-sm-3">Username:</label>
+        <input asp-for="Username" class="form-control" value="@Model.Username"/>
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+    @*Adding password textfield*@
+    <div class="form-group">
+        <label asp-for="Password" class="col-sm-3">Password:</label>
+        <input asp-for="Password" class="form-control"/>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    @*Adding confirmation password textfield*@
+    <div class="form-group">
+        <label asp-for="ConfirmPassword" class="col-sm-3">Confirm Password:</label>
+            <input asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+    @*Adding save and delete buttons*@
+    <div class="form-group">
+        <button style="margin-left:15px" type="submit" class="btn btn-primary">Save</button>
+    </div>
+</form>
+@*Adding save, delete buttons*@
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

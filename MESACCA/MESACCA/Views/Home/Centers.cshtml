@@ -1,0 +1,111 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Centers";
+}
+
+@*<h2 style="padding-top:120px;">MCCA Centers</h2>*@
+@*This section shows the three levels of MESA above the various MESA center icons*@
+<section class="levels" style="padding-top:20px">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="center-heading">
+                    <h2>The Levels Of <strong>Mesa</strong></h2>
+                    <span class="center-line"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-sm-6 margin20">
+                <div class="services-box wow animated fadeIn animated" data-wow-duration="700ms" data-wow-delay="100ms" style="visibility: visible; animation-duration: 700ms; animation-delay: 100ms; animation-name: fadeIn;">
+                    <div class="services-box-icon">
+                        <i class="fa fa-child"></i>
+                    </div><!--services icon-->
+                    <div class="services-box-info">
+                        <h4>Pre-College</h4>
+                        <p>
+                            The MESA Schools Program (MSP) assists students at middle and senior high schools (and some elementary schools) to
+                            excel in math and science and become competitively eligible for academically rigorous colleges and universities.
+                        </p>
+                    </div>
+                </div><!--services box-->
+            </div><!--services col-->
+            <div class="col-md-4 col-sm-6 margin20">
+                <div class="services-box wow animated fadeIn animated" data-wow-duration="700ms" data-wow-delay="200ms" style="visibility: visible; animation-duration: 700ms; animation-delay: 200ms; animation-name: fadeIn;">
+                    <div class="services-box-icon">
+                        <i class="fa fa-male"></i>
+                    </div><!--services icon-->
+                    <div class="services-box-info">
+                        <h4>Community College</h4>
+                        <p>
+                            The MESA Community College Program (MCCP) supports students to successfully transfer to four-year universities in science,
+                            technology, engineering and math (STEM) majors.
+                        </p>
+                    </div>
+                </div><!--services box-->
+            </div><!--services col-->
+            <div class="col-md-4 col-sm-6 margin20">
+                <div class="services-box wow animated fadeIn animated" data-wow-duration="700ms" data-wow-delay="300ms" style="visibility: visible; animation-duration: 700ms; animation-delay: 300ms; animation-name: fadeIn;">
+                    <div class="services-box-icon">
+                        <i class="fa fa-graduation-cap"></i>
+                    </div><!--services icon-->
+                    <div class="services-box-info">
+                        <h4>University</h4>
+                        <p>
+                            The MESA Engineering Program (MEP) supports educationally disadvantaged students to attain four-year degrees in engineering or computer science.
+                        </p>
+                    </div>
+                </div><!--services box-->
+            </div><!--services col-->
+        </div><!--services row-->
+    </div>
+</section>
+<div class="container">
+    @*first row - universities*@
+    <h4 >University - MEP</h4>
+    @*Line across page*@
+    <hr color="black"/>
+    <div class="row" style="margin-top:20px;">
+        <div class="col-md-4">
+            <a href="http://www.ecs.csus.edu/mep/" target="_blank"><div style="border:1px solid gray;height:300px;text-align:center;padding:10px;"><img src="~/images/sacstatesmall.png" height="192" width="186" /><br />California State University Sacramento<br />6000 J St, Sacramento, CA 95819</div></a>
+        </div>
+        <div class="col-md-4">
+            <a href="http://www.pacific.edu/Academics/Schools-and-Colleges/School-of-Engineering-and-Computer-Science/Community/MESA/MESA-Engineering-Program.html" target="_blank"><div style="border:1px solid gray;height:300px;text-align:center;padding:10px;"><img src="~/images/UofPacific.jpg" height="81" style="margin-top:60px;" /><br />University of the Pacific<br />3601 Pacific Avenue, Stockton, California 95211</div></a>
+       </div>
+        <div class="col-md-4">
+            <a href="http://mesaschools.ucdavis.edu/" target="_blank"> <div style="border:1px solid gray;height:300px;text-align:center;padding:10px;"><img src="~/images/ucdavis.jpg" height="61" width="212" style="margin-top:60px;" /><br />UC Davis<br />1 Shields Ave, Davis, CA 95616</div></a>
+        </div>
+    </div>
+    @*second row -Los rios Community colleges*@
+    <h4 style="margin-top:20px">Community College - MCCP</h4>
+    @*Line across page*@
+    <hr color="black" />
+    <div class="row" style="margin-top:20px;">
+        <div class="col-md-4">
+            <a href="https://www.crc.losrios.edu/services/mesa" target="_blank"><div style="border:1px solid gray;height:300px;text-align:center;padding:10px;"><img src="~/images/cosumnes.jpg"  height="81" style="margin-top:60px;"/><br />Cosumnes River College<br />8401 Center Parkway, Sacramento, CA 95823</div></a>
+        </div>
+        <div class="col-md-4">
+            <a href="http://www.arc.losrios.edu/ARC_Majors/Mathematics/MESA.htm" target="_blank"><div style="border:1px solid gray;height:300px;text-align:center;padding:10px;"><img src="~/images/arclogo.png" /><br />American River College<br />4700 College Oak Dr, Sacramento, CA 95841</div></a>
+        </div>
+        <div class="col-md-4">
+            <a href="http://www.scc.losrios.edu/mesa/" target="_blank"> <div style="border:1px solid gray;height:300px;text-align:center;padding:10px;"><img src="~/images/SCC-LOGO.png" height="181" /><br />Sacramento City College<br />3835 Freeport Boulevard, Sacramento, CA 95822 </div></a>
+        </div>
+    </div>
+    @*third row - other community colleges*@
+    <div class="row" style="margin-top:20px;">
+        <div class="col-md-4">
+            <a href="https://wcc.yccd.edu/student/MESA" target="_blank"><div style="border:1px solid gray;height:300px;text-align:center;padding:10px;"><img src="~/images/WoodlandCollege.png" height="192" /><br />Woodland Community College<br />2300 E. Gibson Road, Woodland, CA 95776</div></a>
+        </div>
+        <div class="col-md-4">
+            <a href="https://www.deltacollege.edu/dept/mesa/" target="_blank"><div style="border:1px solid gray;height:300px;text-align:center;padding:10px;"><img src="~/images/Delta-logo.jpg" height="190" /><br />San Joaquin Delta College <br />5151 Pacific Ave, Stockton, California 95207 </div></a>
+        </div>
+        <div class="col-md-4">
+            <a href="http://www.solano.edu/mesa/" target="_blank"> <div style="border:1px solid gray;height:300px;text-align:center;padding:10px;"><img src="~/images/solano.png" style="margin-top:30px;"/><br />Solano Community College<br />4000 Suisun Valley Road, Fairfield, CA 94534</div></a>
+        </div>
+    </div>
+    <h4 style="margin-top:20px">Pre-College - MSP</h4>
+    @*Line across page*@
+    <hr color="black" />
+</div>

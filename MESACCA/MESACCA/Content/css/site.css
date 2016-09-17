@@ -1,0 +1,62 @@
+﻿/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set widths on the form inputs since otherwise they're 100% wide */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+/* Carousel */
+.carousel-caption {
+    z-index: 10 !important;
+    right:60%;
+    bottom:20%;
+    left:0%;
+}
+
+.carousel-caption p {
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+    .carousel-caption {
+        z-index: 10 !important;
+    }
+}
+
+/* End Carousel */
+
+.center-heading {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+#footer {
+    background: #111;
+    font-size: 0.9em;
+    padding: 80px 0 0;
+    position: relative;
+    clear: both;
+}
+
+.footer-col p {
+    color: #aeaeae;
+    font-size: 13px;
+}
+
+.footer-col h3 {
+    color: #fff;
+    margin-bottom: 35px;
+    font-size: 20px;
+    text-transform: uppercase;
+    font-weight: 300;
+    font-style: normal;
+}
+

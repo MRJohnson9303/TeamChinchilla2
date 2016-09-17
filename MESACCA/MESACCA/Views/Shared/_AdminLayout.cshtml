@@ -1,0 +1,200 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - MCCA</title>
+        
+        <environment names="Development">
+            <link rel="stylesheet" href="~/Content/bootstrap.css" />
+            <link rel="stylesheet" href="~/Content/bootstrap-table.min.css" />
+            <link rel="stylesheet" href="~/Content/Site.css" />
+            <link rel="stylesheet" href="~/Content/css/admin.css" />
+            <link rel="stylesheet" href="~/Content/css/dropzone.css" />
+            <link rel="stylesheet" href="~/Content/css/frontend.css" />
+            <link rel="stylesheet" href="~/Content/css/lity.min.css" />
+            <link rel="stylesheet" href="~/Content/css/rev-style.css" />
+            <link rel="stylesheet" href="~/Content/css/setting.css" />
+            <link rel="stylesheet" href="~/Content/css/style.css" />
+            <link rel="stylesheet" href="~/Content/css/yamm.css" />
+            <link rel="stylesheet" href="~/Content/css/sweetalert.css" />
+            <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+        </environment>
+        <environment names="Staging,Production">
+            <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/css/bootstrap.min.css"
+                  asp-fallback-href="~/Content/bootstrap.min.css"
+                  asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+            <link rel="stylesheet" href="~/Content/bootstrap-table.min.css" />
+            <link rel="stylesheet" href="~/Content/Site.css" />
+            <link rel="stylesheet" href="~/Content/css/admin.css" />
+            <link rel="stylesheet" href="~/Content/css/dropzone.css" />
+            <link rel="stylesheet" href="~/Content/css/frontend.css" />
+            <link rel="stylesheet" href="~/Content/css/lity.min.css" />
+            <link rel="stylesheet" href="~/Content/css/rev-style.css" />
+            <link rel="stylesheet" href="~/Content/css/setting.css" />
+            <link rel="stylesheet" href="~/Content/css/style.css" />
+            <link rel="stylesheet" href="~/Content/css/yamm.css" />
+            <link rel="stylesheet" href="~/Content/css/sweetalert.css" />
+            <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+        </environment>
+    </head>
+    <body style="margin-top:0;">
+        <nav class="navbar navbar-inverse">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a asp-controller="Home" asp-action="Index" class="navbar-brand">MCCA Admin</a>
+                    <a href="https://www.facebook.com/MesaUsa/" target="_blank" class="social-icon-sm si-dark si-gray-round si-colored-facebook" style="margin-top:10px;">
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                    <a href="https://twitter.com/mesastem" target="_blank" class="social-icon-sm si-dark si-gray-round si-colored-twitter" style="margin-top:10px;">
+                        <i class="fa fa-twitter"></i>
+                    </a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="Home" asp-action="About">About</a></li>
+                        <li><a asp-controller="Home" asp-action="Centers">Centers</a></li>
+                        <li><a asp-controller="Home" asp-action="VisionMissionValues">Vision Mission Values</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Programs <i class="fa fa-angle-down"></i></a>
+                            <ul class="dropdown-menu dark-dropdown" role="menu">
+                                <li><a asp-controller="Home" asp-action="MESASchoolsProgram">MESA Schools Program</a></li>
+                                <li><a asp-controller="Home" asp-action="MESACommunityCollegeProgram">MESA Community College Program</a></li>
+                                <li><a asp-controller="Home" asp-action="MESAEngineeringProgram">MESA Engineering Program</a></li>
+                            </ul>
+                        </li>
+                        <li><a asp-controller="Home" asp-action="News">News</a></li>
+                        <li><a asp-controller="Home" asp-action="Donate">Donate</a></li>
+                        <li><a asp-controller="Account" asp-action="LogOff">Log Out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row" style="margin-top:20px;">
+                <div class="col-sm-3">
+                    <ul class="nav nav-sidebar">
+                        <li><a asp-controller="Admin" asp-action="ManageAccounts">Manage Accounts</a></li>
+                        <li><a asp-controller="Admin" asp-action="ManageCenters">Manage Centers</a></li>
+                        <li><a asp-controller="Admin" asp-action="ManageSite">Manage Site</a></li>
+                        <li><a asp-controller="Admin" asp-action="ManagePersonalAccount">Manage Personal Account</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-9">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+        <div>
+
+            <div class="divide20"></div>
+        </div>
+            <footer id="footer">
+                <div class="container">
+
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 margin30">
+                            <div class="footer-col">
+                                <h3>About the MCCA</h3>
+
+                                <p>
+                                    The MESA Capitol Corridor Alliance (MCCA) is a group of centers within one of the regions of the
+                                    MESA Statewide program. The MESA Statewide program serves educationally and financially
+                                    under-served students with the overarching goal to increase participation of those students in
+                                    the Science, Technology, Engineering and Math professions.
+                                </p>
+                                <ul class="list-inline footer-social">
+                                    <li>
+                                        <a href="https://www.facebook.com/MesaUsa/" target="_blank" class="social-icon si-dark si-gray-round si-colored-facebook">
+                                            <i class="fa fa-facebook"></i>
+                                            <i class="fa fa-facebook"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://twitter.com/mesastem" target="_blank" class="social-icon si-dark si-gray-round si-colored-twitter">
+                                            <i class="fa fa-twitter"></i>
+                                            <i class="fa fa-twitter"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!--footer col-->
+                        <div class="col-md-3 col-sm-6 margin30">
+                            <div class="footer-col">
+                                <h3>Contact</h3>
+
+                                <ul class="list-unstyled contact">
+                                    <li>
+                                        <p>
+                                            <strong><i class="fa fa-map-marker"></i> Address:</strong> <br>Santa Clara Hall 1213
+                                            <br>6000 J Street
+                                            <br>Sacramento, CA 95819
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <p>
+                                            <strong><i class="fa fa-envelope"></i> Mail Us:</strong> <a href="#">
+                                                directors@mcca
+                                                .com
+                                            </a>
+                                        </p>
+                                    </li>
+                                    <li><p><strong><i class="fa fa-phone"></i> Phone:</strong> (916) 278-6699</p></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!--footer col-->
+                        <div class="col-md-3 col-sm-6 margin30">
+                            <div class="footer-col">
+                                <h3>Our Sponsors</h3>
+                                <ul class="list-inline f2-work">
+                                    <li><a href="http://mesausa.org/" target="_blank">
+                                        <img src="~/images/mesa_usa_web_logo.gif" alt="MESA USA" class="img-responsive"></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!--footer col-->
+                        <div class="col-md-3 col-sm-6 margin30">
+                            <div class="footer-col">
+                                <h3>Newsletter</h3>
+
+                                <p>
+                                    Newsletter Coming Soon!
+                                </p>
+                            </div>
+                        </div>
+                        <!--footer col-->
+                    </div>
+                </div>
+            </footer>
+            
+
+        <environment names="Development">
+            <script src="~/Scripts/jquery.js"></script>
+            <script src="~/Scripts/bootstrap.js"></script>
+            <script src="~/Content/Site.js" asp-append-version="true"></script>
+        </environment>
+
+        <environment names="Staging,Production">
+            <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.4.min.js"
+                    asp-fallback-src="~/Scripts/jquery.min.js"
+                    asp-fallback-test="window.jQuery">
+            </script>
+            <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/bootstrap.min.js"
+                    asp-fallback-src="~/Scripts/bootstrap.min.js"
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+            </script>
+            <script src="~/Scripts/Site.min.js" asp-append-version="true"></script>
+        </environment>
+
+        @RenderSection("scripts", required: false)
+    </body>
+</html>
