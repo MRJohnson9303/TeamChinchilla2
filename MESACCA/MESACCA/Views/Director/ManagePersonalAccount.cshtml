@@ -64,6 +64,6 @@
     </div>
 </form>
 @*Adding save, delete buttons*@
-@section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-}
+
+@Html.Partial("Partials/_ValidationScriptsPartial")
+
