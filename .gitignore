@@ -5,5 +5,10 @@
 /MESACCA/MESACCA/obj/Release
 /MESACCA/MESACCA/Properties/PublishProfiles
 /MESACCA/MESACCA/obj/Debug
+/MESACCA/MESACCA/bin
+/MESACCA/MESACCA/Properties
 /MESACCA/MESACCA/Scripts/obj/Release/CSAutoParameterize
 /MESACCA/MESACCA/Scripts/obj
+/MESACCA/MESACCA/.vs
+/MESACCA/MESACCA/*.csproj
+/MESACCA/MESACCA/*.csproj*
