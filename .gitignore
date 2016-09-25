@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/MESACCA/MESACCA/obj/Release
+/MESACCA/MESACCA/Properties/PublishProfiles
+/MESACCA/MESACCA/obj/Debug
+/MESACCA/MESACCA/Scripts/obj/Release/CSAutoParameterize
+/MESACCA/MESACCA/Scripts/obj

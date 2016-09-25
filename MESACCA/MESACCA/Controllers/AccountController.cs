@@ -108,6 +108,16 @@ namespace MESACCA.Controllers
                         //Sending successfully logged in user to Admin account dashboard
                         return RedirectToAction(nameof(AdminController.Index), "Admin", new { ID = foundUser.ID, firstName = foundUser.FirstName, lastName = foundUser.LastName });
                     }
+                    else if (foundUser.AccountType.Equals("Director"))
+                    {
+                        //Sending successfully logged in user to Director account dashboard
+                        return RedirectToAction(nameof(DirectorController.Index), "Director", new { ID = foundUser.ID, center = foundUser.Center, firstName = foundUser.FirstName, lastName = foundUser.LastName });
+                    }
+                    else if (foundUser.AccountType.Equals("Staff"))
+                    {
+                        //Sending successfully logged in user to Staff account dashboard
+                        return RedirectToAction(nameof(StaffController.Index), "Staff", new { ID = foundUser.ID, firstName = foundUser.FirstName, lastName = foundUser.LastName });
+                    }
                 }
             }
             return View(model);
