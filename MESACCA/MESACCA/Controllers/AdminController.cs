@@ -115,12 +115,15 @@ namespace MESACCA.Controllers
             newUser.FirstName = model.FirstName;
             newUser.LastName = model.LastName;
             newUser.AccountType = model.AccountType;
+            ViewData["Test"] = model.AccountType;
             newUser.Center = model.Center;
+            ViewData["Test1"] = model.Center;
             newUser.Email = model.Email;
             newUser.PhoneNumber = model.PhoneNumber;
             newUser.Username = model.Username;
             newUser.Password = model.Password;
             newUser.Home = model.Home.ToString();
+            ViewData["Test2"] = model.Home.ToString();
             newUser.About_Us = model.About_Us.ToString();
             newUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
             newUser.MESA_Schools_Program = model.MESA_Schools_Program.ToString();

@@ -71,6 +71,71 @@
             <small class="text-muted">Example: 916-555-5555</small>
         </div>
     </div>
+    @*Adding a label and a table containing a row of check boxes for user rights*@
+    <div class="form-group">
+        <div class="col-sm-3">
+            <label>User Is Allowed to Alter:</label>
+            <table class="table">
+                <thead style="font-size: 12px">
+                    <tr>
+                        @*Table Headings*@
+                        <th>
+                            @Html.DisplayNameFor(model => model.Home)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.About_Us)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Vision_Mission_Values)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.MESA_Schools_Program)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.MESA_Community_College_Program)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.MESA_Engineering_Program)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.News)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Donate)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            @Html.CheckBoxFor(model => model.Home)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.About_Us)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.Vision_Mission_Values)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.MESA_Schools_Program)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.MESA_Community_College_Program)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.MESA_Engineering_Program)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.News)
+                        </td>
+                        <td>
+                            @Html.CheckBoxFor(model => model.Donate)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     @*Adding username textfield*@
     <div class="form-group">
         <label asp-for="Username" class="col-sm-3">Username:</label>
