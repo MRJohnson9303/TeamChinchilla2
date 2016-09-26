@@ -60,8 +60,8 @@
                     @Html.DisplayFor(modelItem => item.Center)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
                 </td>
             </tr>
         }

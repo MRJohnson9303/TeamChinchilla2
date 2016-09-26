@@ -166,6 +166,7 @@ namespace MESACCA.Controllers
             return View(model);
         }
         //This method allows the Admin to edit accounts displayed in Manage Accounts
+        [HttpPost]
         public ActionResult Edit(EditViewModel model)
         {
             Boolean success = false;
@@ -204,16 +205,20 @@ namespace MESACCA.Controllers
             return View(foundUser);
         }
         //This method deletes the user from the system if the delete button in the Edit View is clicked on and sends the User
-        //to Manage Accounts
-        [HttpPost, ActionName("Delete")]
-        public ActionResult DeleteConfirmed(User model)
+        //to Manage Accounts and if the back button is clicked, then the Director is sent back to ManageAccounts.
+        [HttpPost]
+        public ActionResult Delete(User model, string button)
         {
             Boolean success = false;
-            if (model != null)
+            if (button.Contains("delete"))
             {
                 success = sqlConnectionDeleteUser(model.ID);
             }
             if (success == true)
+            {
+                return RedirectToAction("ManageAccounts");
+            }
+            if (button.Contains("back"))
             {
                 return RedirectToAction("ManageAccounts");
             }

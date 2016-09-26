@@ -7,9 +7,6 @@ using MESACCA.ViewModels.Admin;
 using System.Configuration;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
-using System.Web.UI.HtmlControls;
-using System.IO;
 namespace MESACCA.Controllers
 {
     //[Authorize(Roles = "Admin")]
@@ -165,6 +162,7 @@ namespace MESACCA.Controllers
             model.Donate = Convert.ToBoolean(foundUser.Donate);
             return View(model);
         }
+        [HttpPost]
         //This method allows the Admin to edit accounts displayed in Manage Accounts
         public ActionResult Edit(EditViewModel model)
         {
@@ -197,24 +195,28 @@ namespace MESACCA.Controllers
             return View(model);
         }
         //This method sends an entry's information from Manage Accounts into the View when the Delete link is clicked on
+        [HttpGet]
         public ActionResult Delete(int ID)
         {
             User foundUser = new User();
             foundUser = sqlConnectionForUser(ID);
             return View(foundUser);
         }
-        //This method deletes the user from the system if the delete button is clicked on and sends the User
-        //to Manage Accounts
-        [HttpPost, ActionName("Delete")]
-        public ActionResult DeleteConfirmed(User model)
+        //This method deletes the user from the system if the delete button in the Edit View is clicked on and sends the User
+        //to Manage Accounts and if the back button is clicked, then the Admin is sent back to ManageAccounts.
+        [HttpPost]
+        public ActionResult Delete(User model, string button)
         {
             Boolean success = false;
-            //The model's first name is checked to verify if the model object is null to prevent unnecessary SQL database access
-            if (String.IsNullOrEmpty(model.FirstName))
+            if (button.Contains("delete"))
             {
                 success = sqlConnectionDeleteUser(model.ID);
             }
             if (success == true)
+            {
+                return RedirectToAction("ManageAccounts");
+            }
+            if(button.Contains("back"))
             {
                 return RedirectToAction("ManageAccounts");
             }
@@ -302,7 +304,7 @@ namespace MESACCA.Controllers
             //with the updated information.
             if (success == true)
             {
-                return RedirectToAction("ManagePersonalAccount");
+                return RedirectToAction("ManageAccounts");
             }
             return View(model);
         }
