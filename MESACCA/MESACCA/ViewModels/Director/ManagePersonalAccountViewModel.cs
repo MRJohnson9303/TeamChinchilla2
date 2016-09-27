@@ -28,11 +28,9 @@ namespace MESACCA.ViewModels.Director
         [Required]
         [StringLength(12)]
         public string Username { get; set; }
-        [Required]
         [StringLength(20)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-        [Required]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
