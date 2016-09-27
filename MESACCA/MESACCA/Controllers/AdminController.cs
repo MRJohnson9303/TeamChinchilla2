@@ -232,7 +232,6 @@ namespace MESACCA.Controllers
         {
             return View();
         }
-        //[HttpPost, ActionName("AddCenter")]
         [HttpPost]
         public ActionResult AddCenter(AddCenterViewModel model)
         {
@@ -240,10 +239,10 @@ namespace MESACCA.Controllers
             {
                 return RedirectToAction("ManageAccounts");
             }*/
-            /*if (model.Picture.File.ContentLength > 0)
+            if (model.Picture.ContentLength > 0)
             {
                 return RedirectToAction("ManageAccounts");
-            }*/
+            }
             return RedirectToAction("ManageCenters");
         }
         [HttpGet]

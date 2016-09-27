@@ -35,8 +35,8 @@ namespace MESACCA.ViewModels.Admin
         public string URL { get; set; }
         [StringLength(250)]
         public string Description { get; set; }
-        /*[Required]
-        public Models.Picture Picture { get; set; }*/
+        [Required]
+        public HttpPostedFileBase Picture { get; set; }
     }
 }
 

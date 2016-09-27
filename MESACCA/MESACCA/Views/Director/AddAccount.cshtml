@@ -6,7 +6,7 @@
 }
 @using (Html.BeginForm("AddAccount", "Director", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
-    @*Adding First name textfield*@
+    @*Adding First Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
@@ -14,7 +14,7 @@
             @Html.ValidationMessageFor(model => model.FirstName)
         </font>
     </div>
-    @*Adding Last name textfield*@
+    @*Adding Last Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
@@ -22,7 +22,7 @@
             @Html.ValidationMessageFor(model => model.LastName)
         </font>
     </div>
-    @*@Adding a inline account type dropbox*@
+    @*@Adding a inline Account Type dropbox*@
     <div class="form-group">
         <div class="form-inline">
             @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
@@ -37,7 +37,7 @@
             </font>
         </div>
     </div>
-    @*Adding a inline center dropbox*@
+    @*Adding a inline Center dropbox*@
     <div class="form-group">
         <div class="form-inline">
             @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
@@ -52,27 +52,27 @@
             </font>
         </div>
     </div>
-    @*Adding email textfield*@
+    @*Adding Email textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.Email)
-        </font>
         <div class="col-md-offset-2">
             <small class="text-muted">Example: mesa@yahoo.com</small>
         </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Email)
+        </font>
     </div>
-    @*Adding phone number textfield*@
+    @*Adding Phone Number textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control" })
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.PhoneNumber)
-        </font>
         <div class="col-md-offset-2">
             <small class="text-muted">Example: 916-555-5555</small>
         </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.PhoneNumber)
+        </font>
     </div>
     @*Adding a label and a table containing a row of check boxes for user rights*@
     <div class="form-group">
@@ -139,7 +139,7 @@
             </table>
         </div>
     </div>
-    @*Adding username textfield*@
+    @*Adding Username textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
@@ -147,18 +147,18 @@
             @Html.ValidationMessageFor(model => model.Username)
         </font>
     </div>
-    @*Adding password textfield*@
+    @*Adding Password textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Password, new { @class = "col-md-2 control-label" })
         @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.Password)
-        </font>
         <div class="col-md-offset-2">
             <small class="text-muted">Please use a combination of letters, numbers, symbols</small>
         </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Password)
+        </font>
     </div>
-    @*Adding confirmation password textfield*@
+    @*Adding Confirmation Password textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.ConfirmPassword, new { @class = "col-md-2 control-label" })
         @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
