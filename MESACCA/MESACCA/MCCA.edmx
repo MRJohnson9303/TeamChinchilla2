@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="MCCA.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="NewsArticles">
+          <Key>
+            <PropertyRef Name="ArticleID" />
+          </Key>
+          <Property Name="ArticleID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ArticleTitle" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="ArticleBody" Type="text" Nullable="false" />
+          <Property Name="CreatedByUser" Type="int" Nullable="false" />
+          <Property Name="DateOfArticle" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="FirstName" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="LastName" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="AccountType" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="Center" Type="char" MaxLength="50" Nullable="false" />
+          <Property Name="Email" Type="char" MaxLength="30" Nullable="false" />
+          <Property Name="PhoneNumber" Type="char" MaxLength="12" Nullable="false" />
+          <Property Name="Username" Type="char" MaxLength="15" Nullable="false" />
+          <Property Name="Password" Type="char" MaxLength="20" Nullable="false" />
+          <Property Name="Home" Type="char" MaxLength="5" Nullable="false" />
+          <Property Name="About_Us" Type="char" MaxLength="5" Nullable="false" />
+          <Property Name="Vision_Mission_Values" Type="char" MaxLength="5" Nullable="false" />
+          <Property Name="MESA_Schools_Program" Type="char" MaxLength="5" Nullable="false" />
+          <Property Name="MESA_Community_College_Program" Type="char" MaxLength="5" Nullable="false" />
+          <Property Name="MESA_Engineering_Program" Type="char" MaxLength="5" Nullable="false" />
+          <Property Name="News" Type="char" MaxLength="5" Nullable="false" />
+          <Property Name="Donate" Type="char" MaxLength="5" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_NewsArticles_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="NewsArticles" Type="Self.NewsArticles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="NewsArticles">
+              <PropertyRef Name="CreatedByUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MCCAStoreContainer">
+          <EntitySet Name="NewsArticles" EntityType="Self.NewsArticles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_NewsArticles_Users" Association="Self.FK_NewsArticles_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="NewsArticles" EntitySet="NewsArticles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="MCCA" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="NewsArticle">
+          <Key>
+            <PropertyRef Name="ArticleID" />
+          </Key>
+          <Property Name="ArticleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ArticleTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ArticleBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CreatedByUser" Type="Int32" Nullable="false" />
+          <Property Name="DateOfArticle" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="User" Relationship="Self.FK_NewsArticles_Users" FromRole="NewsArticles" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="AccountType" Type="String" MaxLength="8" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Center" Type="String" MaxLength="50" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="30" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="12" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="15" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="20" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Home" Type="String" MaxLength="5" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="About_Us" Type="String" MaxLength="5" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Vision_Mission_Values" Type="String" MaxLength="5" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="MESA_Schools_Program" Type="String" MaxLength="5" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="MESA_Community_College_Program" Type="String" MaxLength="5" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="MESA_Engineering_Program" Type="String" MaxLength="5" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="News" Type="String" MaxLength="5" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Donate" Type="String" MaxLength="5" FixedLength="true" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="NewsArticles" Relationship="Self.FK_NewsArticles_Users" FromRole="Users" ToRole="NewsArticles" />
+        </EntityType>
+        <Association Name="FK_NewsArticles_Users">
+          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="NewsArticles" Type="Self.NewsArticle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="NewsArticles">
+              <PropertyRef Name="CreatedByUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MCCA_DatabaseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="NewsArticles" EntityType="Self.NewsArticle" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <AssociationSet Name="FK_NewsArticles_Users" Association="Self.FK_NewsArticles_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="NewsArticles" EntitySet="NewsArticles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="MCCAStoreContainer" CdmEntityContainer="MCCA_DatabaseEntities">
+          <EntitySetMapping Name="NewsArticles">
+            <EntityTypeMapping TypeName="MCCA.NewsArticle">
+              <MappingFragment StoreEntitySet="NewsArticles">
+                <ScalarProperty Name="ArticleID" ColumnName="ArticleID" />
+                <ScalarProperty Name="ArticleTitle" ColumnName="ArticleTitle" />
+                <ScalarProperty Name="ArticleBody" ColumnName="ArticleBody" />
+                <ScalarProperty Name="CreatedByUser" ColumnName="CreatedByUser" />
+                <ScalarProperty Name="DateOfArticle" ColumnName="DateOfArticle" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="MCCA.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="AccountType" ColumnName="AccountType" />
+                <ScalarProperty Name="Center" ColumnName="Center" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Home" ColumnName="Home" />
+                <ScalarProperty Name="About_Us" ColumnName="About_Us" />
+                <ScalarProperty Name="Vision_Mission_Values" ColumnName="Vision_Mission_Values" />
+                <ScalarProperty Name="MESA_Schools_Program" ColumnName="MESA_Schools_Program" />
+                <ScalarProperty Name="MESA_Community_College_Program" ColumnName="MESA_Community_College_Program" />
+                <ScalarProperty Name="MESA_Engineering_Program" ColumnName="MESA_Engineering_Program" />
+                <ScalarProperty Name="News" ColumnName="News" />
+                <ScalarProperty Name="Donate" ColumnName="Donate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

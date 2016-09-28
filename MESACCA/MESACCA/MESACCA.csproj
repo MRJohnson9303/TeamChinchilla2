@@ -52,6 +52,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -172,17 +174,40 @@
     <Compile Include="Controllers\DirectorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\StaffController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="MCCA.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MCCA.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MCCA.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MCCA.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MCCA.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\NewsArticle.cs" />
     <Compile Include="Models\Center.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="NewsArticle.cs">
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="User.cs">
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\Admin\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\Admin\AddCenterViewModel.cs" />
     <Compile Include="ViewModels\Admin\EditViewModel.cs" />
@@ -190,6 +215,7 @@
     <Compile Include="ViewModels\Director\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\Director\EditViewModel.cs" />
     <Compile Include="ViewModels\Director\ManagePersonalAccountViewModel.cs" />
+    <Compile Include="ViewModels\News\AddNewsViewModel.cs" />
     <Compile Include="ViewModels\Staff\ManagePersonalAccountViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -294,8 +320,25 @@
     <Content Include="images\ucdavis.jpg" />
     <Content Include="images\UofPacific.jpg" />
     <Content Include="images\WoodlandCollege.png" />
+    <Content Include="MCCA.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MCCA.edmx</DependentUpon>
+      <LastGenOutput>MCCA.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="MCCA.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MCCA.edmx</DependentUpon>
+      <LastGenOutput>MCCA.cs</LastGenOutput>
+    </Content>
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <EntityDeploy Include="MCCA.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>MCCA.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="MCCA.edmx.diagram">
+      <DependentUpon>MCCA.edmx</DependentUpon>
+    </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -310,7 +353,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -377,6 +422,7 @@
     <Content Include="Views\Staff\Index.cshtml" />
     <Content Include="Views\Staff\ManagePersonalAccount.cshtml" />
     <Content Include="Views\Manage\ManageSite.cshtml" />
+    <Content Include="Views\News\AddNews.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -388,6 +434,9 @@
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
