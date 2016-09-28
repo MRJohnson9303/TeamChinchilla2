@@ -92,7 +92,7 @@ namespace MESACCA.Controllers
         public ActionResult AddAccount(AddAccountViewModel model)
         {
             Boolean success = false;
-            User newUser = new User();
+            User newUser = new Models.User();
             //ID initialized for comparison
             int ID = 1;
             List<User> userList = new List<User>();
@@ -167,6 +167,9 @@ namespace MESACCA.Controllers
         public ActionResult Edit(EditViewModel model)
         {
             Boolean success = false;
+            User foundUser = new Models.User();
+            //Getting SQL table entry based on User ID to obtain the user's password.
+            foundUser = sqlConnectionForUser(model.ID);
             User updatedUser = new Models.User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page
             updatedUser.FirstName = model.FirstName;
@@ -176,7 +179,17 @@ namespace MESACCA.Controllers
             updatedUser.Email = model.Email;
             updatedUser.PhoneNumber = model.PhoneNumber;
             updatedUser.Username = model.Username;
-            updatedUser.Password = model.Password;
+            //If the Admin decides not to update a User's password, then the current stored password is stored in 
+            //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
+            //into the database.
+            if (String.IsNullOrEmpty(model.Password) == true)
+            {
+                updatedUser.Password = foundUser.Password;
+            }
+            else
+            {
+                updatedUser.Password = model.Password;
+            }
             updatedUser.Home = model.Home.ToString();
             updatedUser.About_Us = model.About_Us.ToString();
             updatedUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
@@ -198,7 +211,7 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult Delete(int ID)
         {
-            User foundUser = new User();
+            User foundUser = new Models.User();
             foundUser = sqlConnectionForUser(ID);
             return View(foundUser);
         }
@@ -268,7 +281,7 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult ManagePersonalAccount()
         {
-            User foundUser = new User();
+            User foundUser = new Models.User();
             ManagePersonalAccountViewModel model = new ManagePersonalAccountViewModel();
             //Getting SQL table entry based on User ID
             foundUser = sqlConnectionForUser(adminID);
@@ -287,11 +300,11 @@ namespace MESACCA.Controllers
         public ActionResult ManagePersonalAccount(ManagePersonalAccountViewModel model)
         {
             Boolean success = false;
-            User foundUser = new User();
+            User foundUser = new Models.User();
             //Getting SQL table entry based on User ID to obtain the user's rights since the user can't manage own rights
             //to update.
             foundUser = sqlConnectionForUser(adminID);
-            User updatedUser = new User();
+            User updatedUser = new Models.User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page that
             //an Admin is allowed to change
             updatedUser.FirstName = model.FirstName;
@@ -333,7 +346,7 @@ namespace MESACCA.Controllers
         //This method invokes "accessDatabaseForUser" to attempt to connect to the SQL database and returns a User object
         private User sqlConnectionForUser(int ID)
         {
-            User foundUser = new User();
+            User foundUser = new Models.User();
             int totalNumberOfTimesToTry = 3;
             int retryIntervalSeconds = 1;
 
@@ -365,7 +378,7 @@ namespace MESACCA.Controllers
         //as the provided username and password and returns a User object with all information of the User
         private User accessDatabaseForUser(int ID)
         {
-            User foundUser = new User();
+            User foundUser = new Models.User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -448,7 +461,7 @@ namespace MESACCA.Controllers
                     sqlConnection.Open();
                     //Creating SQL query that updates the SQL table entry and returns the updated table entry
                     dbCommand.CommandText = @"UPDATE Users 
-                                              SET FirstName = @FirstName, LastName = @LastName, Center = @Center, Email = @Email,
+                                              SET FirstName = @FirstName, LastName = @LastName, AccountType = @AccountType, Center = @Center, Email = @Email,
                                                   PhoneNumber = @PhoneNumber, Username = @Username, Password = @Password,
                                                   Home = @Home, About_Us = @About_Us, Vision_Mission_Values = @Vision_Mission_Values,
                                                   MESA_Schools_Program = @MESA_Schools_Program,
@@ -461,6 +474,7 @@ namespace MESACCA.Controllers
                     //I trim the end of all fields to remove empty spaces
                     dbCommand.Parameters.AddWithValue("@FirstName", updatedUser.FirstName.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@LastName", updatedUser.LastName.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@AccountType", updatedUser.AccountType.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Center", updatedUser.Center.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Email", updatedUser.Email.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@PhoneNumber", updatedUser.PhoneNumber.TrimEnd(' '));
@@ -483,6 +497,7 @@ namespace MESACCA.Controllers
                     //I trim all of the found User data because the SQL server seems to add spaces.
                     foundUser.FirstName = dataReader.GetString(1).TrimEnd(' ');
                     foundUser.LastName = dataReader.GetString(2).TrimEnd(' ');
+                    foundUser.AccountType = dataReader.GetString(3).TrimEnd(' ');
                     foundUser.Center = dataReader.GetString(4).TrimEnd(' ');
                     foundUser.Email = dataReader.GetString(5).TrimEnd(' ');
                     foundUser.PhoneNumber = dataReader.GetString(6).TrimEnd(' ');
@@ -492,6 +507,7 @@ namespace MESACCA.Controllers
                     //all of the returned entry's information with the updated information provided by the user.
                     if (dataReader.HasRows == true && updatedUser.FirstName.Equals(foundUser.FirstName) &&
                         updatedUser.LastName.Equals(foundUser.LastName) &&
+                        updatedUser.AccountType.Equals(foundUser.AccountType) &&
                         updatedUser.Center.Equals(foundUser.Center) &&
                         updatedUser.Email.Equals(foundUser.Email) &&
                         updatedUser.PhoneNumber.Equals(foundUser.PhoneNumber) &&
@@ -612,7 +628,7 @@ namespace MESACCA.Controllers
         private Boolean accessDatabaseToAddUser(int newID, User newUser)
         {
             Boolean success = false;
-            User foundUser = new User();
+            User foundUser = new Models.User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -714,7 +730,7 @@ namespace MESACCA.Controllers
         private Boolean accessDatabaseToDeleteUser(int ID)
         {
             Boolean success = false;
-            User foundUser = new User();
+            User foundUser = new Models.User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())

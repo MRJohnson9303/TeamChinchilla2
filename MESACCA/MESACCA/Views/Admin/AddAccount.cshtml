@@ -120,28 +120,28 @@
                 <tbody>
                     <tr>
                         <td>
-                            <input type="checkbox" asp-for="Home" checked="checked" />
+                            @Html.CheckBoxFor(model => model.Home, new { @checked="checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="About_Us" checked="checked" />
+                            @Html.CheckBoxFor(model => model.About_Us, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="Vision_Mission_Values" checked="checked" />
+                            @Html.CheckBoxFor(model => model.Vision_Mission_Values, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="MESA_Schools_Program" checked="checked" />
+                            @Html.CheckBoxFor(model => model.MESA_Schools_Program, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="MESA_Community_College_Program" checked="checked" />
+                            @Html.CheckBoxFor(model => model.MESA_Community_College_Program, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="MESA_Engineering_Program" checked="checked" />
+                            @Html.CheckBoxFor(model => model.MESA_Engineering_Program, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="News" checked="checked" />
+                            @Html.CheckBoxFor(model => model.News, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="Donate" checked="checked" />
+                            @Html.CheckBoxFor(model => model.Donate, new { @checked = "checked" })
                         </td>
                     </tr>
                 </tbody>
