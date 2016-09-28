@@ -165,11 +165,14 @@ namespace MESACCA.Controllers
             model.Donate = Convert.ToBoolean(foundUser.Donate);
             return View(model);
         }
-        //This method allows the Admin to edit accounts displayed in Manage Accounts
+        //This method allows the Director to edit accounts displayed in Manage Accounts from his/her center
         [HttpPost]
         public ActionResult Edit(EditViewModel model)
         {
             Boolean success = false;
+            User foundUser = new Models.User();
+            //Getting SQL table entry based on User ID to obtain the user's password.
+            foundUser = sqlConnectionForUser(model.ID);
             User updatedUser = new Models.User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page
             updatedUser.FirstName = model.FirstName;
@@ -179,7 +182,17 @@ namespace MESACCA.Controllers
             updatedUser.Email = model.Email;
             updatedUser.PhoneNumber = model.PhoneNumber;
             updatedUser.Username = model.Username;
-            updatedUser.Password = model.Password;
+            //If the Admin decides not to update a User's password, then the current stored password is stored in 
+            //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
+            //into the database.
+            if (String.IsNullOrEmpty(model.Password) == true)
+            {
+                updatedUser.Password = foundUser.Password;
+            }
+            else
+            {
+                updatedUser.Password = model.Password;
+            }
             updatedUser.Home = model.Home.ToString();
             updatedUser.About_Us = model.About_Us.ToString();
             updatedUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
