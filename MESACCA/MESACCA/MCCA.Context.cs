@@ -26,6 +26,6 @@ namespace MESACCA
         }
     
         public virtual DbSet<NewsArticle> NewsArticles { get; set; }
-        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<UserTable> UserTables { get; set; }
     }
 }

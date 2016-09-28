@@ -12,10 +12,10 @@ namespace MESACCA
     using System;
     using System.Collections.Generic;
     
-    public partial class User
+    public partial class UserTable
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public User()
+        public UserTable()
         {
             this.NewsArticles = new HashSet<NewsArticle>();
         }

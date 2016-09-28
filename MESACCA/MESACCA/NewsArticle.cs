@@ -20,6 +20,6 @@ namespace MESACCA
         public int CreatedByUser { get; set; }
         public System.DateTime DateOfArticle { get; set; }
     
-        public virtual User User { get; set; }
+        public virtual UserTable User { get; set; }
     }
 }

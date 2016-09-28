@@ -72,7 +72,7 @@
           <Property Name="DateOfArticle" Type="DateTime" Nullable="false" Precision="7" />
           <NavigationProperty Name="User" Relationship="Self.FK_NewsArticles_Users" FromRole="NewsArticles" ToRole="Users" />
         </EntityType>
-        <EntityType Name="User">
+        <EntityType Name="UserTable">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
@@ -96,7 +96,7 @@
           <NavigationProperty Name="NewsArticles" Relationship="Self.FK_NewsArticles_Users" FromRole="Users" ToRole="NewsArticles" />
         </EntityType>
         <Association Name="FK_NewsArticles_Users">
-          <End Role="Users" Type="Self.User" Multiplicity="1" />
+          <End Role="Users" Type="MCCA.UserTable" Multiplicity="1" />
           <End Role="NewsArticles" Type="Self.NewsArticle" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Users">
@@ -109,9 +109,9 @@
         </Association>
         <EntityContainer Name="MCCA_DatabaseEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="NewsArticles" EntityType="Self.NewsArticle" />
-          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="UserTables" EntityType="MCCA.UserTable" />
           <AssociationSet Name="FK_NewsArticles_Users" Association="Self.FK_NewsArticles_Users">
-            <End Role="Users" EntitySet="Users" />
+            <End Role="Users" EntitySet="UserTables" />
             <End Role="NewsArticles" EntitySet="NewsArticles" />
           </AssociationSet>
         </EntityContainer>
@@ -132,8 +132,8 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Users">
-            <EntityTypeMapping TypeName="MCCA.User">
+          <EntitySetMapping Name="UserTables">
+            <EntityTypeMapping TypeName="MCCA.UserTable">
               <MappingFragment StoreEntitySet="Users">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />

@@ -133,5 +133,6 @@ C:\Users\Nick\Source\Repos\TeamChinchilla2\MESACCA\MESACCA\bin\Microsoft.Owin.Se
 C:\Users\Nick\Source\Repos\TeamChinchilla2\MESACCA\MESACCA\bin\Microsoft.Owin.Security.Google.xml
 C:\Users\Nick\Source\Repos\TeamChinchilla2\MESACCA\MESACCA\bin\Microsoft.Owin.Security.Twitter.xml
 C:\Users\Nick\Source\Repos\TeamChinchilla2\MESACCA\MESACCA\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
+C:\Users\Nick\Source\Repos\TeamChinchilla2\MESACCA\MESACCA\obj\Debug\MESACCA.csprojResolveAssemblyReference.cache
 C:\Users\Nick\Source\Repos\TeamChinchilla2\MESACCA\MESACCA\obj\Debug\MESACCA.dll
 C:\Users\Nick\Source\Repos\TeamChinchilla2\MESACCA\MESACCA\obj\Debug\MESACCA.pdb

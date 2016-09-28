@@ -6,7 +6,7 @@
     <edmx:Diagrams>
       <Diagram DiagramId="cd955eb783ff4ea1a30259b7a32e6452" Name="Diagram1">
         <EntityTypeShape EntityType="MCCA.NewsArticle" Width="1.5" PointX="3" PointY="2.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="MCCA.User" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="MCCA.UserTable" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
         <AssociationConnector Association="MCCA.FK_NewsArticles_Users" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
