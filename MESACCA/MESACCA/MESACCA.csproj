@@ -365,7 +365,6 @@
     <Content Include="Views\Admin\ManagePersonalAccount.cshtml" />
     <Content Include="Views\Admin\ManageSite.cshtml" />
     <Content Include="Views\Admin\PictureTest.cshtml" />
-    <Content Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
     <Content Include="Views\Director\AddAccount.cshtml" />
     <Content Include="Views\Director\Delete.cshtml" />
     <Content Include="Views\Director\DeletePersonalAccount.cshtml" />
@@ -378,6 +377,11 @@
     <Content Include="Views\Staff\Index.cshtml" />
     <Content Include="Views\Staff\ManagePersonalAccount.cshtml" />
     <Content Include="Views\Manage\ManageSite.cshtml" />
+    <Content Include="Views\Shared\Partials\_FooterPartial.cshtml" />
+    <Content Include="Views\Shared\Partials\_HeaderPartial.cshtml" />
+    <Content Include="Views\Shared\Partials\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\Partials\_NavBarPartial.cshtml" />
+    <Content Include="Views\Shared\Partials\_ValidationScriptsPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -408,7 +412,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>56555</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:56555/</IISUrl>
+          <IISUrl>http://localhost:12371/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
