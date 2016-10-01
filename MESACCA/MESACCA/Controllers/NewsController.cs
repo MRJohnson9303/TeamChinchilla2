@@ -18,6 +18,7 @@ namespace MESACCA.Controllers
         {
             return View();
         }
+
         [HttpPost]
         public ActionResult AddNews(AddNewsViewModel model)
         {
@@ -39,6 +40,6 @@ namespace MESACCA.Controllers
 
             return View(model);
         }
-
+        
     }
 }
