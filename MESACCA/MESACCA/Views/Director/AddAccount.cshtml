@@ -4,61 +4,80 @@
     ViewData["Title"] = "Add Account";
     String directorCenter = ViewBag.directorCenter;
 }
-<form method="post" class="form-horizontal">
-    @*Adding First name textfield*@
+@using (Html.BeginForm("AddAccount", "Director", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @*Adding First Name textfield*@
     <div class="form-group">
-        <label asp-for="FirstName" class="col-sm-3">First Name:</label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
+        @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.FirstName)
+        </font>
     </div>
-    @*Adding Last name textfield*@
+    @*Adding Last Name textfield*@
     <div class="form-group">
-        <label asp-for="LastName" class="col-sm-3">Last Name:</label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
+        @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.LastName)
+        </font>
     </div>
-    @*@Adding a inline account type dropbox*@
+    @*@Adding a inline Account Type dropbox*@
     <div class="form-group">
         <div class="form-inline">
-            <label asp-for="AccountType" class="col-sm-3">Account Type:</label>
-            <select asp-for="AccountType" class="form-control">
-                <option>Staff</option>
-            </select>
+            @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
+            <div class="form-control">
+                @Html.DropDownList("AccountType", new List<SelectListItem>
+                {
+                    new SelectListItem {Text ="Staff", Value="Staff" }
+                })
+            </div>
+            <font color="red">
+                @Html.ValidationMessageFor(model => model.AccountType)
+            </font>
         </div>
-        <span asp-validation-for="AccountType" class="text-danger"></span>
     </div>
-    @*Adding a inline center dropbox*@
+    @*Adding a inline Center dropbox*@
     <div class="form-group">
         <div class="form-inline">
-            <label asp-for="Center" class="col-sm-3">Center:</label>
-            <select asp-for="Center" class="form-control">
-                <option>@directorCenter</option>
-            </select>
+            @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
+            <div class="form-control">
+                @Html.DropDownList("Center", new List<SelectListItem>
+                {
+                    new SelectListItem {Text=directorCenter.ToString(), Value=directorCenter.ToString() },
+                })
+            </div>
+            <font color="red">
+                @Html.ValidationMessageFor(model => model.AccountType)
+            </font>
         </div>
-        <span asp-validation-for="Center" class="text-danger"></span>
     </div>
-    @*Adding email textfield*@
+    @*Adding Email textfield*@
     <div class="form-group">
-        <label asp-for="Email" class="col-sm-3">Email:</label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-        <div class="col-sm-offset-3">
+        @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+        <div class="col-md-offset-2">
             <small class="text-muted">Example: mesa@yahoo.com</small>
         </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Email)
+        </font>
     </div>
-    @*Adding phone number textfield*@
+    @*Adding Phone Number textfield*@
     <div class="form-group">
-        <label asp-for="PhoneNumber" class="col-sm-3">Phone Number:</label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-        <div class="col-sm-offset-3">
+        @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control" })
+        <div class="col-md-offset-2">
             <small class="text-muted">Example: 916-555-5555</small>
         </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.PhoneNumber)
+        </font>
     </div>
     @*Adding a label and a table containing a row of check boxes for user rights*@
     <div class="form-group">
-        <div class="col-sm-3">
-            <label>User Is Allowed to Alter:</label>
+        <div class="col-md-3">
+            <label>User Is Allowed to Alter</label>
             <table class="table">
                 <thead style="font-size: 12px">
                     <tr>
@@ -92,60 +111,66 @@
                 <tbody>
                     <tr>
                         <td>
-                            <input type="checkbox" asp-for="Home" checked="checked" />
+                            @Html.CheckBoxFor(model => model.Home, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="About_Us" checked="checked" />
+                            @Html.CheckBoxFor(model => model.About_Us, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="Vision_Mission_Values" checked="checked" />
+                            @Html.CheckBoxFor(model => model.Vision_Mission_Values, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="MESA_Schools_Program" checked="checked" />
+                            @Html.CheckBoxFor(model => model.MESA_Schools_Program, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="MESA_Community_College_Program" checked="checked" />
+                            @Html.CheckBoxFor(model => model.MESA_Community_College_Program, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="MESA_Engineering_Program" checked="checked" />
+                            @Html.CheckBoxFor(model => model.MESA_Engineering_Program, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="News" checked="checked" />
+                            @Html.CheckBoxFor(model => model.News, new { @checked = "checked" })
                         </td>
                         <td>
-                            <input type="checkbox" asp-for="Donate" checked="checked" />
+                            @Html.CheckBoxFor(model => model.Donate, new { @checked = "checked" })
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    @*Adding username textfield*@
+    @*Adding Username textfield*@
     <div class="form-group">
-        <label asp-for="Username" class="col-sm-3">Username:</label>
-        <input asp-for="Username" class="form-control" />
-        <span asp-validation-for="Username" class="text-danger"></span>
+        @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Username)
+        </font>
     </div>
-    @*Adding password textfield*@
+    @*Adding Password textfield*@
     <div class="form-group">
-        <label asp-for="Password" class="col-sm-3">Password:</label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-        <div class="col-sm-offset-3">
+        @Html.LabelFor(model => model.Password, new { @class = "col-md-2 control-label" })
+        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+        <div class="col-md-offset-2">
             <small class="text-muted">Please use a combination of letters, numbers, symbols</small>
         </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Password)
+        </font>
     </div>
-    @*Adding confirmation password textfield*@
+    @*Adding Confirmation Password textfield*@
     <div class="form-group">
-        <label asp-for="ConfirmPassword" class="col-sm-3">Confirm Password:</label>
-        <input asp-for="ConfirmPassword" class="form-control" />
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        @Html.LabelFor(model => model.ConfirmPassword, new { @class = "col-md-2 control-label" })
+        @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.ConfirmPassword)
+        </font>
     </div>
     @*Adding add account button*@
     <div class="form-group">
         <button style="margin-left:15px" type="submit" class="btn btn-primary">Create Account</button>
     </div>
-</form>
+}
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

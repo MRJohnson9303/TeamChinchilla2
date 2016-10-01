@@ -18,6 +18,6 @@ namespace MESACCA.Models
         public string OfficeNumber { get; set; }
         public string URL { get; set; }
         public string Description { get; set; }
-        public Picture Picture { get; set; }
+        public HttpPostedFileBase Picture { get; set; }
     }
 }

@@ -7,9 +7,6 @@ using MESACCA.ViewModels.Admin;
 using System.Configuration;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
-using System.Web.UI.HtmlControls;
-using System.IO;
 namespace MESACCA.Controllers
 {
     //[Authorize(Roles = "Admin")]
@@ -95,7 +92,7 @@ namespace MESACCA.Controllers
         public ActionResult AddAccount(AddAccountViewModel model)
         {
             Boolean success = false;
-            User newUser = new User();
+            User newUser = new Models.User();
             //ID initialized for comparison
             int ID = 1;
             List<User> userList = new List<User>();
@@ -165,10 +162,14 @@ namespace MESACCA.Controllers
             model.Donate = Convert.ToBoolean(foundUser.Donate);
             return View(model);
         }
+        [HttpPost]
         //This method allows the Admin to edit accounts displayed in Manage Accounts
         public ActionResult Edit(EditViewModel model)
         {
             Boolean success = false;
+            User foundUser = new Models.User();
+            //Getting SQL table entry based on User ID to obtain the user's password.
+            foundUser = sqlConnectionForUser(model.ID);
             User updatedUser = new Models.User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page
             updatedUser.FirstName = model.FirstName;
@@ -178,7 +179,17 @@ namespace MESACCA.Controllers
             updatedUser.Email = model.Email;
             updatedUser.PhoneNumber = model.PhoneNumber;
             updatedUser.Username = model.Username;
-            updatedUser.Password = model.Password;
+            //If the Admin decides not to update a User's password, then the current stored password is stored in 
+            //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
+            //into the database.
+            if (String.IsNullOrEmpty(model.Password) == true)
+            {
+                updatedUser.Password = foundUser.Password;
+            }
+            else
+            {
+                updatedUser.Password = model.Password;
+            }
             updatedUser.Home = model.Home.ToString();
             updatedUser.About_Us = model.About_Us.ToString();
             updatedUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
@@ -197,22 +208,26 @@ namespace MESACCA.Controllers
             return View(model);
         }
         //This method sends an entry's information from Manage Accounts into the View when the Delete link is clicked on
+        [HttpGet]
         public ActionResult Delete(int ID)
         {
-            User foundUser = new User();
+            User foundUser = new Models.User();
             foundUser = sqlConnectionForUser(ID);
             return View(foundUser);
         }
-        //This method deletes the user from the system if the delete button is clicked on and sends the User
-        //to Manage Accounts
-        [HttpPost, ActionName("Delete")]
-        public ActionResult DeleteConfirmed(User model)
+        //This method deletes the user from the system if the delete button in the Edit View is clicked on and sends the User
+        //to Manage Accounts and if the back button is clicked, then the Admin is sent back to ManageAccounts.
+        [HttpPost]
+        public ActionResult Delete(User model, string button)
         {
             Boolean success = false;
-            //The model's first name is checked to verify if the model object is null to prevent unnecessary SQL database access
-            if (String.IsNullOrEmpty(model.FirstName))
+            if (button.Contains("delete"))
             {
                 success = sqlConnectionDeleteUser(model.ID);
+            }
+            else if (button.Contains("back"))
+            {
+                return RedirectToAction("ManageAccounts");
             }
             if (success == true)
             {
@@ -230,7 +245,6 @@ namespace MESACCA.Controllers
         {
             return View();
         }
-        //[HttpPost, ActionName("AddCenter")]
         [HttpPost]
         public ActionResult AddCenter(AddCenterViewModel model)
         {
@@ -238,10 +252,10 @@ namespace MESACCA.Controllers
             {
                 return RedirectToAction("ManageAccounts");
             }*/
-            /*if (model.Picture.File.ContentLength > 0)
+            if (model.Picture.ContentLength > 0)
             {
                 return RedirectToAction("ManageAccounts");
-            }*/
+            }
             return RedirectToAction("ManageCenters");
         }
         [HttpGet]
@@ -267,7 +281,7 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult ManagePersonalAccount()
         {
-            User foundUser = new User();
+            User foundUser = new Models.User();
             ManagePersonalAccountViewModel model = new ManagePersonalAccountViewModel();
             //Getting SQL table entry based on User ID
             foundUser = sqlConnectionForUser(adminID);
@@ -286,16 +300,39 @@ namespace MESACCA.Controllers
         public ActionResult ManagePersonalAccount(ManagePersonalAccountViewModel model)
         {
             Boolean success = false;
-            User updatedUser = new User();
+            User foundUser = new Models.User();
+            //Getting SQL table entry based on User ID to obtain the user's rights since the user can't manage own rights
+            //to update.
+            foundUser = sqlConnectionForUser(adminID);
+            User updatedUser = new Models.User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page that
             //an Admin is allowed to change
-            updatedUser.FirstName = model.FirstName.TrimEnd(' ');
-            updatedUser.LastName = model.LastName.TrimEnd(' ');
-            updatedUser.Center = model.Center.TrimEnd(' ');
-            updatedUser.Email = model.Email.TrimEnd(' ');
-            updatedUser.PhoneNumber = model.PhoneNumber.TrimEnd(' ');
-            updatedUser.Username = model.Username.TrimEnd(' ');
-            updatedUser.Password = model.Password.TrimEnd(' ');
+            updatedUser.FirstName = model.FirstName;
+            updatedUser.LastName = model.LastName;
+            updatedUser.Center = model.Center;
+            updatedUser.Email = model.Email;
+            updatedUser.PhoneNumber = model.PhoneNumber;
+            updatedUser.Username = model.Username;
+            //If the user decides not to update their password, then the current stored password is stored in 
+            //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
+            //into the database.
+            if(String.IsNullOrEmpty(model.Password) == true)
+            {
+                updatedUser.Password = foundUser.Password;
+            }
+            else
+            {
+                updatedUser.Password = model.Password;
+            }
+            //Using the foundUser object to pass the user's current rights to the database.
+            updatedUser.Home = foundUser.Home;
+            updatedUser.About_Us = foundUser.About_Us;
+            updatedUser.Vision_Mission_Values = foundUser.Vision_Mission_Values;
+            updatedUser.MESA_Schools_Program = foundUser.MESA_Schools_Program;
+            updatedUser.MESA_Community_College_Program = foundUser.MESA_Community_College_Program;
+            updatedUser.MESA_Engineering_Program = foundUser.MESA_Engineering_Program;
+            updatedUser.News = foundUser.News;
+            updatedUser.Donate = foundUser.Donate;
             //Getting Boolean result of SQL entry information update
             success = sqlConnectionUpdateUser(adminID, updatedUser);
             //If the update was successful, redirect the User to the Manage Personal Account View to refresh the page
@@ -306,10 +343,10 @@ namespace MESACCA.Controllers
             }
             return View(model);
         }
-        //This method attempts to connect to the SQL database and returns a User object
+        //This method invokes "accessDatabaseForUser" to attempt to connect to the SQL database and returns a User object
         private User sqlConnectionForUser(int ID)
         {
-            User foundUser = new User();
+            User foundUser = new Models.User();
             int totalNumberOfTimesToTry = 3;
             int retryIntervalSeconds = 1;
 
@@ -341,7 +378,7 @@ namespace MESACCA.Controllers
         //as the provided username and password and returns a User object with all information of the User
         private User accessDatabaseForUser(int ID)
         {
-            User foundUser = new User();
+            User foundUser = new Models.User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -365,13 +402,21 @@ namespace MESACCA.Controllers
                     foundUser.PhoneNumber = dataReader.GetString(6).TrimEnd(' ');
                     foundUser.Username = dataReader.GetString(7).TrimEnd(' ');
                     foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
+                    foundUser.Home = dataReader.GetString(9).TrimEnd(' ');
+                    foundUser.About_Us = dataReader.GetString(10).TrimEnd(' ');
+                    foundUser.Vision_Mission_Values = dataReader.GetString(11).TrimEnd(' ');
+                    foundUser.MESA_Schools_Program = dataReader.GetString(12).TrimEnd(' ');
+                    foundUser.MESA_Community_College_Program = dataReader.GetString(13).TrimEnd(' ');
+                    foundUser.MESA_Engineering_Program = dataReader.GetString(14).TrimEnd(' ');
+                    foundUser.News = dataReader.GetString(15).TrimEnd(' ');
+                    foundUser.Donate = dataReader.GetString(16).TrimEnd(' ');
                     //Closing SQL connection
                     sqlConnection.Close();
                 }
                 return foundUser;
             }
         }
-        //This method attempts to connect to the SQL database and returns a Boolean value regarding update confirmation
+        //This method invokes "updateUserDatabase" to attempt to connect to the SQL database and returns a Boolean value regarding update confirmation
         private Boolean sqlConnectionUpdateUser(int ID, User updatedUser)
         {
             Boolean success = false;
@@ -416,7 +461,7 @@ namespace MESACCA.Controllers
                     sqlConnection.Open();
                     //Creating SQL query that updates the SQL table entry and returns the updated table entry
                     dbCommand.CommandText = @"UPDATE Users 
-                                              SET FirstName = @FirstName, LastName = @LastName, Center = @Center, Email = @Email,
+                                              SET FirstName = @FirstName, LastName = @LastName, AccountType = @AccountType, Center = @Center, Email = @Email,
                                                   PhoneNumber = @PhoneNumber, Username = @Username, Password = @Password,
                                                   Home = @Home, About_Us = @About_Us, Vision_Mission_Values = @Vision_Mission_Values,
                                                   MESA_Schools_Program = @MESA_Schools_Program,
@@ -429,6 +474,7 @@ namespace MESACCA.Controllers
                     //I trim the end of all fields to remove empty spaces
                     dbCommand.Parameters.AddWithValue("@FirstName", updatedUser.FirstName.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@LastName", updatedUser.LastName.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@AccountType", updatedUser.AccountType.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Center", updatedUser.Center.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Email", updatedUser.Email.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@PhoneNumber", updatedUser.PhoneNumber.TrimEnd(' '));
@@ -451,6 +497,7 @@ namespace MESACCA.Controllers
                     //I trim all of the found User data because the SQL server seems to add spaces.
                     foundUser.FirstName = dataReader.GetString(1).TrimEnd(' ');
                     foundUser.LastName = dataReader.GetString(2).TrimEnd(' ');
+                    foundUser.AccountType = dataReader.GetString(3).TrimEnd(' ');
                     foundUser.Center = dataReader.GetString(4).TrimEnd(' ');
                     foundUser.Email = dataReader.GetString(5).TrimEnd(' ');
                     foundUser.PhoneNumber = dataReader.GetString(6).TrimEnd(' ');
@@ -460,6 +507,7 @@ namespace MESACCA.Controllers
                     //all of the returned entry's information with the updated information provided by the user.
                     if (dataReader.HasRows == true && updatedUser.FirstName.Equals(foundUser.FirstName) &&
                         updatedUser.LastName.Equals(foundUser.LastName) &&
+                        updatedUser.AccountType.Equals(foundUser.AccountType) &&
                         updatedUser.Center.Equals(foundUser.Center) &&
                         updatedUser.Email.Equals(foundUser.Email) &&
                         updatedUser.PhoneNumber.Equals(foundUser.PhoneNumber) &&
@@ -474,7 +522,7 @@ namespace MESACCA.Controllers
                 return success;
             }
         }
-        //This method attempts to connect to the SQL database and returns a List object containing all Users
+        //This method invokes "accessDatabaseForUsers" to attempt to connect to the SQL database and returns a List object containing all Users
         private List<User> sqlConnectionForUsersList()
         {
             //SortedList<String, User> userList = new SortedList<String, User>();
@@ -536,7 +584,6 @@ namespace MESACCA.Controllers
                         foundUser.PhoneNumber = dataReader.GetString(6).TrimEnd(' ');
                         foundUser.Username = dataReader.GetString(7).TrimEnd(' ');
                         foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
-                        //Adding each User object to the sorted list using Account Type as the key
                         userList.Add(foundUser);
                     }
                     //Closing SQL connection
@@ -545,7 +592,7 @@ namespace MESACCA.Controllers
                 return userList;
             }
         }
-        //This method attempts to connect to the SQL database and a Boolean value regarding account creation confirmation
+        //This method invokes "accessDatabaseToAddUser" to attempt to connect to the SQL database and a Boolean value regarding account creation confirmation
         private Boolean sqlConnectionAddUser(int newID, User newUser)
         {
             Boolean success = false;
@@ -581,7 +628,7 @@ namespace MESACCA.Controllers
         private Boolean accessDatabaseToAddUser(int newID, User newUser)
         {
             Boolean success = false;
-            User foundUser = new User();
+            User foundUser = new Models.User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -647,7 +694,7 @@ namespace MESACCA.Controllers
                 return success;
             }
         }
-        //This method attempts to connect to the SQL database and returns a Boolean value regarding deletion confirmation
+        //This method invokes "accessDatabaseToDeleteUser" to attempt to connect to the SQL database and returns a Boolean value regarding deletion confirmation
         private Boolean sqlConnectionDeleteUser(int ID)
         {
             Boolean success = false;
@@ -683,7 +730,7 @@ namespace MESACCA.Controllers
         private Boolean accessDatabaseToDeleteUser(int ID)
         {
             Boolean success = false;
-            User foundUser = new User();
+            User foundUser = new Models.User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())

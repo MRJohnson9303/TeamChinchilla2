@@ -165,10 +165,14 @@ namespace MESACCA.Controllers
             model.Donate = Convert.ToBoolean(foundUser.Donate);
             return View(model);
         }
-        //This method allows the Admin to edit accounts displayed in Manage Accounts
+        //This method allows the Director to edit accounts displayed in Manage Accounts from his/her center
+        [HttpPost]
         public ActionResult Edit(EditViewModel model)
         {
             Boolean success = false;
+            User foundUser = new Models.User();
+            //Getting SQL table entry based on User ID to obtain the user's password.
+            foundUser = sqlConnectionForUser(model.ID);
             User updatedUser = new Models.User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page
             updatedUser.FirstName = model.FirstName;
@@ -178,7 +182,17 @@ namespace MESACCA.Controllers
             updatedUser.Email = model.Email;
             updatedUser.PhoneNumber = model.PhoneNumber;
             updatedUser.Username = model.Username;
-            updatedUser.Password = model.Password;
+            //If the Admin decides not to update a User's password, then the current stored password is stored in 
+            //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
+            //into the database.
+            if (String.IsNullOrEmpty(model.Password) == true)
+            {
+                updatedUser.Password = foundUser.Password;
+            }
+            else
+            {
+                updatedUser.Password = model.Password;
+            }
             updatedUser.Home = model.Home.ToString();
             updatedUser.About_Us = model.About_Us.ToString();
             updatedUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
@@ -204,14 +218,18 @@ namespace MESACCA.Controllers
             return View(foundUser);
         }
         //This method deletes the user from the system if the delete button in the Edit View is clicked on and sends the User
-        //to Manage Accounts
-        [HttpPost, ActionName("Delete")]
-        public ActionResult DeleteConfirmed(User model)
+        //to Manage Accounts and if the back button is clicked, then the Director is sent back to ManageAccounts.
+        [HttpPost]
+        public ActionResult Delete(User model, string button)
         {
             Boolean success = false;
-            if (model != null)
+            if (button.Contains("delete"))
             {
                 success = sqlConnectionDeleteUser(model.ID);
+            }
+            else if (button.Contains("back"))
+            {
+                return RedirectToAction("ManageAccounts");
             }
             if (success == true)
             {
@@ -242,23 +260,56 @@ namespace MESACCA.Controllers
             return View(model);
         }
         //This method allows the User to edit personal account information, save the changes to the SQL database and
-        //refreshes the page for the User showing the update informatin if successful
+        //refreshes the page for the User showing the update information if successful. It also allows the User to delete
+        //own account by first takes the User to a confirmation page before deletion.
         [HttpPost]
-        public ActionResult ManagePersonalAccount(ManagePersonalAccountViewModel model)
+        public ActionResult ManagePersonalAccount(ManagePersonalAccountViewModel model, string button)
         {
             Boolean success = false;
-            User updatedUser = new Models.User();
-            //Getting ViewModel model information given in the textfields of the Manage Personal Account page that
-            //an Admin is allowed to change
-            updatedUser.FirstName = model.FirstName.TrimEnd(' ');
-            updatedUser.LastName = model.LastName.TrimEnd(' ');
-            updatedUser.Center = model.Center.TrimEnd(' ');
-            updatedUser.Email = model.Email.TrimEnd(' ');
-            updatedUser.PhoneNumber = model.PhoneNumber.TrimEnd(' ');
-            updatedUser.Username = model.Username.TrimEnd(' ');
-            updatedUser.Password = model.Password.TrimEnd(' ');
-            //Getting Boolean result of SQL entry information update
-            success = sqlConnectionUpdateUser(directorID, updatedUser);
+            User foundUser = new User();
+            if (button.Contains("submit"))
+            {
+
+                //Getting SQL table entry based on User ID to obtain the User's rights since the user can't manage own rights
+                //to update.
+                foundUser = sqlConnectionForUser(directorID);
+                User updatedUser = new User();
+                //Getting ViewModel model information given in the textfields of the Manage Personal Account page that
+                //an Admin is allowed to change
+                updatedUser.FirstName = model.FirstName;
+                updatedUser.LastName = model.LastName;
+                updatedUser.AccountType = model.AccountType;
+                updatedUser.Center = model.Center;
+                updatedUser.Email = model.Email;
+                updatedUser.PhoneNumber = model.PhoneNumber;
+                updatedUser.Username = model.Username;
+                //If the user decides not to update their password, then the current stored password is stored in 
+                //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
+                //into the database.
+                if (String.IsNullOrEmpty(model.Password) == true)
+                {
+                    updatedUser.Password = foundUser.Password;
+                }
+                else
+                {
+                    updatedUser.Password = model.Password;
+                }
+                //Using the foundUser object to pass the user's current rights to the database.
+                updatedUser.Home = foundUser.Home;
+                updatedUser.About_Us = foundUser.About_Us;
+                updatedUser.Vision_Mission_Values = foundUser.Vision_Mission_Values;
+                updatedUser.MESA_Schools_Program = foundUser.MESA_Schools_Program;
+                updatedUser.MESA_Community_College_Program = foundUser.MESA_Community_College_Program;
+                updatedUser.MESA_Engineering_Program = foundUser.MESA_Engineering_Program;
+                updatedUser.News = foundUser.News;
+                updatedUser.Donate = foundUser.Donate;
+                //Getting Boolean result of SQL entry information update
+                success = sqlConnectionUpdateUser(directorID, updatedUser);
+            }
+            else if (button.Contains("delete"))
+            {
+                return RedirectToAction("DeletePersonalAccount");
+            }
             //If the update was successful, redirect the User to the Manage Personal Account View to refresh the page
             //with the updated information.
             if (success == true)
@@ -268,6 +319,7 @@ namespace MESACCA.Controllers
             return View(model);
         }
         //This method simply provides the confirmation page for the deletion of one's account from the database
+        [HttpGet]
         public ActionResult DeletePersonalAccount()
         {
             return View();
@@ -344,6 +396,14 @@ namespace MESACCA.Controllers
                     foundUser.PhoneNumber = dataReader.GetString(6).TrimEnd(' ');
                     foundUser.Username = dataReader.GetString(7).TrimEnd(' ');
                     foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
+                    foundUser.Home = dataReader.GetString(9).TrimEnd(' ');
+                    foundUser.About_Us = dataReader.GetString(10).TrimEnd(' ');
+                    foundUser.Vision_Mission_Values = dataReader.GetString(11).TrimEnd(' ');
+                    foundUser.MESA_Schools_Program = dataReader.GetString(12).TrimEnd(' ');
+                    foundUser.MESA_Community_College_Program = dataReader.GetString(13).TrimEnd(' ');
+                    foundUser.MESA_Engineering_Program = dataReader.GetString(14).TrimEnd(' ');
+                    foundUser.News = dataReader.GetString(15).TrimEnd(' ');
+                    foundUser.Donate = dataReader.GetString(16).TrimEnd(' ');
                     //Closing SQL connection
                     sqlConnection.Close();
                 }
