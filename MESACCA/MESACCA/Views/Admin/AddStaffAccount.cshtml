@@ -1,15 +1,14 @@
-﻿<h2>Add Account</h2>
-@model MESACCA.ViewModels.Director.AddAccountViewModel
+﻿<h2>Add Staff Account</h2>
+@model MESACCA.ViewModels.Admin.AddAccountViewModel
 @{
-    ViewData["Title"] = "Add Account";
-    String directorCenter = ViewBag.directorCenter;
+    ViewData["Title"] = "Add Staff Account";
 }
-@using (Html.BeginForm("AddAccount", "Director", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("AddStaffAccount", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @*Adding First Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", value = @ViewData["FirstName"] })
         <font color="red">
             @Html.ValidationMessageFor(model => model.FirstName)
         </font>
@@ -17,25 +16,15 @@
     @*Adding Last Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", value = @ViewData["LastName"] })
         <font color="red">
             @Html.ValidationMessageFor(model => model.LastName)
         </font>
     </div>
-    @*@Adding a inline Account Type dropbox*@
+    @*@Adding readonly Account Type textfield*@
     <div class="form-group">
-        <div class="form-inline">
-            @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
-            <div class="form-control">
-                @Html.DropDownList("AccountType", new List<SelectListItem>
-                {
-                    new SelectListItem {Text ="Staff", Value="Staff" }
-                })
-            </div>
-            <font color="red">
-                @Html.ValidationMessageFor(model => model.AccountType)
-            </font>
-        </div>
+        @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC", value = @ViewData["AccountType"] })
     </div>
     @*Adding a inline Center dropbox*@
     <div class="form-group">
@@ -44,13 +33,18 @@
             <div class="form-control">
                 @Html.DropDownList("Center", new List<SelectListItem>
                 {
-                    new SelectListItem {Text=directorCenter.ToString(), Value=directorCenter.ToString() },
-                })
+                    new SelectListItem {Text ="Center 1", Value="Center 1" },
+                    new SelectListItem {Text ="Center 2", Value="Center 2" }
+                },
+                "Select Center")
             </div>
-            <font color="red">
-                @Html.ValidationMessageFor(model => model.Center)
-            </font>
         </div>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Current centers in the database</small>
+        </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Center)
+        </font>
     </div>
     @*Adding Email textfield*@
     <div class="form-group">
@@ -174,3 +168,6 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+
+
+

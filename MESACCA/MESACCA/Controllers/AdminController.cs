@@ -86,13 +86,38 @@ namespace MESACCA.Controllers
         {
             return View();
         }
-        //This method adds an account with provided information to the SQL database and redirects user to ManageAccounts
-        //if successful
+        //This method sends the Admin to the AddDirectorAccount or AddStaffAccount View based on the account type selected
+        //in the provided dropbox along with the information in the First Name and Last Name fields.
         [HttpPost]
         public ActionResult AddAccount(AddAccountViewModel model)
         {
+            if (model.AccountType.Equals("Director"))
+            {
+                return RedirectToAction("AddDirectorAccount", new { model.FirstName, model.LastName, model.AccountType });
+            }
+            else if (model.AccountType.Equals("Staff"))
+            {
+                return RedirectToAction("AddStaffAccount", new { model.FirstName, model.LastName, model.AccountType });
+            }
+            return View();
+        }
+        //This method returns the AddDirectorAccount View with the first name, last name and account type filled in using
+        //passed in information, but the account type textfield is readonly.
+        [HttpGet]
+        public ActionResult AddDirectorAccount(string firstName, string lastName, string accountType)
+        {
+            ViewData["FirstName"] = firstName;
+            ViewData["LastName"] = lastName;
+            ViewData["AccountType"] = accountType;
+            return View();
+        }
+        //This method adds a Director account with provided information to the SQL database and redirects user to ManageAccounts
+        //if successful.
+        [HttpPost]
+        public ActionResult AddDirectorAccount(AddAccountViewModel model)
+        {
             Boolean success = false;
-            User newUser = new Models.User();
+            User newUser = new User();
             //ID initialized for comparison
             int ID = 1;
             List<User> userList = new List<User>();
@@ -112,15 +137,66 @@ namespace MESACCA.Controllers
             newUser.FirstName = model.FirstName;
             newUser.LastName = model.LastName;
             newUser.AccountType = model.AccountType;
-            ViewData["Test"] = model.AccountType;
             newUser.Center = model.Center;
-            ViewData["Test1"] = model.Center;
+            newUser.Email = model.Email;
+            newUser.PhoneNumber = model.PhoneNumber;
+            newUser.Username = model.Username;
+            newUser.Password = model.Password;
+            //Setting all User rights for the Admin to be True because the disabled checkboxes return False 
+            newUser.Home = "True";
+            newUser.About_Us = "True";
+            newUser.Vision_Mission_Values = "True";
+            newUser.MESA_Schools_Program = "True";
+            newUser.MESA_Community_College_Program = "True";
+            newUser.MESA_Engineering_Program = "True";
+            newUser.News = "True";
+            newUser.Donate = "True";
+            success = sqlConnectionAddUser(ID, newUser);
+            if (success == true)
+            {
+                return RedirectToAction("ManageAccounts");
+            }
+            return View();
+        }
+        //This method returns the AddStaffAccount View with the first name, last name and account type filled in using
+        //passed in information, but the account type textfield is readonly.
+        [HttpGet]
+        public ActionResult AddStaffAccount(string firstName, string lastName, string accountType)
+        {
+            return View();
+        }
+        //This method adds a Staff account with provided information to the SQL database and redirects user to ManageAccounts
+        //if successful.
+        [HttpPost]
+        public ActionResult AddStaffAccount(AddAccountViewModel model)
+        {
+            Boolean success = false;
+            User newUser = new User();
+            //ID initialized for comparison
+            int ID = 1;
+            List<User> userList = new List<User>();
+            //Storing the SortedList object returned which contains all Users
+            userList = sqlConnectionForUsersList();
+            //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
+            //a User ID then break the loop and use the new ID value for the new User account ID.
+            //This means if a User is deleted, then a new User will get the old ID
+            foreach (var item in userList)
+            {
+                if (ID != item.ID)
+                {
+                    break;
+                }
+                ID += 1;
+            }
+            newUser.FirstName = model.FirstName;
+            newUser.LastName = model.LastName;
+            newUser.AccountType = model.AccountType;
+            newUser.Center = model.Center;
             newUser.Email = model.Email;
             newUser.PhoneNumber = model.PhoneNumber;
             newUser.Username = model.Username;
             newUser.Password = model.Password;
             newUser.Home = model.Home.ToString();
-            ViewData["Test2"] = model.Home.ToString();
             newUser.About_Us = model.About_Us.ToString();
             newUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
             newUser.MESA_Schools_Program = model.MESA_Schools_Program.ToString();
@@ -139,7 +215,7 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult Edit(int ID)
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             EditViewModel model = new EditViewModel();
             //Getting User information based on User ID
             foundUser = sqlConnectionForUser(ID);
@@ -162,15 +238,15 @@ namespace MESACCA.Controllers
             model.Donate = Convert.ToBoolean(foundUser.Donate);
             return View(model);
         }
+        //This method allows the Admin to edit accounts displayed in Manage Accounts and saves changes in the SQL database
         [HttpPost]
-        //This method allows the Admin to edit accounts displayed in Manage Accounts
         public ActionResult Edit(EditViewModel model)
         {
             Boolean success = false;
-            User foundUser = new Models.User();
+            User foundUser = new User();
             //Getting SQL table entry based on User ID to obtain the user's password.
             foundUser = sqlConnectionForUser(model.ID);
-            User updatedUser = new Models.User();
+            User updatedUser = new User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page
             updatedUser.FirstName = model.FirstName;
             updatedUser.LastName = model.LastName;
@@ -190,14 +266,32 @@ namespace MESACCA.Controllers
             {
                 updatedUser.Password = model.Password;
             }
-            updatedUser.Home = model.Home.ToString();
-            updatedUser.About_Us = model.About_Us.ToString();
-            updatedUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
-            updatedUser.MESA_Schools_Program = model.MESA_Schools_Program.ToString();
-            updatedUser.MESA_Community_College_Program = model.MESA_Community_College_Program.ToString();
-            updatedUser.MESA_Engineering_Program = model.MESA_Engineering_Program.ToString();
-            updatedUser.News = model.News.ToString();
-            updatedUser.Donate = model.Donate.ToString();
+            //If the account being edited is a Director, 
+            //manually set the Director's rights to True because the disabled checkboxes return False.
+            if (model.AccountType.Equals("Director"))
+            {
+                updatedUser.Home = "True";
+                updatedUser.About_Us = "True";
+                updatedUser.Vision_Mission_Values = "True";
+                updatedUser.MESA_Schools_Program = "True";
+                updatedUser.MESA_Community_College_Program = "True";
+                updatedUser.MESA_Engineering_Program = "True";
+                updatedUser.News = "True";
+                updatedUser.Donate = "True";
+            }
+            //If the account being edited is a Staff member, 
+            //set the user's rights with the provided checkboxes returns.
+            else if (model.AccountType.Equals("Staff"))
+            {
+                updatedUser.Home = model.Home.ToString();
+                updatedUser.About_Us = model.About_Us.ToString();
+                updatedUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
+                updatedUser.MESA_Schools_Program = model.MESA_Schools_Program.ToString();
+                updatedUser.MESA_Community_College_Program = model.MESA_Community_College_Program.ToString();
+                updatedUser.MESA_Engineering_Program = model.MESA_Engineering_Program.ToString();
+                updatedUser.News = model.News.ToString();
+                updatedUser.Donate = model.Donate.ToString();
+            }
             //Getting Boolean result of SQL entry information update
             success = sqlConnectionUpdateUser(model.ID, updatedUser);
             //If the update was successful, redirect the User to the Manage Accounts page
@@ -211,7 +305,7 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult Delete(int ID)
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             foundUser = sqlConnectionForUser(ID);
             return View(foundUser);
         }
@@ -239,8 +333,8 @@ namespace MESACCA.Controllers
         {
             return View();
         }
-        [HttpGet]
         //This method returns the AddCenter View
+        [HttpGet]
         public ActionResult AddCenter()
         {
             return View();
@@ -258,22 +352,39 @@ namespace MESACCA.Controllers
             }
             return RedirectToAction("ManageCenters");
         }
+        //This method returns the ManageSite View with buttons appearing based on user rights to the
+        //web pages on the site named on the buttons.
+        //The Admin has rights to all portions of the website.
         [HttpGet]
-        public ActionResult PictureTest()
+        public ActionResult ManageSite()
         {
             return View();
         }
+        //This methods sends the user to the appropriate View based on which button was clicked.
         [HttpPost]
-        public ActionResult PictureTest(HttpPostedFileBase File)
+        public ActionResult ManageSite(String button)
         {
-            if(File.ContentLength > 0)
+            switch (button)
             {
-                return RedirectToAction("ManageAccounts");
+                case "Home":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "About Us":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "Vision Mission Values":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "MESA Schools Program":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "MESA Community College Program":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "MESA Engineering Program":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "News":
+                    return RedirectToAction("AddNews", "News", new { referrer = "Admin" });
+                case "Donate":
+                    return RedirectToAction("ManagePersonalAccount");
+                default:
+                    break;
             }
-            return RedirectToAction("ManagePersonalAccount");
-        }
-        public ActionResult ManageSite()
-        {
             return View();
         }
         //This method returns the ManagePersonalAccount View with the ManagePersonalAccountViewModel passed in to 
@@ -281,7 +392,7 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult ManagePersonalAccount()
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             ManagePersonalAccountViewModel model = new ManagePersonalAccountViewModel();
             //Getting SQL table entry based on User ID
             foundUser = sqlConnectionForUser(adminID);
@@ -300,11 +411,11 @@ namespace MESACCA.Controllers
         public ActionResult ManagePersonalAccount(ManagePersonalAccountViewModel model)
         {
             Boolean success = false;
-            User foundUser = new Models.User();
+            User foundUser = new User();
             //Getting SQL table entry based on User ID to obtain the user's rights since the user can't manage own rights
             //to update.
             foundUser = sqlConnectionForUser(adminID);
-            User updatedUser = new Models.User();
+            User updatedUser = new User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page that
             //an Admin is allowed to change
             updatedUser.FirstName = model.FirstName;
@@ -316,7 +427,7 @@ namespace MESACCA.Controllers
             //If the user decides not to update their password, then the current stored password is stored in 
             //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
             //into the database.
-            if(String.IsNullOrEmpty(model.Password) == true)
+            if (String.IsNullOrEmpty(model.Password) == true)
             {
                 updatedUser.Password = foundUser.Password;
             }
@@ -346,7 +457,7 @@ namespace MESACCA.Controllers
         //This method invokes "accessDatabaseForUser" to attempt to connect to the SQL database and returns a User object
         private User sqlConnectionForUser(int ID)
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             int totalNumberOfTimesToTry = 3;
             int retryIntervalSeconds = 1;
 
@@ -378,7 +489,7 @@ namespace MESACCA.Controllers
         //as the provided username and password and returns a User object with all information of the User
         private User accessDatabaseForUser(int ID)
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -452,7 +563,7 @@ namespace MESACCA.Controllers
         private Boolean updateUserDatabase(int ID, User updatedUser)
         {
             Boolean success = false;
-            User foundUser = new Models.User();
+            User foundUser = new User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -503,6 +614,14 @@ namespace MESACCA.Controllers
                     foundUser.PhoneNumber = dataReader.GetString(6).TrimEnd(' ');
                     foundUser.Username = dataReader.GetString(7).TrimEnd(' ');
                     foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
+                    foundUser.Home = dataReader.GetString(9).TrimEnd(' ');
+                    foundUser.About_Us = dataReader.GetString(10).TrimEnd(' ');
+                    foundUser.Vision_Mission_Values = dataReader.GetString(11).TrimEnd(' ');
+                    foundUser.MESA_Schools_Program = dataReader.GetString(12).TrimEnd(' ');
+                    foundUser.MESA_Community_College_Program = dataReader.GetString(13).TrimEnd(' ');
+                    foundUser.MESA_Engineering_Program = dataReader.GetString(14).TrimEnd(' ');
+                    foundUser.News = dataReader.GetString(15).TrimEnd(' ');
+                    foundUser.Donate = dataReader.GetString(16).TrimEnd(' ');
                     //Determining if the update was successfully executed by checking if an entry is returned and comparing
                     //all of the returned entry's information with the updated information provided by the user.
                     if (dataReader.HasRows == true && updatedUser.FirstName.Equals(foundUser.FirstName) &&
@@ -512,7 +631,15 @@ namespace MESACCA.Controllers
                         updatedUser.Email.Equals(foundUser.Email) &&
                         updatedUser.PhoneNumber.Equals(foundUser.PhoneNumber) &&
                         updatedUser.Username.Equals(foundUser.Username) &&
-                        updatedUser.Password.Equals(foundUser.Password))
+                        updatedUser.Password.Equals(foundUser.Password) &&
+                        updatedUser.Home.Equals(foundUser.Home) &&
+                        updatedUser.About_Us.Equals(foundUser.About_Us) &&
+                        updatedUser.Vision_Mission_Values.Equals(foundUser.Vision_Mission_Values) &&
+                        updatedUser.MESA_Schools_Program.Equals(foundUser.MESA_Schools_Program) &&
+                        updatedUser.MESA_Community_College_Program.Equals(foundUser.MESA_Community_College_Program) &&
+                        updatedUser.MESA_Engineering_Program.Equals(foundUser.MESA_Engineering_Program) &&
+                        updatedUser.News.Equals(foundUser.News) &&
+                        updatedUser.Donate.Equals(foundUser.Donate))
                     {
                         success = true;
                     }
@@ -558,7 +685,6 @@ namespace MESACCA.Controllers
         //based on Users' account type and returns the list.
         private List<User> accessDatabaseForUsers()
         {
-            //SortedList<String, User> userList = new SortedList<String, User>();
             List<User> userList = new List<User>();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
@@ -628,7 +754,7 @@ namespace MESACCA.Controllers
         private Boolean accessDatabaseToAddUser(int newID, User newUser)
         {
             Boolean success = false;
-            User foundUser = new Models.User();
+            User foundUser = new User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -730,7 +856,7 @@ namespace MESACCA.Controllers
         private Boolean accessDatabaseToDeleteUser(int ID)
         {
             Boolean success = false;
-            User foundUser = new Models.User();
+            User foundUser = new User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())

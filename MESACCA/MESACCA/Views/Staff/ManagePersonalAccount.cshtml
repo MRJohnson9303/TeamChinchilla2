@@ -24,12 +24,12 @@
     @*@Adding a inline account type dropbox*@
     <div class="form-group">
         @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#999", value = Model.AccountType })
+        @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC", value = Model.AccountType })
     </div>
     @*Adding a inline center dropbox*@
     <div class="form-group">
         @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.Center, new { @class = "form-control", @readonly = "readonly", style = "background-color:#999", value = Model.Center })
+        @Html.TextBoxFor(model => model.Center, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC", value = Model.Center })
         <font color="red">
             @Html.ValidationMessageFor(model => model.Center)
         </font>

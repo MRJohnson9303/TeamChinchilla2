@@ -28,10 +28,10 @@
             <div class="form-control">
                 @Html.DropDownList("AccountType", new List<SelectListItem>
                 {
-                    new SelectListItem {Text ="Director", Value="Director" },
-                    new SelectListItem {Text ="Staff", Value="Staff" }
+                    new SelectListItem {Text = "Director", Value = "Director"},
+                    new SelectListItem {Text = "Staff", Value = "Staff" }
                 },
-                "Select Account Type")
+                "Select Account Type", new { onchange = "this.form.submit();" })
             </div>
         </div>
         <div class="col-md-offset-2">
@@ -41,145 +41,9 @@
             @Html.ValidationMessageFor(model => model.AccountType)
         </font>
     </div>
-    @*Adding a inline Center dropbox*@
-    <div class="form-group">
-        <div class="form-inline">
-            @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
-            <div class="form-control">
-                @Html.DropDownList("Center", new List<SelectListItem>
-                {
-                    new SelectListItem {Text ="Center 1", Value="Center 1" },
-                    new SelectListItem {Text ="Center 2", Value="Center 2" }
-                },
-                "Select Center")
-            </div>
-        </div>
-        <div class="col-md-offset-2">
-            <small class="text-muted">Current centers in the database</small>
-        </div>
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.AccountType)
-        </font>
-    </div>
-    @*Adding Email textfield*@
-    <div class="form-group">
-        @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
-        <div class="col-md-offset-2">
-            <small class="text-muted">Example: mesa@yahoo.com</small>
-        </div>
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.Email)
-        </font>
-    </div>
-    @*Adding Phone Number textfield*@
-    <div class="form-group">
-        @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control" })
-        <div class="col-md-offset-2">
-            <small class="text-muted">Example: 916-555-5555</small>
-        </div>
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.PhoneNumber)
-        </font>
-    </div>
-    @*Adding a label and a table containing a row of check boxes for user rights*@
-    <div class="form-group">
-        <div class="col-md-3">
-            <label>User Is Allowed to Alter</label>
-            <table class="table">
-                <thead style="font-size: 12px">
-                    <tr>
-                        @*Table Headings*@
-                        <th>
-                            @Html.DisplayNameFor(model => model.Home)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.About_Us)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Vision_Mission_Values)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.MESA_Schools_Program)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.MESA_Community_College_Program)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.MESA_Engineering_Program)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.News)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Donate)
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Html.CheckBoxFor(model => model.Home, new { @checked="checked" })
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.About_Us, new { @checked = "checked" })
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.Vision_Mission_Values, new { @checked = "checked" })
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.MESA_Schools_Program, new { @checked = "checked" })
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.MESA_Community_College_Program, new { @checked = "checked" })
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.MESA_Engineering_Program, new { @checked = "checked" })
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.News, new { @checked = "checked" })
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.Donate, new { @checked = "checked" })
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    @*Adding Username textfield*@
-    <div class="form-group">
-        @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.Username)
-        </font>
-    </div>
-    @*Adding Password textfield*@
-    <div class="form-group">
-        @Html.LabelFor(model => model.Password, new { @class = "col-md-2 control-label" })
-        @Html.PasswordFor(model => model.Password, new { @class = "form-control" }) 
-        <div class="col-md-offset-2">
-            <small class="text-muted">Please use a combination of letters, numbers, symbols</small>
-        </div>
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.Password)
-        </font>
-    </div>
-    @*Adding Confirmation Password textfield*@
-    <div class="form-group">
-        @Html.LabelFor(model => model.ConfirmPassword, new { @class = "col-md-2 control-label" })
-        @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.ConfirmPassword)
-        </font>
-    </div>
-    @*Adding add account button*@
-    <div class="form-group">
-        <button style="margin-left:15px" type="submit" class="btn btn-primary">Create Account</button>
-    </div>
 }
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
+
+

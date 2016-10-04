@@ -16,7 +16,7 @@
     @*Adding Last name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", value = Model.LastName})
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", value = Model.LastName })
         <font color="red">
             @Html.ValidationMessageFor(model => model.LastName)
         </font>
@@ -24,12 +24,12 @@
     @*@Adding a inline account type dropbox*@
     <div class="form-group">
         @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#999", value =Model.AccountType})
+        @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC", value = Model.AccountType })
     </div>
     @*Adding a inline center dropbox*@
     <div class="form-group">
         @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.Center, new { @class="form-control", value = Model.Center})
+        @Html.TextBoxFor(model => model.Center, new { @class = "form-control", value = Model.Center })
         <font color="red">
             @Html.ValidationMessageFor(model => model.Center)
         </font>
@@ -67,7 +67,7 @@
     @*Adding password textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Password, new { @class = "col-md-2 control-label" })
-        @Html.PasswordFor(model =>model.Password, new { @class = "form-control"})
+        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
         <font color="red">
             @Html.ValidationMessageFor(model => model.Password)
         </font>
@@ -78,7 +78,7 @@
     @*Adding confirmation password textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.ConfirmPassword, new { @class = "col-md-2 control-label" })
-        @Html.PasswordFor(model =>model.ConfirmPassword, new { @class = "form-control"})
+        @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
         <font color="red">
             @Html.ValidationMessageFor(model => model.ConfirmPassword)
         </font>
