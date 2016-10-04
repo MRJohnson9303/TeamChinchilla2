@@ -170,8 +170,8 @@ namespace MESACCA.Controllers
                     sqlConnection.Open();
                     //Creating SQL query
                     dbCommand.CommandText = @"SELECT * FROM Users WHERE Username = @username AND Password = @password";
-                    dbCommand.Parameters.AddWithValue("@username", _username);
-                    dbCommand.Parameters.AddWithValue("@password", _password);
+                    dbCommand.Parameters.AddWithValue("@username", SecurityUtility.ParseSQL(_username));
+                    dbCommand.Parameters.AddWithValue("@password", SecurityUtility.ParseSQL(_password));
                     //Building data reader
                     var dataReader = dbCommand.ExecuteReader();
                     //Advancing to the next record which is the first and only record in this case

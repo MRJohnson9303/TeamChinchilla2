@@ -12,38 +12,43 @@ namespace MESACCA.DataBaseManagers
     {
         public static List<NewsArticle> getNewsPosts()
         {
-            /*
             List<NewsArticle> returnValue = new List<NewsArticle>();
-            
-            using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Common.GetSqlConnectionString()))
+            try
             {
-                using (var dbCommand = sqlConnection.CreateCommand())
+                using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Common.GetSqlConnectionString()))
                 {
-                    //Opening SQL connection
-                    sqlConnection.Open();
-                    //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                    dbCommand.CommandText = @"SELECT top 100 FROM NewsArticle";
-                    var dataReader = dbCommand.ExecuteReader();
-                    var iterator = dataReader.GetEnumerator();
-                    while (iterator.MoveNext())
+                    using (var dbCommand = sqlConnection.CreateCommand())
                     {
-                        NewsArticle article = new NewsArticle();
-                        //Getting the SQL entry information 
-                        //I trim all of the found User data because the SQL server seems to add spaces.
-                        article.ArticleID = dataReader.GetInt32(0);
-                        article.ArticleTitle = dataReader.GetString(1).TrimEnd(' ');
-                        article.ArticleBody = dataReader.GetString(2).TrimEnd(' ');
-                        article.CreatedByUser = dataReader.GetInt32(3);
-                        article.AuthorName = dataReader.GetString(4).TrimEnd(' ');
-                        article.DateOfArticle = dataReader.GetDateTime(5);
-                        returnValue.Add(article);
-                    }
-                    //Closing SQL connection
-                    sqlConnection.Close();
+                        
+                        //Opening SQL connection
+                        sqlConnection.Open();
+                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
+                        dbCommand.CommandText = @"SELECT n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName FROM (SELECT top 100 * FROM NewsArticles order by DateOfArticle desc) as n INNER JOIN Users as u on u.ID = n.CreatedByUser";
+                        var dataReader = dbCommand.ExecuteReader();
+                        var iterator = dataReader.GetEnumerator();
+                        while (iterator.MoveNext())
+                        {
+                            NewsArticle article = new NewsArticle();
+                            //Getting the SQL entry information 
+                            //I trim all of the found User data because the SQL server seems to add spaces.
+                            article.ArticleTitle = dataReader.GetString(0).TrimEnd(' ');
+                            article.ArticleBody = dataReader.GetString(1).TrimEnd(' ');
+                            article.DateOfArticle = dataReader.GetDateTime(2);
+                            article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
+                            returnValue.Add(article);
+                        }
+                        //Closing SQL connection
+                        sqlConnection.Close();
+                    }    
                 }
-                return returnValue;
+            } catch(Exception ex)
+            {
+
             }
-            */
+
+            return returnValue;
+           
+            /*
             List<NewsArticle> returnValue = new List<NewsArticle>();
             for (int i = 1; i < 5; i++)
             {
@@ -59,6 +64,7 @@ namespace MESACCA.DataBaseManagers
                 returnValue.Add(newsArticle);
             }
             return returnValue;
+            */
         }
     }
 }
