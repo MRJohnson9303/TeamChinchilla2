@@ -4,6 +4,16 @@
     ViewBag.Title = "Add News";
 }
 
+<script>
+    $(document).ready(function () {
+        CKEDITOR.replace('ArticleBody',
+            {
+                "extraPlugins": 'imagebrowser',
+                "imageBrowser_listUrl" : "/ckeditor-imagebrowser/demo/images/images_list.json"
+            });
+    });
+</script>
+
 <h2>Add News</h2>
 
 @if (ViewBag.Message != null)
@@ -28,39 +38,39 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.ArticleBody, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.TextAreaFor(model => model.ArticleBody, new { htmlAttributes = new { @class = "form-control" } })
+            <div class="col-md-8">
+                @Html.TextAreaFor(model => model.ArticleBody, 4 , 20 , new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.ArticleBody, "", new { @class = "text-danger" })
             </div>
         </div>
 
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.DateOfArticle, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.DateOfArticle, new { htmlAttributes = new { @class = "form-control date-picker" } })
-                @Html.ValidationMessageFor(model => model.DateOfArticle, "", new { @class = "text-danger" })
-            </div>
+        @*<div class="form-group">
+        @Html.LabelFor(model => model.DateOfArticle, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.DateOfArticle, new { htmlAttributes = new { @class = "form-control date-picker" } })
+            @Html.ValidationMessageFor(model => model.DateOfArticle, "", new { @class = "text-danger" })
         </div>
+    </div>*@
 
-            <div class="col-lg-2"></div>
-            <div class="btn-toolbar">
+        <div class="col-lg-2"></div>
+        <div class="btn-toolbar">
 
-                <input type="submit" value="Create" class="btn btn-default" />
+            <input type="submit" value="Create" class="btn btn-default" />
 
 
-                @if (Request.Params["referrer"] == "Admin")
-                {
-                    <a class="btn btn-default center-block" href="@Url.Action("ManageSite", "Admin")">Return to Manage Site Options</a>
-                }
-                else if (Request.Params["referrer"] == "Director")
-                {
-                    <a class="btn btn-default" href="@Url.Action("ManageSite", "Director")">Return to Manage Site Options</a>
-                }
-                else if (Request.Params["referrer"] == "Staff")
-                {
-                    <a class="btn btn-default" href="@Url.Action("ManageSite", "Staff")">Return to Manage Site Options</a>
-                }
+            @*@if (Request.Params["referrer"] == "Admin")
+    {
+        <a class="btn btn-default center-block" href="@Url.Action("ManageSite", "Admin")">Return to Manage Site Options</a>
+    }
+    else if (Request.Params["referrer"] == "Director")
+    {
+        <a class="btn btn-default" href="@Url.Action("ManageSite", "Director")">Return to Manage Site Options</a>
+    }
+    else if (Request.Params["referrer"] == "Staff")
+    {
+        <a class="btn btn-default" href="@Url.Action("ManageSite", "Staff")">Return to Manage Site Options</a>
+    }*@
             </div>
 
 

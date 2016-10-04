@@ -28,7 +28,7 @@ namespace MESACCA.Controllers
                 {
                     ArticleTitle = model.ArticleTitle,
                     ArticleBody = model.ArticleBody,
-                    DateOfArticle = model.DateOfArticle,
+                    DateOfArticle = DateTime.Now,
                     CreatedByUser = 1
                 };
 

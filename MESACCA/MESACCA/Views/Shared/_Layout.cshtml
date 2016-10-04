@@ -1,5 +1,9 @@
 ﻿<!DOCTYPE html>
 <html>
+@Scripts.Render("~/bundles/ckeditor")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@RenderSection("scripts", required: false)
 @Html.Partial("Partials/_HeaderPartial")
 <body>
     @Html.Partial("Partials/_NavBarPartial")
@@ -8,9 +12,7 @@
     </div>
     @Html.Partial("Partials/_FooterPartial")
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+
 </body>
 </html>
 
