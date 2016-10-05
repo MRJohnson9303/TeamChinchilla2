@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+@Html.Partial("Partials/_HeaderPartial")
+<body style="margin-top:0;">
+    @Html.Partial("Partials/_NavBarPartial")
+
+    <div class="container">
+        <div class="row" style="margin-top:120px;">
+            @Html.Partial("Partials/_AccountSideBar")
+            <div class="col-sm-9">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    @Html.Partial("Partials/_FooterPartial")
+    @Html.Partial("Partials/_ValidationScriptsPartial")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

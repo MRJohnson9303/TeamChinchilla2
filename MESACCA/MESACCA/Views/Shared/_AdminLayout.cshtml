@@ -6,21 +6,11 @@
 
     <div class="container">
         <div class="row" style="margin-top:120px;">
-            <div class="col-sm-3">
-                <ul class="nav nav-sidebar">
-                    <li>@Html.ActionLink("Manage Accounts", "ManageAccounts", "Admin", routeValues: null, htmlAttributes: new { id = "ManageAccountsLink" })</li>
-                    <li>@Html.ActionLink("Manage Centers", "ManageCenters", "Admin", routeValues: null, htmlAttributes: new { id = "ManageCentersLink" })</li>
-                    <li>@Html.ActionLink("Manage Site", "ManageSite", "Admin", routeValues: null, htmlAttributes: new { id = "ManageSiteLink" })</li>
-                    <li>@Html.ActionLink("Manage Personal Account", "ManagePersonalAccount", "Admin", routeValues: null, htmlAttributes: new { id = "ManagePersonalAccountLink" })</li>
-                </ul>
-            </div>
+            @Html.Partial("Partials/_AccountSideBar")
             <div class="col-sm-9">
                 @RenderBody()
             </div>
         </div>
-    </div>
-    <div>
-        <div class="divide20"></div>
     </div>
     
     @Html.Partial("Partials/_FooterPartial")

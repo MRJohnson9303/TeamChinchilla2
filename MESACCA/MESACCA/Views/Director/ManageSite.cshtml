@@ -2,23 +2,30 @@
     ViewData["Title"] = "Manage Site";
 }
 <h2>Manage Site</h2>
-@*Adding about us and vision mission values buttons with a 20 pixel margin to the bottom*@
-<fieldset style="margin-bottom:20px">
-    <button type="submit" value="Home" onclick="location.href='@Url.Action("Index", "Director")'" class="btn btn-primary" style="margin-right:10px">Home</button>
-    <button type="submit" value="About Us" onclick="location.href='@Url.Action("Index", "Director")'" class="btn btn-primary" style="margin-right:10px">About Us</button>
-    <button type="submit" value="Vision Mission Values" onclick="location.href='@Url.Action("Index", "Director")'" class="btn btn-primary">Vision Mission Values</button>
-</fieldset>
-@*Adding program buttons with a 20 pixel margin to the bottom*@
-<fieldset style="margin-bottom:20px">
-    @*MESA School Program button*@
-    <button type="submit" value="MESA School Program" onclick="location.href='@Url.Action("Index", "Director")'" class="btn btn-primary" style="margin-right:10px">MESA School Program</button>
-    @*MESA Community College Program button*@
-    <button type="submit" value="MESA Community College Program" onclick="location.href='@Url.Action("Index", "Director")'" class="btn btn-primary" style="margin-right:10px">MESA Community College Program</button>
-    @*MESA Engineering Program button*@
-    <button type="submit" value="MESA Engineering Program" onclick="location.href='@Url.Action("Index", "Director")'" class="btn btn-primary">MESA Engineering Program</button>
-</fieldset>
-@*Adding news and donate buttons*@
-<fieldset>
-    <button type="submit" value="News" onclick="location.href='@Url.Action("Index", "Director")'" class="btn btn-primary" style="margin-right:10px">News</button>
-    <button type="submit" value="Donate" onclick="location.href='@Url.Action("Index", "Director")'" class="btn btn-primary">Donate</button>
-</fieldset>
+@using (Html.BeginForm("ManageSite", "Director", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @*Adding 20 pixel margin to the bottom*@
+    <div class="form-group" style="margin-bottom:20px">
+        @*Home button with 10 pixel margin to the right*@
+        <button type="submit" name="button" value="Home" class="btn btn-primary" style="margin-right:10px">Home</button>
+        @*About Us button with 10 pixel margin to the right*@
+        <button type="submit" name="button" value="About Us" class="btn btn-primary" style="margin-right:10px">About Us</button>
+        @*Vision Mission Values button*@
+        <button type="submit" name="button" value="Vision Mission Values" class="btn btn-primary">Vision Mission Values</button>
+    </div>
+    @*Adding 20 pixel margin to the bottom*@
+    <div class="form-group" style="margin-bottom:20px">
+        @*MESA School Program button with 10 pixel margin to the right*@
+        <button type="submit" name="button" value="MESA Schools Program" class="btn btn-primary" style="margin-right:10px">MESA Schools Program</button>
+        @*MESA Community College Program button with 10 pixel margin to the right*@
+        <button type="submit" name="button" value="MESA Community College Program" class="btn btn-primary" style="margin-right:10px">MESA Community College Program</button>
+        @*MESA Engineering Program button*@
+        <button type="submit" name="button" value="MESA Engineering Program" class="btn btn-primary">MESA Engineering Program</button>
+    </div>
+    <div class="form-group">
+        @*News button with 10 pixel margin to the right*@
+        <button type="submit" name="button" value="News" class="btn btn-primary" style="margin-right:10px">News</button>
+        @*Donate button*@
+        <button type="submit" name="button" value="Donate" class="btn btn-primary">Donate</button>
+    </div>
+}

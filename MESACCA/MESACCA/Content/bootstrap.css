@@ -3813,6 +3813,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
 .nav > li {
   position: relative;
   display: block;
+  border: 1px solid;
 }
 
 .nav > li > a {

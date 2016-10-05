@@ -45,7 +45,7 @@
         <div class="form-inline">
             @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
             <div class="form-control">
-            @Html.DropDownList("Center", new List<SelectListItem>
+                @Html.DropDownList("Center", new List<SelectListItem>
             {
                 new SelectListItem {Text =Model.Center.ToString(), Value=Model.Center.ToString()},
                 new SelectListItem {Text ="Center 1", Value="Center 1" },
@@ -116,34 +116,68 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Html.CheckBoxFor(model => model.Home)
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.About_Us)
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.Vision_Mission_Values)
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.MESA_Schools_Program)
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.MESA_Community_College_Program)
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.MESA_Engineering_Program)
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.News)
-                        </td>
-                        <td>
-                            @Html.CheckBoxFor(model => model.Donate)
-                        </td>
-                    </tr>
-                </tbody>
+                @if (Model.AccountType.Equals("Director"))
+                {
+                    <tbody>
+                        <tr>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Home, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.About_Us, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Vision_Mission_Values, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Schools_Program, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Community_College_Program, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Engineering_Program, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.News, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Donate, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                        </tr>
+                    </tbody>
+                }
+                @if (Model.AccountType.Equals("Staff"))
+                {
+                    <tbody>
+                        <tr>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Home)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.About_Us)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Vision_Mission_Values)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Schools_Program)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Community_College_Program)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Engineering_Program)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.News)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Donate)
+                            </td>
+                        </tr>
+                    </tbody>
+                }
             </table>
         </div>
     </div>

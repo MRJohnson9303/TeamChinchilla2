@@ -142,7 +142,7 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult Edit(int ID)
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             EditViewModel model = new EditViewModel();
             //Getting User information based on User ID
             foundUser = sqlConnectionForUser(ID);
@@ -165,12 +165,13 @@ namespace MESACCA.Controllers
             model.Donate = Convert.ToBoolean(foundUser.Donate);
             return View(model);
         }
-        //This method allows the Director to edit accounts displayed in Manage Accounts from his/her center
+        //This method allows the Director to edit accounts displayed in Manage Accounts from his/her center and saves changes
+        //in the SQL database
         [HttpPost]
         public ActionResult Edit(EditViewModel model)
         {
             Boolean success = false;
-            User foundUser = new Models.User();
+            User foundUser = new User();
             //Getting SQL table entry based on User ID to obtain the user's password.
             foundUser = sqlConnectionForUser(model.ID);
             User updatedUser = new Models.User();
@@ -213,7 +214,7 @@ namespace MESACCA.Controllers
         //This method sends an entry's information from Manage Accounts into the View when the Delete link is clicked on
         public ActionResult Delete(int ID)
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             foundUser = sqlConnectionForUser(ID);
             return View(foundUser);
         }
@@ -237,8 +238,39 @@ namespace MESACCA.Controllers
             }
             return RedirectToAction("Edit", new { ID = model.ID });
         }
+        //This method returns the ManageSite View with buttons appearing based on user rights to the
+        //web pages on the site named on the buttons.
+        //A Director has rights to all portions of the website.
+        [HttpGet]
         public ActionResult ManageSite()
         {
+            return View();
+        }
+        //This methods sends the user to the appropriate View based on which button was clicked.
+        [HttpPost]
+        public ActionResult ManageSite(String button)
+        {
+            switch (button)
+            {
+                case "Home":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "About Us":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "Vision Mission Values":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "MESA Schools Program":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "MESA Community College Program":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "MESA Engineering Program":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "News":
+                    return RedirectToAction("AddNews", "News", new { referrer = "Director" });
+                case "Donate":
+                    return RedirectToAction("ManagePersonalAccount");
+                default:
+                    break;
+            }
             return View();
         }
         //This method returns the ManagePersonalAccount View with the ManagePersonalAccountViewModel passed in to 
@@ -246,7 +278,7 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult ManagePersonalAccount()
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             ManagePersonalAccountViewModel model = new ManagePersonalAccountViewModel();
             //Getting SQL table entry based on User ID
             foundUser = sqlConnectionForUser(directorID);
@@ -340,7 +372,7 @@ namespace MESACCA.Controllers
         //This method attempts to connect to the SQL database and returns a User object
         private User sqlConnectionForUser(int ID)
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             int totalNumberOfTimesToTry = 3;
             int retryIntervalSeconds = 1;
 
@@ -372,7 +404,7 @@ namespace MESACCA.Controllers
         //as the provided username and password and returns a User object with all information of the User
         private User accessDatabaseForUser(int ID)
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -446,7 +478,7 @@ namespace MESACCA.Controllers
         private Boolean updateUserDatabase(int ID, User updatedUser)
         {
             Boolean success = false;
-            User foundUser = new Models.User();
+            User foundUser = new User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -495,6 +527,14 @@ namespace MESACCA.Controllers
                     foundUser.PhoneNumber = dataReader.GetString(6).TrimEnd(' ');
                     foundUser.Username = dataReader.GetString(7).TrimEnd(' ');
                     foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
+                    foundUser.Home = dataReader.GetString(9).TrimEnd(' ');
+                    foundUser.About_Us = dataReader.GetString(10).TrimEnd(' ');
+                    foundUser.Vision_Mission_Values = dataReader.GetString(11).TrimEnd(' ');
+                    foundUser.MESA_Schools_Program = dataReader.GetString(12).TrimEnd(' ');
+                    foundUser.MESA_Community_College_Program = dataReader.GetString(13).TrimEnd(' ');
+                    foundUser.MESA_Engineering_Program = dataReader.GetString(14).TrimEnd(' ');
+                    foundUser.News = dataReader.GetString(15).TrimEnd(' ');
+                    foundUser.Donate = dataReader.GetString(16).TrimEnd(' ');
                     //Determining if the update was successfully executed by checking if an entry is returned and comparing
                     //all of the returned entry's information with the updated information provided by the user.
                     if (dataReader.HasRows == true && updatedUser.FirstName.Equals(foundUser.FirstName) &&
@@ -503,7 +543,15 @@ namespace MESACCA.Controllers
                         updatedUser.Email.Equals(foundUser.Email) &&
                         updatedUser.PhoneNumber.Equals(foundUser.PhoneNumber) &&
                         updatedUser.Username.Equals(foundUser.Username) &&
-                        updatedUser.Password.Equals(foundUser.Password))
+                        updatedUser.Password.Equals(foundUser.Password) &&
+                        updatedUser.Home.Equals(foundUser.Home) &&
+                        updatedUser.About_Us.Equals(foundUser.About_Us) &&
+                        updatedUser.Vision_Mission_Values.Equals(foundUser.Vision_Mission_Values) &&
+                        updatedUser.MESA_Schools_Program.Equals(foundUser.MESA_Schools_Program) &&
+                        updatedUser.MESA_Community_College_Program.Equals(foundUser.MESA_Community_College_Program) &&
+                        updatedUser.MESA_Engineering_Program.Equals(foundUser.MESA_Engineering_Program) &&
+                        updatedUser.News.Equals(foundUser.News) &&
+                        updatedUser.Donate.Equals(foundUser.Donate))
                     {
                         success = true;
                     }
@@ -549,7 +597,6 @@ namespace MESACCA.Controllers
         //based on Users' account type and returns the list.
         private List<User> accessDatabaseForUsers()
         {
-            //SortedList<String, User> userList = new SortedList<String, User>();
             List<User> userList = new List<User>();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
@@ -563,7 +610,7 @@ namespace MESACCA.Controllers
                     var iterator = dataReader.GetEnumerator();
                     while (iterator.MoveNext())
                     {
-                        User foundUser = new Models.User();
+                        User foundUser = new User();
                         //Getting the SQL entry information 
                         //I trim all of the found User data because the SQL server seems to add spaces.
                         foundUser.ID = dataReader.GetInt32(0);
@@ -620,7 +667,7 @@ namespace MESACCA.Controllers
         private Boolean accessDatabaseToDeleteUser(int ID)
         {
             Boolean success = false;
-            User foundUser = new Models.User();
+            User foundUser = new User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())

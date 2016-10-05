@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MESACCA.Models;
+using MESACCA.DataBaseManagers;
 
 namespace MESACCA.Controllers
 {
@@ -48,21 +50,26 @@ namespace MESACCA.Controllers
 
             return View();
         }
+
         public ActionResult News()
         {
-            ViewData["Message"] = "News Page";
+            //ViewData["Posts"] = NewsArticleManager.getNewsPosts();
 
-            return View();
+            return View(NewsArticleManager.getNewsPosts());
         }
+
         public ActionResult Donate()
         {
             ViewData["Message"] = "Donate Page";
 
             return View();
         }
+
         public ActionResult Error()
         {
             return View();
         }
+        
     }
 }
+

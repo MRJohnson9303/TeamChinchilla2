@@ -23,8 +23,41 @@ namespace MESACCA.Controllers
             ViewData["lastName"] = lastName;
             return View();
         }
+        //This method returns the ManageSite View with buttons appearing based on user rights to the
+        //web pages on the site named on the buttons.
+        [HttpGet]
         public ActionResult ManageSite()
         {
+            User foundUser = new User();
+            //Getting SQL table entry based on User ID
+            foundUser = sqlConnectionForUser(staffID);
+            return View(foundUser);
+        }
+        //This methods sends the user to the appropriate View based on which button was clicked.
+        [HttpPost]
+        public ActionResult ManageSite(String button)
+        {
+            switch (button)
+            {
+                case "Home":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "About Us":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "Vision Mission Values":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "MESA Schools Program":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "MESA Community College Program":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "MESA Engineering Program":
+                    return RedirectToAction("ManagePersonalAccount");
+                case "News":
+                    return RedirectToAction("AddNews", "News", new { referrer = "Staff" });
+                case "Donate":
+                    return RedirectToAction("ManagePersonalAccount");
+                default:
+                    break;
+            }
             return View();
         }
         //This method returns the ManagePersonalAccount View with the ManagePersonalAccountViewModel passed in to 
@@ -32,7 +65,7 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult ManagePersonalAccount()
         {
-            User foundUser = new Models.User();
+            User foundUser = new User();
             ManagePersonalAccountViewModel model = new ManagePersonalAccountViewModel();
             //Getting SQL table entry based on User ID
             foundUser = sqlConnectionForUser(staffID);
@@ -232,7 +265,7 @@ namespace MESACCA.Controllers
         private Boolean updateUserDatabase(int ID, User updatedUser)
         {
             Boolean success = false;
-            User foundUser = new Models.User();
+            User foundUser = new User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -290,178 +323,6 @@ namespace MESACCA.Controllers
                         updatedUser.PhoneNumber.Equals(foundUser.PhoneNumber) &&
                         updatedUser.Username.Equals(foundUser.Username) &&
                         updatedUser.Password.Equals(foundUser.Password))
-                    {
-                        success = true;
-                    }
-                    //Closing SQL connection
-                    sqlConnection.Close();
-                }
-                return success;
-            }
-        }
-        //This method invokes "accessDatabaseForUsers" to attempt to connect to the SQL database and returns a List object containing all Users
-        private List<User> sqlConnectionForUsersList()
-        {
-            //SortedList<String, User> userList = new SortedList<String, User>();
-            List<User> userList = new List<User>();
-            int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
-
-            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
-            {
-                try
-                {
-                    if (tries > 1)
-                    {
-                        T.Thread.Sleep(1000 * retryIntervalSeconds);
-                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
-                    }
-                    userList = accessDatabaseForUsers();
-                    //Break if the List object is not empty
-                    if (userList.Count > 0)
-                    {
-                        break;
-                    }
-                }
-                //Break if there is an exception
-                catch (Exception Exc)
-                {
-                    break;
-                }
-            }
-            return userList;
-        }
-        //This method connects to the database, collects all the entries in the Users table into a list
-        //based on Users' account type and returns the list.
-        private List<User> accessDatabaseForUsers()
-        {
-            //SortedList<String, User> userList = new SortedList<String, User>();
-            List<User> userList = new List<User>();
-            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
-            {
-                using (var dbCommand = sqlConnection.CreateCommand())
-                {
-                    //Opening SQL connection
-                    sqlConnection.Open();
-                    //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                    dbCommand.CommandText = @"SELECT * FROM Users";
-                    var dataReader = dbCommand.ExecuteReader();
-                    var iterator = dataReader.GetEnumerator();
-                    while (iterator.MoveNext())
-                    {
-                        User foundUser = new User();
-                        //Getting the SQL entry information 
-                        //I trim all of the found User data because the SQL server seems to add spaces.
-                        foundUser.ID = dataReader.GetInt32(0);
-                        foundUser.FirstName = dataReader.GetString(1).TrimEnd(' ');
-                        foundUser.LastName = dataReader.GetString(2).TrimEnd(' ');
-                        foundUser.AccountType = dataReader.GetString(3).TrimEnd(' ');
-                        foundUser.Center = dataReader.GetString(4).TrimEnd(' ');
-                        foundUser.Email = dataReader.GetString(5).TrimEnd(' ');
-                        foundUser.PhoneNumber = dataReader.GetString(6).TrimEnd(' ');
-                        foundUser.Username = dataReader.GetString(7).TrimEnd(' ');
-                        foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
-                        userList.Add(foundUser);
-                    }
-                    //Closing SQL connection
-                    sqlConnection.Close();
-                }
-                return userList;
-            }
-        }
-        //This method invokes "accessDatabaseToAddUser" to attempt to connect to the SQL database and a Boolean value regarding account creation confirmation
-        private Boolean sqlConnectionAddUser(int newID, User newUser)
-        {
-            Boolean success = false;
-            int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
-
-            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
-            {
-                try
-                {
-                    if (tries > 1)
-                    {
-                        T.Thread.Sleep(1000 * retryIntervalSeconds);
-                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
-                    }
-                    success = accessDatabaseToAddUser(newID, newUser);
-                    //Break if an account added to the SQL database 
-                    if (success == true)
-                    {
-                        break;
-                    }
-                }
-                //Break if there is an exception
-                catch (Exception Exc)
-                {
-                    break;
-                }
-            }
-            return success;
-        }
-        //This method connects to the database, adds to the Users table, collects Users from the table for comparison,
-        //and returns Boolean value regarding success
-        private Boolean accessDatabaseToAddUser(int newID, User newUser)
-        {
-            Boolean success = false;
-            User foundUser = new User();
-            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
-            {
-                using (var dbCommand = sqlConnection.CreateCommand())
-                {
-                    //Opening SQL connection
-                    sqlConnection.Open();
-                    //Creating SQL query
-                    dbCommand.CommandText = @"INSERT INTO Users (ID, FirstName, LastName, AccountType, Center, Email, PhoneNumber, Username, Password,
-                                                                 Home, About_Us, Vision_Mission_Values, MESA_Schools_Program, MESA_Community_College_Program, 
-                                                                 MESA_Engineering_Program, News, Donate)
-                                              Values (@ID, @FirstName, @LastName, @AccountType, @Center, @Email, @PhoneNumber, @Username, @Password,
-                                                      @Home, @About_Us, @Vision_Mission_Values, @MESA_Schools_Program, @MESA_Community_College_Program, 
-                                                      @MESA_Engineering_Program, @News, @Donate)
-                                              Select * FROM Users WHERE ID = @ID";
-                    dbCommand.Parameters.AddWithValue("@ID", newID);
-                    //I trim the ends of empty spaces
-                    dbCommand.Parameters.AddWithValue("@FirstName", newUser.FirstName.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@LastName", newUser.LastName.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@AccountType", newUser.AccountType.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@Center", newUser.Center.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@Email", newUser.Email.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@PhoneNumber", newUser.PhoneNumber.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@Username", newUser.Username.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@Password", newUser.Password.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@Home", newUser.Home.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@About_Us", newUser.About_Us.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@Vision_Mission_Values", newUser.Vision_Mission_Values.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@MESA_Schools_Program", newUser.MESA_Schools_Program.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@MESA_Community_College_Program", newUser.MESA_Community_College_Program.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@MESA_Engineering_Program", newUser.MESA_Engineering_Program.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@News", newUser.News.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@Donate", newUser.Donate.TrimEnd(' '));
-                    //Building data reader
-                    var dataReader = dbCommand.ExecuteReader();
-                    //Advancing to the next record which is the first and only record in this case
-                    dataReader.Read();
-                    //Storing information from found sql entry into a User object 
-                    //I trim all of the found User data because the SQL server seems to add spaces.
-                    foundUser.ID = dataReader.GetInt32(0);
-                    foundUser.FirstName = dataReader.GetString(1).TrimEnd(' ');
-                    foundUser.LastName = dataReader.GetString(2).TrimEnd(' ');
-                    foundUser.AccountType = dataReader.GetString(3).TrimEnd(' ');
-                    foundUser.Center = dataReader.GetString(4).TrimEnd(' ');
-                    foundUser.Email = dataReader.GetString(5).TrimEnd(' ');
-                    foundUser.PhoneNumber = dataReader.GetString(6).TrimEnd(' ');
-                    foundUser.Username = dataReader.GetString(7).TrimEnd(' ');
-                    foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
-                    //Determining if the table entry was successfully executed by checking if an entry is returned and comparing
-                    //all of the returned entry's information with the new User's information.
-                    if (dataReader.HasRows == true && newUser.FirstName.Equals(foundUser.FirstName) &&
-                        newUser.LastName.Equals(foundUser.LastName) &&
-                        newUser.Center.Equals(foundUser.Center) &&
-                        newUser.Email.Equals(foundUser.Email) &&
-                        newUser.PhoneNumber.Equals(foundUser.PhoneNumber) &&
-                        newUser.Username.Equals(foundUser.Username) &&
-                        newUser.Password.Equals(foundUser.Password))
                     {
                         success = true;
                     }

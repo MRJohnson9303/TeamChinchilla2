@@ -18,6 +18,7 @@ namespace MESACCA
         public string ArticleTitle { get; set; }
         public string ArticleBody { get; set; }
         public int CreatedByUser { get; set; }
+        public string AuthorName { get; set; }
         public System.DateTime DateOfArticle { get; set; }
     
         public virtual UserTable User { get; set; }

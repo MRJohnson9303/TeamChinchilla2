@@ -169,6 +169,8 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Utilities\Common.cs" />
+    <Compile Include="Utilities\SecurityUtility.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\DirectorController.cs" />
@@ -176,26 +178,30 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\StaffController.cs" />
+    <Compile Include="DataBaseManagers\NewsArticleManager.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="MCCA.Context.cs">
+    <Compile Include="MCCA.Context1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MCCA.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="MCCA.cs">
+    <Compile Include="MCCA.cs" />
+    <Compile Include="MCCA.Designer.cs">
+      <DependentUpon>MCCA.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MCCA1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MCCA.tt</DependentUpon>
     </Compile>
-    <Compile Include="MCCA.Designer.cs">
+    <Compile Include="MCCA1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MCCA.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\NewsArticle.cs" />
     <Compile Include="Models\Center.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -219,6 +225,129 @@
     <Compile Include="ViewModels\Staff\ManagePersonalAccountViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ckeditor\adapters\jquery.js" />
+    <Content Include="ckeditor\build-config.js" />
+    <Content Include="ckeditor\ckeditor.js" />
+    <Content Include="ckeditor\configbackup.js" />
+    <Content Include="ckeditor\config.js" />
+    <Content Include="ckeditor\contents.css" />
+    <Content Include="ckeditor\lang\en.js" />
+    <Content Include="ckeditor\plugins\a11yhelp\dialogs\a11yhelp.js" />
+    <Content Include="ckeditor\plugins\a11yhelp\dialogs\lang\en.js" />
+    <Content Include="ckeditor\plugins\about\dialogs\about.js" />
+    <Content Include="ckeditor\plugins\about\dialogs\hidpi\logo_ckeditor.png" />
+    <Content Include="ckeditor\plugins\about\dialogs\logo_ckeditor.png" />
+    <Content Include="ckeditor\plugins\clipboard\dialogs\paste.js" />
+    <Content Include="ckeditor\plugins\dialog\dialogDefinition.js" />
+    <Content Include="ckeditor\plugins\icons.png" />
+    <Content Include="ckeditor\plugins\icons_hidpi.png" />
+    <Content Include="ckeditor\plugins\imagebrowser\browser\browser.css" />
+    <Content Include="ckeditor\plugins\imagebrowser\browser\browser.html" />
+    <Content Include="ckeditor\plugins\imagebrowser\browser\browser.js" />
+    <Content Include="ckeditor\plugins\imagebrowser\browser\jquery-1.9.1.min.js" />
+    <Content Include="ckeditor\plugins\imagebrowser\LICENSE.txt" />
+    <Content Include="ckeditor\plugins\image\dialogs\image.js" />
+    <Content Include="ckeditor\plugins\image\images\noimage.png" />
+    <Content Include="ckeditor\plugins\link\dialogs\anchor.js" />
+    <Content Include="ckeditor\plugins\link\dialogs\link.js" />
+    <Content Include="ckeditor\plugins\link\images\anchor.png" />
+    <Content Include="ckeditor\plugins\link\images\hidpi\anchor.png" />
+    <Content Include="ckeditor\plugins\magicline\images\hidpi\icon-rtl.png" />
+    <Content Include="ckeditor\plugins\magicline\images\hidpi\icon.png" />
+    <Content Include="ckeditor\plugins\magicline\images\icon-rtl.png" />
+    <Content Include="ckeditor\plugins\magicline\images\icon.png" />
+    <Content Include="ckeditor\plugins\pastefromword\filter\default.js" />
+    <Content Include="ckeditor\plugins\scayt\dialogs\options.js" />
+    <Content Include="ckeditor\plugins\scayt\dialogs\toolbar.css" />
+    <Content Include="ckeditor\plugins\specialchar\dialogs\lang\en.js" />
+    <Content Include="ckeditor\plugins\specialchar\dialogs\specialchar.js" />
+    <Content Include="ckeditor\plugins\tabletools\dialogs\tableCell.js" />
+    <Content Include="ckeditor\plugins\table\dialogs\table.js" />
+    <Content Include="ckeditor\plugins\wsc\dialogs\ciframe.html" />
+    <Content Include="ckeditor\plugins\wsc\dialogs\tmpFrameset.html" />
+    <Content Include="ckeditor\plugins\wsc\dialogs\wsc.css" />
+    <Content Include="ckeditor\plugins\wsc\dialogs\wsc.js" />
+    <Content Include="ckeditor\plugins\wsc\dialogs\wsc_ie.js" />
+    <Content Include="ckeditor\samples\css\samples.css" />
+    <Content Include="ckeditor\samples\img\github-top.png" />
+    <Content Include="ckeditor\samples\img\header-bg.png" />
+    <Content Include="ckeditor\samples\img\header-separator.png" />
+    <Content Include="ckeditor\samples\img\logo.png" />
+    <Content Include="ckeditor\samples\img\navigation-tip.png" />
+    <Content Include="ckeditor\samples\index.html" />
+    <Content Include="ckeditor\samples\js\sample.js" />
+    <Content Include="ckeditor\samples\js\sf.js" />
+    <Content Include="ckeditor\samples\old\ajax.html" />
+    <Content Include="ckeditor\samples\old\api.html" />
+    <Content Include="ckeditor\samples\old\appendto.html" />
+    <Content Include="ckeditor\samples\old\assets\inlineall\logo.png" />
+    <Content Include="ckeditor\samples\old\assets\outputxhtml\outputxhtml.css" />
+    <Content Include="ckeditor\samples\old\assets\sample.jpg" />
+    <Content Include="ckeditor\samples\old\assets\uilanguages\languages.js" />
+    <Content Include="ckeditor\samples\old\datafiltering.html" />
+    <Content Include="ckeditor\samples\old\dialog\assets\my_dialog.js" />
+    <Content Include="ckeditor\samples\old\dialog\dialog.html" />
+    <Content Include="ckeditor\samples\old\divreplace.html" />
+    <Content Include="ckeditor\samples\old\enterkey\enterkey.html" />
+    <Content Include="ckeditor\samples\old\htmlwriter\assets\outputforflash\outputforflash.swf" />
+    <Content Include="ckeditor\samples\old\htmlwriter\assets\outputforflash\swfobject.js" />
+    <Content Include="ckeditor\samples\old\htmlwriter\outputforflash.html" />
+    <Content Include="ckeditor\samples\old\htmlwriter\outputhtml.html" />
+    <Content Include="ckeditor\samples\old\index.html" />
+    <Content Include="ckeditor\samples\old\inlineall.html" />
+    <Content Include="ckeditor\samples\old\inlinebycode.html" />
+    <Content Include="ckeditor\samples\old\inlinetextarea.html" />
+    <Content Include="ckeditor\samples\old\jquery.html" />
+    <Content Include="ckeditor\samples\old\magicline\magicline.html" />
+    <Content Include="ckeditor\samples\old\readonly.html" />
+    <Content Include="ckeditor\samples\old\replacebyclass.html" />
+    <Content Include="ckeditor\samples\old\replacebycode.html" />
+    <Content Include="ckeditor\samples\old\sample.css" />
+    <Content Include="ckeditor\samples\old\sample.js" />
+    <Content Include="ckeditor\samples\old\tabindex.html" />
+    <Content Include="ckeditor\samples\old\toolbar\toolbar.html" />
+    <Content Include="ckeditor\samples\old\uicolor.html" />
+    <Content Include="ckeditor\samples\old\uilanguages.html" />
+    <Content Include="ckeditor\samples\old\wysiwygarea\fullpage.html" />
+    <Content Include="ckeditor\samples\old\xhtmlstyle.html" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\css\fontello.css" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\font\fontello.svg" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\font\LICENSE.txt" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\index.html" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\js\abstracttoolbarmodifier.js" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\js\fulltoolbareditor.js" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\js\toolbarmodifier.js" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\js\toolbartextmodifier.js" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\lib\codemirror\codemirror.css" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\lib\codemirror\codemirror.js" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\lib\codemirror\javascript.js" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\lib\codemirror\neo.css" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\lib\codemirror\show-hint.css" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\lib\codemirror\show-hint.js" />
+    <Content Include="ckeditor\skins\moonocolor\dialog.css" />
+    <Content Include="ckeditor\skins\moonocolor\dialog_ie.css" />
+    <Content Include="ckeditor\skins\moonocolor\dialog_ie7.css" />
+    <Content Include="ckeditor\skins\moonocolor\dialog_ie8.css" />
+    <Content Include="ckeditor\skins\moonocolor\dialog_iequirks.css" />
+    <Content Include="ckeditor\skins\moonocolor\editor.css" />
+    <Content Include="ckeditor\skins\moonocolor\editor_gecko.css" />
+    <Content Include="ckeditor\skins\moonocolor\editor_ie.css" />
+    <Content Include="ckeditor\skins\moonocolor\editor_ie7.css" />
+    <Content Include="ckeditor\skins\moonocolor\editor_ie8.css" />
+    <Content Include="ckeditor\skins\moonocolor\editor_iequirks.css" />
+    <Content Include="ckeditor\skins\moonocolor\icons.png" />
+    <Content Include="ckeditor\skins\moonocolor\icons_hidpi.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\arrow.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\close.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\hidpi\close.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\hidpi\lock-open.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\hidpi\lock.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\hidpi\refresh.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\lock-open.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\lock.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\refresh.png" />
+    <Content Include="ckeditor\skins\moonocolor\images\spinner.gif" />
+    <Content Include="ckeditor\styles.js" />
     <Content Include="Content\bootstrap-table.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -322,23 +451,39 @@
     <Content Include="images\WoodlandCollege.png" />
     <Content Include="MCCA.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MCCA.edmx</DependentUpon>
-      <LastGenOutput>MCCA.Context.cs</LastGenOutput>
+      <LastGenOutput>MCCA.Context1.cs</LastGenOutput>
     </Content>
     <Content Include="MCCA.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MCCA.edmx</DependentUpon>
-      <LastGenOutput>MCCA.cs</LastGenOutput>
+      <LastGenOutput>MCCA1.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <EntityDeploy Include="MCCA.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>MCCA.Designer.cs</LastGenOutput>
+      <LastGenOutput>MCCA1.Designer.cs</LastGenOutput>
     </EntityDeploy>
     <Content Include="MCCA.edmx.diagram">
       <DependentUpon>MCCA.edmx</DependentUpon>
     </Content>
+    <Content Include="ckeditor\CHANGES.md" />
+    <Content Include="ckeditor\LICENSE.md" />
+    <Content Include="ckeditor\plugins\imagebrowser\README.rst" />
+    <Content Include="ckeditor\plugins\scayt\CHANGELOG.md" />
+    <Content Include="ckeditor\plugins\scayt\LICENSE.md" />
+    <Content Include="ckeditor\plugins\scayt\README.md" />
+    <Content Include="ckeditor\plugins\wsc\LICENSE.md" />
+    <Content Include="ckeditor\plugins\wsc\README.md" />
+    <Content Include="ckeditor\README.md" />
+    <Content Include="ckeditor\samples\old\assets\posteddata.php" />
+    <Content Include="ckeditor\samples\old\htmlwriter\assets\outputforflash\outputforflash.fla" />
+    <Content Include="ckeditor\samples\old\sample_posteddata.php" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\font\config.json" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\font\fontello.eot" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\font\fontello.ttf" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\font\fontello.woff" />
+    <Content Include="ckeditor\samples\toolbarconfigurator\lib\codemirror\LICENSE" />
+    <Content Include="ckeditor\skins\moonocolor\readme.md" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -353,22 +498,14 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
@@ -381,24 +518,6 @@
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Account\SendCode.cshtml" />
     <Content Include="Views\Account\VerifyCode.cshtml" />
-    <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
-    <Content Include="Views\Manage\ChangePassword.cshtml" />
-    <Content Include="Views\Manage\Index.cshtml" />
-    <Content Include="Views\Manage\ManageLogins.cshtml" />
-    <Content Include="Views\Manage\SetPassword.cshtml" />
-    <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
-    <Content Include="Views\Shared\Lockout.cshtml" />
-    <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Shared\_AdminLayout.cshtml" />
-    <Content Include="Views\Shared\_DirectorLayout.cshtml" />
-    <Content Include="Views\Shared\_StaffLayout.cshtml" />
-    <Content Include="Views\Home\Centers.cshtml" />
-    <Content Include="Views\Home\Donate.cshtml" />
-    <Content Include="Views\Home\MESACommunityCollegeProgram.cshtml" />
-    <Content Include="Views\Home\MESAEngineeringProgram.cshtml" />
-    <Content Include="Views\Home\MESASchoolsProgram.cshtml" />
-    <Content Include="Views\Home\News.cshtml" />
-    <Content Include="Views\Home\VisionMissionValues.cshtml" />
     <Content Include="Views\Admin\AddAccount.cshtml" />
     <Content Include="Views\Admin\AddCenter.cshtml" />
     <Content Include="Views\Admin\Delete.cshtml" />
@@ -409,7 +528,6 @@
     <Content Include="Views\Admin\ManagePersonalAccount.cshtml" />
     <Content Include="Views\Admin\ManageSite.cshtml" />
     <Content Include="Views\Admin\PictureTest.cshtml" />
-    <Content Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
     <Content Include="Views\Director\AddAccount.cshtml" />
     <Content Include="Views\Director\Delete.cshtml" />
     <Content Include="Views\Director\DeletePersonalAccount.cshtml" />
@@ -418,14 +536,43 @@
     <Content Include="Views\Director\ManageAccounts.cshtml" />
     <Content Include="Views\Director\ManagePersonalAccount.cshtml" />
     <Content Include="Views\Director\ManageSite.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Centers.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Donate.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\MESACommunityCollegeProgram.cshtml" />
+    <Content Include="Views\Home\MESAEngineeringProgram.cshtml" />
+    <Content Include="Views\Home\MESASchoolsProgram.cshtml" />
+    <Content Include="Views\Home\News.cshtml" />
+    <Content Include="Views\Home\VisionMissionValues.cshtml" />
+    <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
+    <Content Include="Views\Manage\ChangePassword.cshtml" />
+    <Content Include="Views\Manage\Index.cshtml" />
+    <Content Include="Views\Manage\ManageLogins.cshtml" />
+    <Content Include="Views\Manage\ManageSite.cshtml" />
+    <Content Include="Views\Manage\SetPassword.cshtml" />
+    <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
+    <Content Include="Views\News\AddNews.cshtml" />
+    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\Shared\_DirectorLayout.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_StaffLayout.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Shared\Partials\_FooterPartial.cshtml" />
+    <Content Include="Views\Shared\Partials\_HeaderPartial.cshtml" />
+    <Content Include="Views\Shared\Partials\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\Partials\_NavBarPartial.cshtml" />
+    <Content Include="Views\Shared\Partials\_ValidationScriptsPartial.cshtml" />
     <Content Include="Views\Staff\DeletePersonalAccount.cshtml" />
     <Content Include="Views\Staff\Index.cshtml" />
     <Content Include="Views\Staff\ManagePersonalAccount.cshtml" />
-    <Content Include="Views\Manage\ManageSite.cshtml" />
-    <Content Include="Views\News\AddNews.cshtml" />
+    <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="obj\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -456,7 +603,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>56555</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:56555/</IISUrl>
+          <IISUrl>http://localhost:12371/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

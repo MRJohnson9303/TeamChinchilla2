@@ -18,6 +18,7 @@ namespace MESACCA.Controllers
         {
             return View();
         }
+
         [HttpPost]
         public ActionResult AddNews(AddNewsViewModel model)
         {
@@ -27,7 +28,7 @@ namespace MESACCA.Controllers
                 {
                     ArticleTitle = model.ArticleTitle,
                     ArticleBody = model.ArticleBody,
-                    DateOfArticle = model.DateOfArticle,
+                    DateOfArticle = DateTime.Now,
                     CreatedByUser = 1
                 };
 
@@ -39,6 +40,6 @@ namespace MESACCA.Controllers
 
             return View(model);
         }
-
+        
     }
 }

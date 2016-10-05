@@ -4,7 +4,41 @@
 @{
     ViewData["Title"] = "News";
 }
+<div>
+    <div class="container">
+        <div class="NewsContainer" style="width: 100%;">
 
-<h3> @ViewData["Title"]</h3>
-<h3> @ViewData["Message"]</h3>
+            <div style="font-size:30px;">
+                News and Updates
+            </div>
 
+            @foreach (var x in Model)
+            {
+                <div style="border: 1px solid; margin-top: 15px">
+                    <!-- Header Div ie, who posted, date it was posted Div-->
+                    <div style="padding: 5px; font-size: 20px; border-bottom: 1px solid;">
+                        @x.ArticleTitle
+                    </div>
+
+                    <!-- Author info-->
+                    <div style="font-size: 11px; font-style: italic; margin: 0 10px; text-align: right;">
+                        Author: <div style="display: inline-block; position: relative; font-size: 12px; font-style: initial;">@x.AuthorName </div>
+                        Created on: <div style="display: inline-block; position: relative; font-size: 12px; font-style: initial;">@x.DateOfArticle</div>
+                    </div>
+
+                    <!-- Content Div-->
+                    <div style="padding:8px; border-bottom: 1px solid;">
+                        @Html.Raw(x.ArticleBody)
+                    </div>
+
+                    <!-- Attachment Div-->
+                    <div style="padding: 5px;">
+                        Place attachment links here
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
