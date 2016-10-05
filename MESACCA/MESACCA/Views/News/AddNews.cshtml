@@ -43,33 +43,17 @@
             </div>
         </div>
 
-            <div class="col-lg-2"></div>
-            <div class="btn-toolbar">
-
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
-
-
-                @if (Request.Params["referrer"] == "Admin")
-                {
-                    <a class="btn btn-default center-block" href="@Url.Action("ManageSite", "Admin")">Return to Manage Site Options</a>
-                }
-                else if (Request.Params["referrer"] == "Director")
-                {
-                    <a class="btn btn-default" href="@Url.Action("ManageSite", "Director")">Return to Manage Site Options</a>
-                }
-                else if (Request.Params["referrer"] == "Staff")
-                {
-                    <a class="btn btn-default" href="@Url.Action("ManageSite", "Staff")">Return to Manage Site Options</a>
-                }
             </div>
-
-
-
+        </div>
     </div>
-
 }
 
-
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
