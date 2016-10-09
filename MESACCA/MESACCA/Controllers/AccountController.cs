@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MESACCA.Models;
 using MESACCA.Controllers;
+using MESACCA.DataBaseManagers;
 
 namespace MESACCA.Controllers
 {
@@ -25,6 +26,8 @@ namespace MESACCA.Controllers
         public AccountController()
         {
         }
+
+        #region Managers
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
@@ -56,7 +59,10 @@ namespace MESACCA.Controllers
             }
         }
 
-        //
+        #endregion
+        
+        #region LogIn
+        
         // GET: /Account/Login
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
@@ -97,7 +103,7 @@ namespace MESACCA.Controllers
                         return View(model);
                 }*/
                 //Getting the a User from the SQL database whose username and password match those provided
-                foundUser = sqlConnection(model.Username, model.Password);
+                foundUser = SQLUtility.sqlConnection(model.Username, model.Password);
                 //There is a chance that an empty User object may be given due connection issues or incorrect login information
                 //is given, so one of the assigned User properties (AccountType) is checked. If the checked User property
                 //is null, then the ViewModel model is simply sent to the View. 
@@ -122,82 +128,11 @@ namespace MESACCA.Controllers
             }
             return View(model);
         }
-        //This method attempts to connect to the SQL database and returns a User object
-        private User sqlConnection(String username, String password)
-        {
-            String _username = username;
-            String _password = password;
-            User foundUser = new Models.User();
-            int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
 
-            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
-            {
-                try
-                {
-                    if (tries > 1)
-                    {
-                        T.Thread.Sleep(1000 * retryIntervalSeconds);
-                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
-                    }
-                    foundUser = accessDatabase(_username, _password);
-                    //Break if an account from the SQL database was found 
-                    if (foundUser.AccountType != null)
-                    {
-                        break;
-                    }
-                }
-                //Break if there is an exception
-                catch (Exception Exc)
-                {
-                    break;
-                }
-            }
-            return foundUser;
-        }
-        //This method connects to the database, reads the database and finding an entry with the same information
-        //as the provided username and password and returns a User object with some information 
-        private User accessDatabase(string username, string password)
-        {
-            String _username = username;
-            String _password = password;
-            User foundUser = new Models.User();
-            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
-            {
-                using (var dbCommand = sqlConnection.CreateCommand())
-                {
-                    //Opening SQL connection
-                    sqlConnection.Open();
-                    //Creating SQL query
-                    dbCommand.CommandText = @"SELECT * FROM Users WHERE Username = @username AND Password = @password";
-                    dbCommand.Parameters.AddWithValue("@username", SecurityUtility.ParseSQL(_username));
-                    dbCommand.Parameters.AddWithValue("@password", SecurityUtility.ParseSQL(_password));
-                    //Building data reader
-                    var dataReader = dbCommand.ExecuteReader();
-                    //Advancing to the next record which is the first and only record in this case
-                    dataReader.Read();
-                    //Storing information from found sql entry into a User object and returning it
-                    //I trim all of the found User data because the SQL server seems to add spaces.
-                    foundUser.ID = dataReader.GetInt32(0);
-                    foundUser.FirstName = dataReader.GetString(1).TrimEnd(' ');
-                    foundUser.LastName = dataReader.GetString(2).TrimEnd(' ');
-                    foundUser.AccountType = dataReader.GetString(3).TrimEnd(' ');
-                    foundUser.Center = dataReader.GetString(4).TrimEnd(' ');
-                    foundUser.Email = dataReader.GetString(5).TrimEnd();
-                    foundUser.Username = dataReader.GetString(7).TrimEnd(' ');
-                    foundUser.Password = dataReader.GetString(8).TrimEnd();
-                    //Closing SQL connectioon
-                    sqlConnection.Close();
-                }
-                return foundUser;
-            }
-        }
-        ///This method returns an ADO.NET connection string. 
-        private static string GetSqlConnectionString()
-        {
-            return ConfigurationManager.ConnectionStrings["SQLConnection"].ConnectionString;
-        }
-        //
+        #endregion
+
+        #region VerifyCode
+
         // GET: /Account/VerifyCode
         [AllowAnonymous]
         public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
@@ -209,8 +144,7 @@ namespace MESACCA.Controllers
             }
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
-
-        //
+        
         // POST: /Account/VerifyCode
         [HttpPost]
         [AllowAnonymous]
@@ -240,144 +174,10 @@ namespace MESACCA.Controllers
             }
         }
 
-        //
-        // GET: /Account/Register
-        [AllowAnonymous]
-        public ActionResult Register()
-        {
-            return View();
-        }
+        #endregion
 
-        //
-        // POST: /Account/Register
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+        #region ExteranlLoginStuff
 
-                    return RedirectToAction("Index", "Home");
-                }
-                AddErrors(result);
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
-        //
-        // GET: /Account/ConfirmEmail
-        [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string userId, string code)
-        {
-            if (userId == null || code == null)
-            {
-                return View("Error");
-            }
-            var result = await UserManager.ConfirmEmailAsync(userId, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        }
-
-        //
-        // GET: /Account/ForgotPassword
-        [AllowAnonymous]
-        public ActionResult ForgotPassword()
-        {
-            return View();
-        }
-
-        //
-        // POST: /Account/ForgotPassword
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = await UserManager.FindByNameAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
-                {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return View("ForgotPasswordConfirmation");
-                }
-
-                // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                // Send an email with this link
-                // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-                // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "Account");
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
-        //
-        // GET: /Account/ForgotPasswordConfirmation
-        [AllowAnonymous]
-        public ActionResult ForgotPasswordConfirmation()
-        {
-            return View();
-        }
-
-        //
-        // GET: /Account/ResetPassword
-        [AllowAnonymous]
-        public ActionResult ResetPassword(string code)
-        {
-            return code == null ? View("Error") : View();
-        }
-
-        //
-        // POST: /Account/ResetPassword
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            var user = await UserManager.FindByNameAsync(model.Email);
-            if (user == null)
-            {
-                // Don't reveal that the user does not exist
-                return RedirectToAction("ResetPasswordConfirmation", "Account");
-            }
-            var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("ResetPasswordConfirmation", "Account");
-            }
-            AddErrors(result);
-            return View();
-        }
-
-        //
-        // GET: /Account/ResetPasswordConfirmation
-        [AllowAnonymous]
-        public ActionResult ResetPasswordConfirmation()
-        {
-            return View();
-        }
-
-        //
         // POST: /Account/ExternalLogin
         [HttpPost]
         [AllowAnonymous]
@@ -453,7 +253,9 @@ namespace MESACCA.Controllers
             }
         }
 
-        //
+        #endregion
+
+        #region LogOff
         // POST: /Account/ExternalLoginConfirmation
         [HttpPost]
         [AllowAnonymous]
@@ -508,6 +310,8 @@ namespace MESACCA.Controllers
         {
             return View();
         }
+
+        #endregion
 
         protected override void Dispose(bool disposing)
         {

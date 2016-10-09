@@ -169,7 +169,10 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="DataBaseManagers\SQLUtility.cs" />
+    <Compile Include="Utilities\CustomPrincipal.cs" />
     <Compile Include="Utilities\Common.cs" />
+    <Compile Include="Utilities\CustomPrincipalInterface.cs" />
     <Compile Include="Utilities\SecurityUtility.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
