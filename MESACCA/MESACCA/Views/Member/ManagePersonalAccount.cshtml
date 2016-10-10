@@ -1,0 +1,93 @@
+﻿@model MESACCA.ViewModels.Admin.ManagePersonalAccountViewModel
+@{
+    ViewData["Title"] = "Manage Personal Account";
+}
+<h2>Manage Personal Account</h2>
+@using (Html.BeginForm("ManagePersonalAccount", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @*Adding First name textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", value = Model.FirstName })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.FirstName)
+        </font>
+    </div>
+    @*Adding Last name textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", value = Model.LastName })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.LastName)
+        </font>
+    </div>
+    @*@Adding a inline account type dropbox*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC", value = Model.AccountType })
+    </div>
+    @*Adding a inline center dropbox*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Center, new { @class = "form-control", value = Model.Center })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Center)
+        </font>
+    </div>
+    @*Adding email textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Email, new { @class = "form-control", value = Model.Email })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Email)
+        </font>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Example: mesa@yahoo.com</small>
+        </div>
+    </div>
+    @*Adding phone number textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", value = Model.PhoneNumber })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.PhoneNumber)
+        </font>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Example: 916-555-5555</small>
+        </div>
+    </div>
+    @*Adding username textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Username, new { @class = "form-control", value = Model.Username })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Username)
+        </font>
+    </div>
+    @*Adding password textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Password, new { @class = "col-md-2 control-label" })
+        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Password)
+        </font>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Please use a combination of letters, numbers, symbols</small>
+        </div>
+    </div>
+    @*Adding confirmation password textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.ConfirmPassword, new { @class = "col-md-2 control-label" })
+        @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.ConfirmPassword)
+        </font>
+    </div>
+    @*Adding save button*@
+    <div class="form-group">
+        <button style="margin-left:15px" type="submit" class="btn btn-primary">Save</button>
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -53,9 +53,7 @@ namespace MESACCA.Controllers
 
         public ActionResult News()
         {
-            //ViewData["Posts"] = NewsArticleManager.getNewsPosts();
-
-            return View(NewsArticleManager.getNewsPosts());
+            return View(SQLManager.getNewsPosts());
         }
 
         public ActionResult Donate()

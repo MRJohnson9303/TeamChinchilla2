@@ -1,0 +1,49 @@
+﻿<h2>Add Account</h2>
+@model MESACCA.ViewModels.Admin.AddAccountViewModel
+@{
+    ViewData["Title"] = "Add Account";
+}
+@using (Html.BeginForm("AddAccount", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @*Adding First Name textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.FirstName)
+        </font>
+    </div>
+    @*Adding Last Name textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.LastName)
+        </font>
+    </div>
+    @*@Adding a inline Account Type dropbox*@
+    <div class="form-group">
+        <div class="form-inline">
+            @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
+            <div class="form-control">
+                @Html.DropDownList("AccountType", new List<SelectListItem>
+                {
+                    new SelectListItem {Text = "Director", Value = "Director"},
+                    new SelectListItem {Text = "Staff", Value = "Staff" }
+                },
+                "Select Account Type", new { onchange = "this.form.submit();" })
+            </div>
+        </div>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Example: Director, Staff</small>
+        </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.AccountType)
+        </font>
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

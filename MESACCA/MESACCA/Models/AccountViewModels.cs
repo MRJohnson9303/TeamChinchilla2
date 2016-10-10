@@ -60,6 +60,8 @@ namespace MESACCA.Models
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+
+        public User User { get; set; }
     }
 
     public class RegisterViewModel

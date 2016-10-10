@@ -3,23 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Security.Principal;
+using MESACCA.Models;
 
 namespace MESACCA.Utilities
 {
-    public class CustomPrincipal : ICustomPrincipal
+    public class CustomPrincipal : IPrincipal
     {
         public IIdentity Identity { get; private set; }
         public UserRoles Role { get; }
-           
+
         public bool IsInRole(string role) { return false; }
 
-        public CustomPrincipal(string key)
+        public CustomPrincipal(Users user)
         {
-            this.Identity = new GenericIdentity(key);
-        }
+            this.Identity = new GenericIdentity(Guid.NewGuid().ToString());
 
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+            UserRoles role = (UserRoles)Enum.Parse(typeof(UserRoles), user.AccountType.ToLower());
+            if (Enum.IsDefined(typeof(UserRoles), role))
+            {
+                Role = role;
+            }
+        }
+        
     }
 }

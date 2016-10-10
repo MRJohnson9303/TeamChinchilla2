@@ -2,18 +2,24 @@
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
-using S = System.Data.SqlClient;
-using T = System.Threading;
+using System.Data.SqlClient;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Configuration;
+
 using System.Web;
 using System.Web.Mvc;
-using System.Configuration;
+using System.Web.Security;
+
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+
 using MESACCA.Models;
 using MESACCA.Controllers;
 using MESACCA.DataBaseManagers;
+using MESACCA.Utilities;
+using Microsoft.AspNet.Identity;
 
 namespace MESACCA.Controllers
 {
@@ -78,32 +84,71 @@ namespace MESACCA.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            User foundUser = new Models.User();
+            Users foundUser = new Users();
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
             else
             {
+                foundUser = SQLManager.sqlConnection(model.Username, model.Password);
 
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, change to shouldLockout: true
-                /*var result = await SignInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, shouldLockout: false);
-                switch (result)
+                if (foundUser == null)
                 {
-                    case SignInStatus.Success:
-                        return RedirectToLocal(returnUrl);
-                    case SignInStatus.LockedOut:
-                        return View("Lockout");
-                    case SignInStatus.RequiresVerification:
-                        return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                    case SignInStatus.Failure:
-                    default:
-                        ModelState.AddModelError("", "Invalid login attempt.");
-                        return View(model);
-                }*/
-                //Getting the a User from the SQL database whose username and password match those provided
-                foundUser = SQLUtility.sqlConnection(model.Username, model.Password);
+                    ModelState.AddModelError("", "Invalid login attempt.");
+                    return View(model);
+                }
+                
+                System.Web.HttpContext.Current.User = new CustomPrincipal(foundUser);
+                
+                FormsAuthentication.SetAuthCookie(System.Web.HttpContext.Current.User.Identity.Name, false);
+
+                if (!MyUserManager.LoginUser(foundUser))
+                {
+                    FormsAuthentication.SignOut();
+                    ModelState.AddModelError("", "That User is currently logged in");
+                    return View(model);
+                }
+
+                return RedirectToAction(nameof(MemberController.Index), "Member");
+
+                #region testCode
+                // var userInfo = new ApplicationUser { UserInfo = foundUser, UserName = foundUser.Username };
+
+                //var UserManagerResult = await UserManager.CreateAsync(userInfo, foundUser.Password);
+                //var UserManagerResult = UserManager.Create(userInfo, foundUser.Password);
+
+                // if (UserManagerResult.Succeeded)
+                //  {
+                /*
+                var SignInManagerResult = await SignInManager.PasswordSignInAsync(foundUser.Username, foundUser.Password, model.RememberMe, shouldLockout: false);
+                    switch (SignInManagerResult)
+                    {
+                        case SignInStatus.Success:
+                            CustomPrincipal userPrincipal = new CustomPrincipal(foundUser);
+
+                            System.Web.HttpContext.Current.User = userPrincipal;
+
+                            FormsAuthentication.SetAuthCookie(model.Username, false);
+
+                            var bigTest = UserManager.FindById(System.Web.HttpContext.Current.User.Identity.GetUserId());
+
+                            return RedirectToAction(nameof(MemberController.Index), "Member");
+                        case SignInStatus.LockedOut:
+                            return View("Lockout");
+                        case SignInStatus.RequiresVerification:
+                           // return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                        case SignInStatus.Failure:
+                        default:
+                            ModelState.AddModelError("", "Invalid login attempt.");
+                            return View(model);
+                    }
+                /*
+               // }
+              //  AddErrors(UserManagerResult);
+
+              //  return View(model);
+                /*
                 //There is a chance that an empty User object may be given due connection issues or incorrect login information
                 //is given, so one of the assigned User properties (AccountType) is checked. If the checked User property
                 //is null, then the ViewModel model is simply sent to the View. 
@@ -112,21 +157,74 @@ namespace MESACCA.Controllers
                     if (foundUser.AccountType.Equals("Admin"))
                     {
                         //Sending successfully logged in user to Admin account dashboard
-                        return RedirectToAction(nameof(AdminController.Index), "Admin", new { ID = foundUser.ID, firstName = foundUser.FirstName, lastName = foundUser.LastName });
+                        return RedirectToAction(nameof(AdminController.Index), "Admin");// user);//new { ID = foundUser.ID, firstName = foundUser.FirstName, lastName = foundUser.LastName });
                     }
                     else if (foundUser.AccountType.Equals("Director"))
                     {
                         //Sending successfully logged in user to Director account dashboard
-                        return RedirectToAction(nameof(DirectorController.Index), "Director", new { ID = foundUser.ID, center = foundUser.Center, firstName = foundUser.FirstName, lastName = foundUser.LastName });
+                        return RedirectToAction(nameof(DirectorController.Index), "Director");//new { ID = foundUser.ID, firstName = foundUser.FirstName, lastName = foundUser.LastName });
                     }
                     else if (foundUser.AccountType.Equals("Staff"))
                     {
                         //Sending successfully logged in user to Staff account dashboard
-                        return RedirectToAction(nameof(StaffController.Index), "Staff", new { ID = foundUser.ID, firstName = foundUser.FirstName, lastName = foundUser.LastName });
+                        return RedirectToAction(nameof(StaffController.Index), "Staff");//new { ID = foundUser.ID, firstName = foundUser.FirstName, lastName = foundUser.LastName });
                     }
                 }
+                return View(model);
+                */
+
+                /*
+                // This doesn't count login failures towards account lockout
+                // To enable password failures to trigger account lockout, change to shouldLockout: true
+                var result = await SignInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, shouldLockout: false);
+
+                switch (result)
+                {
+                    case SignInStatus.Success:
+                        //Getting the a User from the SQL database whose username and password match those provided
+                        foundUser = SQLManager.sqlConnection(model.Username, model.Password);
+
+                        if (foundUser == null) {
+                            ModelState.AddModelError("", "Invalid login attempt.");
+                            return View(model);
+                        }
+
+                        System.Web.HttpContext.Current.User = new CustomPrincipal(foundUser);
+                
+                        //There is a chance that an empty User object may be given due connection issues or incorrect login information
+                        //is given, so one of the assigned User properties (AccountType) is checked. If the checked User property
+                        //is null, then the ViewModel model is simply sent to the View. 
+                        if (foundUser.AccountType != null)
+                        {
+                            if (foundUser.AccountType.Equals("Admin"))
+                            {
+                                //Sending successfully logged in user to Admin account dashboard
+                                return RedirectToAction(nameof(AdminController.Index), "Admin", new { ID = foundUser.ID, firstName = foundUser.FirstName, lastName = foundUser.LastName });
+                            }
+                            else if (foundUser.AccountType.Equals("Director"))
+                            {
+                                //Sending successfully logged in user to Director account dashboard
+                                return RedirectToAction(nameof(DirectorController.Index), "Director", new { ID = foundUser.ID, center = foundUser.Center, firstName = foundUser.FirstName, lastName = foundUser.LastName });
+                            }
+                            else if (foundUser.AccountType.Equals("Staff"))
+                            {
+                                //Sending successfully logged in user to Staff account dashboard
+                                return RedirectToAction(nameof(StaffController.Index), "Staff", new { ID = foundUser.ID, firstName = foundUser.FirstName, lastName = foundUser.LastName });
+                            }
+                        }
+                        return View(model);
+                    case SignInStatus.LockedOut:
+                        return View("Lockout");
+                    case SignInStatus.RequiresVerification:
+                        return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    case SignInStatus.Failure:
+                    default:
+                        ModelState.AddModelError("", "Invalid login attempt.");
+                        return View(model);
+                }
+                */
+                #endregion
             }
-            return View(model);
         }
 
         #endregion
@@ -256,6 +354,8 @@ namespace MESACCA.Controllers
         #endregion
 
         #region LogOff
+      
+        /*
         // POST: /Account/ExternalLoginConfirmation
         [HttpPost]
         [AllowAnonymous]
@@ -292,14 +392,16 @@ namespace MESACCA.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View(model);
         }
-
+        */
         //
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
+            SecurityUtility.baseLogOut();
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            SignInManager.AuthenticationManager.SignOut();
             return RedirectToAction("Index", "Home");
         }
 
@@ -391,5 +493,6 @@ namespace MESACCA.Controllers
             }
         }
         #endregion
+        
     }
 }

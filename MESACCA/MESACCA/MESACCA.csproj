@@ -169,19 +169,46 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="DataBaseManagers\SQLUtility.cs" />
+    <Compile Include="AspNetRole.cs">
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AspNetUser.cs">
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AspNetUserClaim.cs">
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AspNetUserLogin.cs">
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Center.cs">
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\MyUserManager.cs" />
+    <Compile Include="C__MigrationHistory.cs">
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FilterAttribute\ValidateUserFilterAttribute.cs" />
+    <Compile Include="DataBaseManagers\SQLManager.cs" />
+    <Compile Include="MCCA1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\NewsArticleExtention.cs" />
+    <Compile Include="Users.cs">
+      <DependentUpon>MCCA.tt</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\CustomPrincipal.cs" />
     <Compile Include="Utilities\Common.cs" />
-    <Compile Include="Utilities\CustomPrincipalInterface.cs" />
     <Compile Include="Utilities\SecurityUtility.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="Controllers\DirectorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\StaffController.cs" />
-    <Compile Include="DataBaseManagers\NewsArticleManager.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -193,11 +220,6 @@
     <Compile Include="MCCA.cs" />
     <Compile Include="MCCA.Designer.cs">
       <DependentUpon>MCCA.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MCCA1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MCCA.tt</DependentUpon>
     </Compile>
     <Compile Include="MCCA1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -214,9 +236,6 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="UserTable.cs">
-      <DependentUpon>MCCA.tt</DependentUpon>
-    </Compile>
     <Compile Include="ViewModels\Admin\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\Admin\AddCenterViewModel.cs" />
     <Compile Include="ViewModels\Admin\EditViewModel.cs" />
@@ -501,7 +520,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -521,16 +542,16 @@
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Account\SendCode.cshtml" />
     <Content Include="Views\Account\VerifyCode.cshtml" />
-    <Content Include="Views\Admin\AddAccount.cshtml" />
-    <Content Include="Views\Admin\AddCenter.cshtml" />
-    <Content Include="Views\Admin\Delete.cshtml" />
-    <Content Include="Views\Admin\Edit.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Admin\ManageAccounts.cshtml" />
-    <Content Include="Views\Admin\ManageCenters.cshtml" />
-    <Content Include="Views\Admin\ManagePersonalAccount.cshtml" />
-    <Content Include="Views\Admin\ManageSite.cshtml" />
-    <Content Include="Views\Admin\PictureTest.cshtml" />
+    <Content Include="Views\Member\AddAccount.cshtml" />
+    <Content Include="Views\Member\AddCenter.cshtml" />
+    <Content Include="Views\Member\Delete.cshtml" />
+    <Content Include="Views\Member\Edit.cshtml" />
+    <Content Include="Views\Member\Index.cshtml" />
+    <Content Include="Views\Member\ManageAccounts.cshtml" />
+    <Content Include="Views\Member\ManageCenters.cshtml" />
+    <Content Include="Views\Member\ManagePersonalAccount.cshtml" />
+    <Content Include="Views\Member\ManageSite.cshtml" />
+    <Content Include="Views\Member\PictureTest.cshtml" />
     <Content Include="Views\Director\AddAccount.cshtml" />
     <Content Include="Views\Director\Delete.cshtml" />
     <Content Include="Views\Director\DeletePersonalAccount.cshtml" />
@@ -557,7 +578,7 @@
     <Content Include="Views\Manage\SetPassword.cshtml" />
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\News\AddNews.cshtml" />
-    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\Shared\_MemberLayout.cshtml" />
     <Content Include="Views\Shared\_DirectorLayout.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\_StaffLayout.cshtml" />
@@ -572,6 +593,8 @@
     <Content Include="Views\Staff\Index.cshtml" />
     <Content Include="Views\Staff\ManagePersonalAccount.cshtml" />
     <Content Include="Views\Web.config" />
+    <Content Include="Views\Member\AddDirectorAccount.cshtml" />
+    <Content Include="Views\Member\AddStaffAccount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

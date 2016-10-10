@@ -8,6 +8,15 @@
         <EntityTypeShape EntityType="MCCA.NewsArticle" Width="1.5" PointX="3" PointY="2.25" IsExpanded="true" />
         <EntityTypeShape EntityType="MCCA.UserTable" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
         <AssociationConnector Association="MCCA.FK_NewsArticles_Users" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="MCCA.C__MigrationHistory" Width="1.5" PointX="3.75" PointY="5.75" />
+        <EntityTypeShape EntityType="MCCA.AspNetRole" Width="1.5" PointX="5.75" PointY="2.5" />
+        <EntityTypeShape EntityType="MCCA.AspNetUserClaim" Width="1.5" PointX="10.25" PointY="3.625" />
+        <EntityTypeShape EntityType="MCCA.AspNetUserLogin" Width="1.5" PointX="10.25" PointY="1" />
+        <EntityTypeShape EntityType="MCCA.AspNetUser" Width="1.5" PointX="8" PointY="1.125" />
+        <EntityTypeShape EntityType="MCCA.Center" Width="1.5" PointX="0.75" PointY="6.75" />
+        <AssociationConnector Association="MCCA.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="MCCA.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="MCCA.AspNetUserRoles" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

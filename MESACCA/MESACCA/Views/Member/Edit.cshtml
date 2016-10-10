@@ -1,0 +1,218 @@
+﻿@model MESACCA.ViewModels.Admin.EditViewModel
+@{
+    ViewData["Title"] = "Edit";
+}
+<h2>Edit</h2>
+@using (Html.BeginForm("Edit", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @*Adding First Name textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", value = Model.FirstName })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.FirstName)
+        </font>
+    </div>
+    @*Adding Last Name textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", value = Model.LastName })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.LastName)
+        </font>
+    </div>
+    @*@Adding a inline Account Type dropbox*@
+    <div class="form-group">
+        <div class="form-inline">
+            @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
+            <div class="form-control">
+                @Html.DropDownList("AccountType", new List<SelectListItem>
+                {
+                    new SelectListItem {Text ="Director", Value="Director" },
+                    new SelectListItem {Text ="Staff", Value="Staff" }
+                })
+            </div>
+        </div>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Example: Director, Staff</small>
+        </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.AccountType)
+        </font>
+    </div>
+    @*Adding a inline Center dropbox*@
+    <div class="form-group">
+        <div class="form-inline">
+            @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
+            <div class="form-control">
+                @Html.DropDownList("Center", new List<SelectListItem>
+            {
+                new SelectListItem {Text =Model.Center.ToString(), Value=Model.Center.ToString()},
+                new SelectListItem {Text ="Center 1", Value="Center 1" },
+                new SelectListItem {Text ="Center 2", Value="Center 2" }
+            })
+            </div>
+        </div>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Current centers in the database</small>
+        </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Center)
+        </font>
+    </div>
+    @*Adding Email textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Email, new { @class = "form-control", value = Model.Email })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Email)
+        </font>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Example: mesa@yahoo.com</small>
+        </div>
+    </div>
+    @*Adding Phone Number textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", value = Model.PhoneNumber })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.PhoneNumber)
+        </font>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Example: 916-555-5555</small>
+        </div>
+    </div>
+    @*Adding a label and a table containing a row of check boxes for user rights*@
+    <div class="form-group">
+        <div class="col-sm-3">
+            <label>User Is Allowed to Alter:</label>
+            <table class="table">
+                <thead style="font-size: 12px">
+                    <tr>
+                        @*Table Headings*@
+                        <th>
+                            @Html.DisplayNameFor(model => model.Home)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.About_Us)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Vision_Mission_Values)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.MESA_Schools_Program)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.MESA_Community_College_Program)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.MESA_Engineering_Program)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.News)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Donate)
+                        </th>
+                    </tr>
+                </thead>
+                @if (Model.AccountType.Equals("Director"))
+                {
+                    <tbody>
+                        <tr>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Home, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.About_Us, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Vision_Mission_Values, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Schools_Program, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Community_College_Program, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Engineering_Program, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.News, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Donate, new { @checked = "checked", @disabled = "disabled" })
+                            </td>
+                        </tr>
+                    </tbody>
+                }
+                @if (Model.AccountType.Equals("Staff"))
+                {
+                    <tbody>
+                        <tr>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Home)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.About_Us)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Vision_Mission_Values)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Schools_Program)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Community_College_Program)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.MESA_Engineering_Program)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.News)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(model => model.Donate)
+                            </td>
+                        </tr>
+                    </tbody>
+                }
+            </table>
+        </div>
+    </div>
+    @*Adding Username textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Username, new { @class = "form-control", value = Model.Username })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Username)
+        </font>
+    </div>
+    @*Adding Password textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Password, new { @class = "col-md-2 control-label" })
+        @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Password)
+        </font>
+        <div class="col-md-offset-2">
+            <small class="text-muted">Please use a combination of letters, numbers, symbols</small>
+        </div>
+    </div>
+    @*Adding Confirmation Password textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.ConfirmPassword, new { @class = "col-md-2 control-label" })
+        @Html.PasswordFor(model => model.ConfirmPassword, new { @class = "form-control" })
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.ConfirmPassword)
+        </font>
+    </div>
+    @*Adding add account button*@
+    <div class="form-group">
+        <button style="margin-left:15px" type="submit" class="btn btn-primary">Save</button>
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

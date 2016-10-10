@@ -6,7 +6,7 @@ using System.Configuration;
 
 namespace MESACCA.Utilities
 {
-    public enum UserRoles { director, admin, staff, };
+    public enum UserRoles { director, admin, staff };
 
     public static class Common
     { 
@@ -14,6 +14,6 @@ namespace MESACCA.Utilities
         {
             return ConfigurationManager.ConnectionStrings["SQLConnection"].ConnectionString;
         }
-
+        
     }
 }

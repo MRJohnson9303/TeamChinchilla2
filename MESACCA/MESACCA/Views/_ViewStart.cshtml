@@ -1,7 +1,11 @@
 ﻿@{
     var controller = this.ViewContext.RouteData.Values["controller"].ToString();
     string cLayout = "";
-    if (controller == "Admin")
+
+    if (controller == "Member") {
+        cLayout = "~/Views/Shared/_MemberLayout.cshtml";
+    }
+    else if (controller == "Admin")
     {
         cLayout = "~/Views/Shared/_AdminLayout.cshtml";
     }
