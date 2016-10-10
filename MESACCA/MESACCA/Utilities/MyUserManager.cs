@@ -20,8 +20,9 @@ namespace MESACCA.Utilities
             {
                 if (UserDictionary.ContainsKey(Key) || UserDictionary.ContainsValue(u))
                 {
-                    // Do not allow multiple log ins
-                    return false;
+                    //#TODO Test if the entry is removed when user closed browser or tab
+                    // Do not allow multiple log ins for same user
+                    //return false;
                 }
 
                 UserDictionary.Add(Key, u);
