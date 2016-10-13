@@ -22,7 +22,7 @@ namespace MESACCA.DataBaseManagers
         {
             String _username = username;
             String _password = password;
-            Users foundUser = new Users();
+            Users foundUser = null;
             int totalNumberOfTimesToTry = 3;
             int retryIntervalSeconds = 1;
 
@@ -57,7 +57,7 @@ namespace MESACCA.DataBaseManagers
         {
             String _username = username;
             String _password = password;
-            Users foundUser = new Users();
+            Users foundUser = null;
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -74,6 +74,8 @@ namespace MESACCA.DataBaseManagers
                     dataReader.Read();
                     //Storing information from found sql entry into a User object and returning it
                     //I trim all of the found User data because the SQL server seems to add spaces.
+
+                    foundUser = new Users();
                     foundUser.ID = dataReader.GetInt32(0);
                     foundUser.FirstName = dataReader.GetString(1).TrimEnd(' ');
                     foundUser.LastName = dataReader.GetString(2).TrimEnd(' ');
