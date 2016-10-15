@@ -243,6 +243,10 @@
     <Compile Include="ViewModels\Director\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\Director\EditViewModel.cs" />
     <Compile Include="ViewModels\Director\ManagePersonalAccountViewModel.cs" />
+    <Compile Include="ViewModels\Member\AddAccountViewModel.cs" />
+    <Compile Include="ViewModels\Member\AddCenterViewModel.cs" />
+    <Compile Include="ViewModels\Member\EditViewModel.cs" />
+    <Compile Include="ViewModels\Member\ManagePersonalAccountViewModel.cs" />
     <Compile Include="ViewModels\News\AddNewsViewModel.cs" />
     <Compile Include="ViewModels\Staff\ManagePersonalAccountViewModel.cs" />
   </ItemGroup>
@@ -544,8 +548,8 @@
     <Content Include="Views\Account\VerifyCode.cshtml" />
     <Content Include="Views\Member\AddAccount.cshtml" />
     <Content Include="Views\Member\AddCenter.cshtml" />
-    <Content Include="Views\Member\Delete.cshtml" />
-    <Content Include="Views\Member\Edit.cshtml" />
+    <Content Include="Views\Member\DeleteAccount.cshtml" />
+    <Content Include="Views\Member\EditAccount.cshtml" />
     <Content Include="Views\Member\Index.cshtml" />
     <Content Include="Views\Member\ManageAccounts.cshtml" />
     <Content Include="Views\Member\ManageCenters.cshtml" />

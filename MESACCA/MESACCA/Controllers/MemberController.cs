@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using MESACCA.Models;
 using S = System.Data.SqlClient;
 using T = System.Threading;
-using MESACCA.ViewModels.Admin;
+using MESACCA.ViewModels.Member;
 using System.Configuration;
 using System.Web;
 using System.Web.Mvc;
@@ -128,6 +128,52 @@ namespace MESACCA.Controllers
             ViewData["AccountType"] = accountType;
             return View();
         }
+
+        [HttpPost]
+        [ValidateUser]
+        public ActionResult AddDirectorAccount(AddAccountViewModel model)
+        {
+            Boolean success = false;
+            User newUser = new User();
+            //ID initialized for comparison
+            int ID = 1;
+            List<User> userList = new List<User>();
+            //Storing the SortedList object returned which contains all Users
+            userList = SQLManager.sqlConnectionForUsersList();
+            //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
+            //a User ID then break the loop and use the new ID value for the new User account ID.
+            //This means if a User is deleted, then a new User will get the old ID
+            foreach (var item in userList)
+            {
+                if (ID != item.ID)
+                {
+                    break;
+                }
+                ID += 1;
+            }
+            newUser.FirstName = model.FirstName;
+            newUser.LastName = model.LastName;
+            newUser.AccountType = model.AccountType;
+            newUser.Center = model.Center;
+            newUser.Email = model.Email;
+            newUser.PhoneNumber = model.PhoneNumber;
+            newUser.Username = model.Username;
+            newUser.Password = model.Password;
+            newUser.Home = "True";
+            newUser.About_Us = "True";
+            newUser.Vision_Mission_Values = "True";
+            newUser.MESA_Schools_Program = "True";
+            newUser.MESA_Community_College_Program = "True";
+            newUser.MESA_Engineering_Program = "True";
+            newUser.News = "True";
+            newUser.Donate = "True";
+            success = SQLManager.sqlConnectionAddUser(ID, newUser);
+            if (success == true)
+            {
+                return RedirectToAction("ManageAccounts");
+            }
+            return View();
+        }
        
         //This method returns the AddStaffAccount View with the first name, last name and account type filled in using
         //passed in information, but the account type textfield is readonly.
@@ -193,7 +239,7 @@ namespace MESACCA.Controllers
         //This method returns the Edit View with the EditViewModel passed in to display account information
         [HttpGet]
         [ValidateUser]
-        public ActionResult Edit(int ID)
+        public ActionResult EditAccount(int ID)
         {
             User foundUser = new User();
             EditViewModel model = new EditViewModel();
@@ -222,7 +268,7 @@ namespace MESACCA.Controllers
         //This method allows the Admin to edit accounts displayed in Manage Accounts and saves changes in the SQL database
         [HttpPost]
         [ValidateUser]
-        public ActionResult Edit(EditViewModel model)
+        public ActionResult EditAccount(EditViewModel model)
         {
             Boolean success = false;
             User foundUser = new User();
@@ -291,7 +337,7 @@ namespace MESACCA.Controllers
         //This method sends an entry's information from Manage Accounts into the View when the Delete link is clicked on
         [HttpGet]
         [ValidateUser]
-        public ActionResult Delete(int ID)
+        public ActionResult DeleteAccount(int ID)
         {
             User foundUser = new User();
             foundUser = SQLManager.sqlConnectionForUser(ID);
@@ -302,7 +348,7 @@ namespace MESACCA.Controllers
         //to Manage Accounts and if the back button is clicked, then the Admin is sent back to ManageAccounts.
         [HttpPost]
         [ValidateUser]
-        public ActionResult Delete(User model, string button)
+        public ActionResult DeleteAccount(User model, string button)
         {
             Boolean success = false;
             if (button.Contains("delete"))
@@ -365,7 +411,10 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult ManageSite()
         {
-            return View();
+            User foundUser = new User();
+            //Getting SQL table entry based on User ID
+            foundUser = SQLManager.sqlConnectionForUser(adminID);
+            return View(foundUser);
         }
         
         //This methods sends the user to the appropriate View based on which button was clicked.
@@ -437,6 +486,7 @@ namespace MESACCA.Controllers
             //an Admin is allowed to change
             updatedUser.FirstName = model.FirstName;
             updatedUser.LastName = model.LastName;
+            updatedUser.AccountType = model.AccountType;
             updatedUser.Center = model.Center;
             updatedUser.Email = model.Email;
             updatedUser.PhoneNumber = model.PhoneNumber;
@@ -469,10 +519,27 @@ namespace MESACCA.Controllers
             {
                 return RedirectToAction("ManagePersonalAccount");
             }
-            return View(model);
+            return RedirectToAction("ManageAccounts");
         }
 
         #endregion
-        
+
+        [HttpGet]
+        [ValidateUser]
+        public ActionResult PictureTest()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateUser]
+        public ActionResult PictureTest(HttpPostedFileBase File)
+        {
+            if(File.ContentLength > 0)
+            {
+                return RedirectToAction("ManageAccounts");
+            }
+            return View();
+        }
     }
 }

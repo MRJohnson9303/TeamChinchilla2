@@ -5,7 +5,7 @@
 <h2>Manage Accounts</h2>
 <fieldset>
     @*Adding a create account button that will be 20 pixels about the search bar and other buttons*@
-    <button type="submit" onclick="location.href='@Url.Action("AddAccount", "Admin")'" style="margin-bottom:20px" class="btn btn-primary">Add Account</button>
+    <button type="submit" onclick="location.href='@Url.Action("AddAccount", "Member")'" style="margin-bottom:20px" class="btn btn-primary">Add Account</button>
     @*Adding textfield and buttons to create a search bar*@
     <form>
         <label for="Name">Name:</label>
@@ -59,8 +59,8 @@
                     @Html.DisplayFor(modelItem => item.Center)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                    @Html.ActionLink("Edit", "EditAccount", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "DeleteAccount", new { id = item.ID })
                     
                 </td>
             </tr>

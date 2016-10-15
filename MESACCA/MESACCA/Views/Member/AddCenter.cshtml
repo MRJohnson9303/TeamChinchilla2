@@ -1,9 +1,9 @@
-﻿@model MESACCA.ViewModels.Admin.AddCenterViewModel
+﻿@model MESACCA.ViewModels.Member.AddCenterViewModel
 @{
     ViewData["Title"] = "Add Center";
 }
 <h2>Add Center</h2>
-@using (Html.BeginForm("AddCenter", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" , enctype = "multipart/form-data" }))
+@using (Html.BeginForm("AddCenter", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" , enctype = "multipart/form-data" }))
 {
     @*Adding Name textfield*@
     <div class="form-group">

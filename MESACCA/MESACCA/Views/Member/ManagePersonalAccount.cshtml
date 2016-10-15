@@ -1,9 +1,9 @@
-﻿@model MESACCA.ViewModels.Admin.ManagePersonalAccountViewModel
+﻿@model MESACCA.ViewModels.Member.ManagePersonalAccountViewModel
 @{
     ViewData["Title"] = "Manage Personal Account";
 }
 <h2>Manage Personal Account</h2>
-@using (Html.BeginForm("ManagePersonalAccount", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("ManagePersonalAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @*Adding First name textfield*@
     <div class="form-group">

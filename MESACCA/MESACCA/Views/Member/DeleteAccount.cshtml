@@ -1,6 +1,6 @@
 ﻿@model MESACCA.Models.User
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Account";
 }
 <h2>Delete</h2>
 
@@ -33,7 +33,7 @@
             @Html.DisplayFor(model => model.Center)
         </dd>
     </dl>
-    @using (Html.BeginForm("Delete", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    @using (Html.BeginForm("DeleteAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
         <div class="form-actions no-color">
             <button type="submit" name="button" value="delete" class="btn btn-default">Delete</button> |

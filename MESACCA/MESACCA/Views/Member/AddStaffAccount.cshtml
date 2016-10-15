@@ -1,9 +1,9 @@
 ﻿<h2>Add Staff Account</h2>
-@model MESACCA.ViewModels.Admin.AddAccountViewModel
+@model MESACCA.ViewModels.Member.AddAccountViewModel
 @{
     ViewData["Title"] = "Add Staff Account";
 }
-@using (Html.BeginForm("AddStaffAccount", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("AddStaffAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @*Adding First Name textfield*@
     <div class="form-group">
