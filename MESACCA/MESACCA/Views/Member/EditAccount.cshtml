@@ -3,6 +3,10 @@
     ViewData["Title"] = "Edit Account";
 }
 <h2>Edit</h2>
+@if (ViewBag.Message != null)
+{
+    <span>@ViewBag.Message</span>
+}
 @using (Html.BeginForm("EditAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @*Adding First Name textfield*@

@@ -4,20 +4,21 @@
 }
 <h2>Manage Accounts</h2>
 <fieldset>
-    @*Adding a create account button that will be 20 pixels about the search bar and other buttons*@
-    <button type="submit" onclick="location.href='@Url.Action("AddAccount", "Member")'" style="margin-bottom:20px" class="btn btn-primary">Add Account</button>
-    @*Adding textfield and buttons to create a search bar*@
-    <form>
-        <label for="Name">Name:</label>
+    @using (Html.BeginForm("ManageAccounts", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @*Adding a create account button that will be 20 pixels about the search bar and other buttons*@
+        <button type="submit" name="button" value="Add Account" class="btn btn-primary">Add Account</button>
+        @*Adding textfield and buttons to create a search bar*@
+        <label>Name:</label>
         @*Textbox that will be used to search user list*@
-        <input type="text" name="name" id="SearchName">
+        <input type="text" name="name">
         @*Adding a search button that sends the contents of the textbox to the "name" parameter of "ManageAccounts"*@
-        <button type="submit"  class="btn btn-primary">Search</button>
+        <button type="submit" name ="button" class="btn btn-primary">Search</button>
         @*Adding a filter button that sends the "First Name" value to the "sortOrder" parameter of "ManageAccounts"*@
-        <button type="submit" name ="sortOrder" value="First Name" class="btn btn-primary">Filter by First Name</button>
+        <button type="submit" name ="button" value="First Name" class="btn btn-primary">Filter by First Name</button>
         @*Adding a filter button that sends the "Last Name" value to the "sortOrder" parameter of "ManageAccounts"*@
-        <button type="submit" name ="sortOrder" value="Last Name" class="btn btn-primary">Filter by Last Name</button>
-    </form>
+        <button type="submit" name ="button" value="Last Name" class="btn btn-primary">Filter by Last Name</button>
+    }
 </fieldset>
 <table class="table">
     <thead>

@@ -18,6 +18,9 @@ namespace MESACCA.Controllers
         //Used for personal account management
         private static int adminID;
         private static Users User;
+        //Used to sort account list for directors as well as for account creation
+        private static String userAccountType;
+        private static String center;
         //This method is a simple hello to the user when he or she signs in as well as saving the ID for personal account
         //management
         [ValidateUser]
@@ -26,26 +29,79 @@ namespace MESACCA.Controllers
             User = MyUserManager.GetUser();
 
             adminID = User.ID;
+            userAccountType = User.AccountType;
+            center = User.Center;
             ViewData["ID"] = User.ID;
             ViewData["firstName"] = User.FirstName;
             ViewData["lastName"] = User.LastName;
-            
+
             return View();
         }
 
+        #region ManageAccounts
+
         //This method collects all User accounts and passes them into the View to be displayed in Manage Accounts
         [ValidateUser]
-        public ActionResult ManageAccounts(String name, String sortOrder)
+        [HttpGet]
+        public ActionResult ManageAccounts()
         {
+            List<User> foundUserList = new List<User>();
+            List<User> userList = new List<User>();
+            //Storing the List object returned which contains all Users
+            foundUserList = SQLManager.sqlConnectionForUsersList();
+            //If the User is a Director, allow only Users who are Staff and in the Director's Center to be in the list
+            if (userAccountType.Equals("Director"))
+            {
+                foreach (User member in foundUserList)
+                {
+                    if (member.AccountType.Equals("Staff") && member.Center.Equals(center))
+                    {
+                        userList.Add(member);
+                    }
+                }
+                foundUserList = userList;
+            }
+            else
+            {
+                //Sorting the User list by account type and passing it into the View.
+                foundUserList.Sort(delegate (User x, User y)
+                {
+                    return x.AccountType.CompareTo(y.AccountType);
+                });
+            }
+            return View(foundUserList);
+        }
+
+        [ValidateUser]
+        [HttpPost]
+        public ActionResult ManageAccounts(String button, String name)
+        {
+            List<User> foundUserList = new List<User>();
             List<User> userList = new List<User>();
             List<User> searchList = new List<User>();
             //Storing the List object returned which contains all Users
-            userList = SQLManager.sqlConnectionForUsersList();
+            foundUserList = SQLManager.sqlConnectionForUsersList();
+            //If the User is a Director, allow only Users who are Staff and in the Director's Center to be in the list
+            if (userAccountType.Equals("Director"))
+            {
+                foreach (User member in foundUserList)
+                {
+                    if (member.AccountType.Equals("Staff") && member.Center.Equals(center))
+                    {
+                        userList.Add(member);
+                    }
+                }
+                foundUserList = userList;
+            }
+            if (button.Equals("Add Account"))
+            {
+                return RedirectToAction(nameof(MemberController.AddAccount));
+            }
             //If the search text bar passes a value, then a list is created and passed into the view containing
             //users whose names contain the given search input
             if (String.IsNullOrEmpty(name) == false)
             {
-                foreach (User member in userList)
+                foreach (User member in foundUserList)
                 {
                     String username = member.FirstName + " " + member.LastName;
                     if (username.Contains(name))
@@ -53,17 +109,17 @@ namespace MESACCA.Controllers
                         searchList.Add(member);
                     }
                 }
-                userList = searchList;
+                foundUserList = searchList;
             }
             //If there is no value passed in the search text bar, sorting the list of Users is based on given sort 
             //button clicks with the list being ordered by account type by default 
             if (String.IsNullOrEmpty(name) == true)
             {
-                switch (sortOrder)
+                switch (button)
                 {
                     case "First Name":
                         {
-                            userList.Sort(delegate (User x, User y)
+                            foundUserList.Sort(delegate (User x, User y)
                             {
                                 return x.FirstName.CompareTo(y.FirstName);
                             });
@@ -71,7 +127,7 @@ namespace MESACCA.Controllers
                         }
                     case "Last Name":
                         {
-                            userList.Sort(delegate (User x, User y)
+                            foundUserList.Sort(delegate (User x, User y)
                             {
                                 return x.LastName.CompareTo(y.LastName);
                             });
@@ -79,7 +135,7 @@ namespace MESACCA.Controllers
                         }
                     default:
                         {
-                            userList.Sort(delegate (User x, User y)
+                            foundUserList.Sort(delegate (User x, User y)
                             {
                                 return x.AccountType.CompareTo(y.AccountType);
                             });
@@ -87,8 +143,10 @@ namespace MESACCA.Controllers
                         }
                 }
             }
-            return View(userList);
+            return View(foundUserList);
         }
+
+        #endregion
 
         #region Add Accounts
 
@@ -97,9 +155,13 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult AddAccount()
         {
+            if (userAccountType.Equals("Director"))
+            {
+                return RedirectToAction("AddStaffAccount", new { firstName = "", lastName = "", accountType = "Staff" });
+            }
             return View();
         }
-        
+
         //This method sends the Admin to the AddDirectorAccount or AddStaffAccount View based on the account type selected
         //in the provided dropbox along with the information in the First Name and Last Name fields.
         [HttpPost]
@@ -116,17 +178,30 @@ namespace MESACCA.Controllers
             }
             return View();
         }
-       
+
         //This method returns the AddDirectorAccount View with the first name, last name and account type filled in using
         //passed in information, but the account type textfield is readonly.
         [HttpGet]
         [ValidateUser]
-        public ActionResult AddDirectorAccount(string firstName, string lastName, string accountType)
+        public ActionResult AddDirectorAccount(string firstName, string lastName, string accountType, string message)
         {
-            ViewData["FirstName"] = firstName;
-            ViewData["LastName"] = lastName;
-            ViewData["AccountType"] = accountType;
-            return View();
+            if (message != null)
+            {
+                ViewBag.Message = message;
+            }
+            AddAccountViewModel model = new AddAccountViewModel();
+            model.FirstName = firstName;
+            model.LastName = lastName;
+            model.AccountType = accountType;
+            model.Home = true;
+            model.About_Us = true;
+            model.Vision_Mission_Values = true;
+            model.MESA_Schools_Program = true;
+            model.MESA_Community_College_Program = true;
+            model.MESA_Engineering_Program = true;
+            model.News = true;
+            model.Donate = true;
+            return View(model);
         }
 
         [HttpPost]
@@ -137,8 +212,10 @@ namespace MESACCA.Controllers
             User newUser = new User();
             //ID initialized for comparison
             int ID = 1;
+            //userNameNoFound initialized for comparison
+            Boolean userNameFound = false;
             List<User> userList = new List<User>();
-            //Storing the SortedList object returned which contains all Users
+            //Storing the List object returned which contains all Users
             userList = SQLManager.sqlConnectionForUsersList();
             //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
             //a User ID then break the loop and use the new ID value for the new User account ID.
@@ -167,23 +244,57 @@ namespace MESACCA.Controllers
             newUser.MESA_Engineering_Program = "True";
             newUser.News = "True";
             newUser.Donate = "True";
-            success = SQLManager.sqlConnectionAddUser(ID, newUser);
-            if (success == true)
+            ViewData["CreatorAccountType"] = userAccountType;
+            //Before creating an account all usernames are compared to the provided username. If there is a match,
+            //then userNameNotFound becomes true.
+            userNameFound = UserNameCheck(userList, newUser);
+            //If a username in the database matches the provided username, then provide an error message.
+            //If a username in the database does not match the provided username, then create an account.
+            if (userNameFound == false)
             {
-                return RedirectToAction("ManageAccounts");
+                success = SQLManager.sqlConnectionAddUser(ID, newUser);
+                if (success == true)
+                {
+                    return RedirectToAction("ManageAccounts");
+                }
+                else
+                {
+                    ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                }
             }
-            return View();
+            else
+            {
+                ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+            }
+            return View(model);
         }
-       
+
         //This method returns the AddStaffAccount View with the first name, last name and account type filled in using
         //passed in information, but the account type textfield is readonly.
         [HttpGet]
         [ValidateUser]
         public ActionResult AddStaffAccount(string firstName, string lastName, string accountType)
         {
-            return View();
+            AddAccountViewModel model = new AddAccountViewModel();
+            model.FirstName = firstName;
+            model.LastName = lastName;
+            model.AccountType = accountType;
+            model.Home = true;
+            model.About_Us = true;
+            model.Vision_Mission_Values = true;
+            model.MESA_Schools_Program = true;
+            model.MESA_Community_College_Program = true;
+            model.MESA_Engineering_Program = true;
+            model.News = true;
+            model.Donate = true;
+            ViewData["CreatorAccountType"] = userAccountType;
+            if (userAccountType.Equals("Director"))
+            {
+                model.Center = center;
+            }
+            return View(model);
         }
-        
+
         //This method adds a Staff account with provided information to the SQL database and redirects user to ManageAccounts
         //if successful.
         [HttpPost]
@@ -194,8 +305,10 @@ namespace MESACCA.Controllers
             User newUser = new User();
             //ID initialized for comparison
             int ID = 1;
+            //userNameNoFound initialized for comparison
+            Boolean userNameFound = false;
             List<User> userList = new List<User>();
-            //Storing the SortedList object returned which contains all Users
+            //Storing the List object returned which contains all Users
             userList = SQLManager.sqlConnectionForUsersList();
             //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
             //a User ID then break the loop and use the new ID value for the new User account ID.
@@ -224,17 +337,34 @@ namespace MESACCA.Controllers
             newUser.MESA_Engineering_Program = model.MESA_Engineering_Program.ToString();
             newUser.News = model.News.ToString();
             newUser.Donate = model.Donate.ToString();
-            success = SQLManager.sqlConnectionAddUser(ID, newUser);
-            if (success == true)
+            ViewData["CreatorAccountType"] = userAccountType;
+            //Before creating an account all usernames are compared to the provided username. If there is a match,
+            //then userNameNotFound becomes true.
+            userNameFound = UserNameCheck(userList, newUser);
+            //If a username in the database matches the provided username, then provide an error message.
+            //If a username in the database does not match the provided username, then create an account.
+            if (userNameFound == false)
             {
-                return RedirectToAction("ManageAccounts");
+                success = SQLManager.sqlConnectionAddUser(ID, newUser);
+                if (success == true)
+                {
+                    return RedirectToAction("ManageAccounts");
+                }
+                else
+                {
+                    ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                }
             }
-            return View();
+            else
+            {
+                ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+            }
+            return View(model);
         }
 
         #endregion
 
-        #region Edit
+        #region EditAccounts
 
         //This method returns the Edit View with the EditViewModel passed in to display account information
         [HttpGet]
@@ -264,15 +394,18 @@ namespace MESACCA.Controllers
             model.Donate = Convert.ToBoolean(foundUser.Donate);
             return View(model);
         }
-        
+
         //This method allows the Admin to edit accounts displayed in Manage Accounts and saves changes in the SQL database
         [HttpPost]
         [ValidateUser]
         public ActionResult EditAccount(EditViewModel model)
         {
             Boolean success = false;
+            //userNameFound and userList is for username comparison
+            Boolean userNameFound = false;
+            List<User> userList = new List<User>();
             User foundUser = new User();
-            //Getting SQL table entry based on User ID to obtain the user's password.
+            //Getting SQL table entry based on User ID to obtain the user's password and for username comparison.
             foundUser = SQLManager.sqlConnectionForUser(model.ID);
             User updatedUser = new User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page
@@ -320,19 +453,38 @@ namespace MESACCA.Controllers
                 updatedUser.News = model.News.ToString();
                 updatedUser.Donate = model.Donate.ToString();
             }
-            //Getting Boolean result of SQL entry information update
-            success = SQLManager.sqlConnectionUpdateUser(model.ID, updatedUser);
-            //If the update was successful, redirect the User to the Manage Accounts page
-            if (success == true)
+            //Storing the List object returned which contains all Users for username comparison.
+            userList = SQLManager.sqlConnectionForUsersList();
+            //Before creating an account all usernames are compared to the provided username. If there is a match,
+            //then userNameNotFound becomes true.
+            userNameFound = UserNameCheck(userList, updatedUser);
+            //If a username in the database matches the provided username, then provide an error message.
+            //If a username in the database does not match the provided username, then push new account changes to the database.
+            //In the event the username is not changed, allow push of new account changes to the database.
+            if (userNameFound == false || (updatedUser.Username.Equals(foundUser.Username) == true))
             {
-                return RedirectToAction("ManageAccounts");
+                //Getting Boolean result of SQL entry information update
+                success = SQLManager.sqlConnectionUpdateUser(model.ID, updatedUser);
+                //If the update was successful, redirect the User to the Manage Accounts page
+                if (success == true)
+                {
+                    return RedirectToAction("ManageAccounts");
+                }
+                else
+                {
+                    ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                }
+            }
+            else
+            {
+                ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
             }
             return View(model);
         }
 
         #endregion
 
-        #region Delete
+        #region DeleteAccounts
 
         //This method sends an entry's information from Manage Accounts into the View when the Delete link is clicked on
         [HttpGet]
@@ -363,7 +515,11 @@ namespace MESACCA.Controllers
             {
                 return RedirectToAction("ManageAccounts");
             }
-            return RedirectToAction("Edit", new { ID = model.ID });
+            else
+            {
+                ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+            }
+            return View(model);
         }
 
         #endregion
@@ -469,57 +625,113 @@ namespace MESACCA.Controllers
             model.Username = foundUser.Username;
             return View(model);
         }
-        
+
         //This method allows the User to edit personal account information, save the changes to the SQL database and
-        //refreshes the page for the User showing the update informatin if successful
+        //refreshes the page for the User showing the update information if successful
         [HttpPost]
         [ValidateUser]
-        public ActionResult ManagePersonalAccount(ManagePersonalAccountViewModel model)
+        public ActionResult ManagePersonalAccount(ManagePersonalAccountViewModel model, String button)
         {
             Boolean success = false;
+            //userNameFound and userList is for username comparison
+            Boolean userNameFound = false;
+            List<User> userList = new List<User>();
             User foundUser = new User();
-            //Getting SQL table entry based on User ID to obtain the user's rights since the user can't manage own rights
-            //to update.
-            foundUser = SQLManager.sqlConnectionForUser(adminID);
-            User updatedUser = new User();
-            //Getting ViewModel model information given in the textfields of the Manage Personal Account page that
-            //an Admin is allowed to change
-            updatedUser.FirstName = model.FirstName;
-            updatedUser.LastName = model.LastName;
-            updatedUser.AccountType = model.AccountType;
-            updatedUser.Center = model.Center;
-            updatedUser.Email = model.Email;
-            updatedUser.PhoneNumber = model.PhoneNumber;
-            updatedUser.Username = model.Username;
-            //If the user decides not to update their password, then the current stored password is stored in 
-            //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
-            //into the database.
-            if (String.IsNullOrEmpty(model.Password) == true)
+            //Send the User to the deletion confirmation verification page.
+            if (button.Contains("delete"))
             {
-                updatedUser.Password = foundUser.Password;
+                return RedirectToAction("DeletePersonalAccount");
             }
-            else
+            else if (button.Contains("submit"))
             {
-                updatedUser.Password = model.Password;
+                //Getting SQL table entry based on User ID to obtain the user's rights since the user can't manage own rights
+                //to update and for the username comparison.
+                foundUser = SQLManager.sqlConnectionForUser(adminID);
+                User updatedUser = new User();
+                //Getting ViewModel model information given in the textfields of the Manage Personal Account page that
+                //an Admin is allowed to change
+                updatedUser.FirstName = model.FirstName;
+                updatedUser.LastName = model.LastName;
+                updatedUser.AccountType = model.AccountType;
+                updatedUser.Center = model.Center;
+                updatedUser.Email = model.Email;
+                updatedUser.PhoneNumber = model.PhoneNumber;
+                updatedUser.Username = model.Username;
+                //If the user decides not to update their password, then the current stored password is stored in 
+                //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
+                //into the database.
+                if (String.IsNullOrEmpty(model.Password) == true)
+                {
+                    updatedUser.Password = foundUser.Password;
+                }
+                else
+                {
+                    updatedUser.Password = model.Password;
+                }
+                //Using the foundUser object to pass the user's current rights to the database.
+                updatedUser.Home = foundUser.Home;
+                updatedUser.About_Us = foundUser.About_Us;
+                updatedUser.Vision_Mission_Values = foundUser.Vision_Mission_Values;
+                updatedUser.MESA_Schools_Program = foundUser.MESA_Schools_Program;
+                updatedUser.MESA_Community_College_Program = foundUser.MESA_Community_College_Program;
+                updatedUser.MESA_Engineering_Program = foundUser.MESA_Engineering_Program;
+                updatedUser.News = foundUser.News;
+                updatedUser.Donate = foundUser.Donate;
+                //Storing the List object returned which contains all Users for username comparison.
+                userList = SQLManager.sqlConnectionForUsersList();
+                //Before creating an account all usernames are compared to the provided username. If there is a match,
+                //then userNameNotFound becomes true.
+                userNameFound = UserNameCheck(userList, updatedUser);
+                //If a username in the database matches the provided username, then provide an error message.
+                //If a username in the database does not match the provided username, then push new account changes to the database.
+                //In the event the username is not changed, allow push of new account changes to the database.
+                if (userNameFound == false || (updatedUser.Username.Equals(foundUser.Username) == true))
+                {
+                    //Getting Boolean result of SQL entry information update
+                    success = SQLManager.sqlConnectionUpdateUser(adminID, updatedUser);
+                    //If the update was successful, create a confirmation message for the User.
+                    if (success == true)
+                    {
+                        ViewBag.Message = "Account was successfully updated";
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                    }
+                }
+                else
+                {
+                    ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+                }
             }
-            //Using the foundUser object to pass the user's current rights to the database.
-            updatedUser.Home = foundUser.Home;
-            updatedUser.About_Us = foundUser.About_Us;
-            updatedUser.Vision_Mission_Values = foundUser.Vision_Mission_Values;
-            updatedUser.MESA_Schools_Program = foundUser.MESA_Schools_Program;
-            updatedUser.MESA_Community_College_Program = foundUser.MESA_Community_College_Program;
-            updatedUser.MESA_Engineering_Program = foundUser.MESA_Engineering_Program;
-            updatedUser.News = foundUser.News;
-            updatedUser.Donate = foundUser.Donate;
-            //Getting Boolean result of SQL entry information update
-            success = SQLManager.sqlConnectionUpdateUser(adminID, updatedUser);
-            //If the update was successful, redirect the User to the Manage Personal Account View to refresh the page
-            //with the updated information.
+            return View(model);
+        }
+
+        #endregion
+
+        #region Delete Personal Account
+
+        //This method simply provides the confirmation verification page for the deletion of one's account from the database
+        [HttpGet]
+        [ValidateUser]
+        public ActionResult DeletePersonalAccount()
+        {
+            return View();
+        }
+        //This method is called when the delete confirmation button is clicked on when deleting own account.
+        //It deletes the User from the database and sends the User to the Home Page if successful.
+        [HttpPost, ActionName("DeletePersonalAccount")]
+        [ValidateUser]
+        public ActionResult DeletePersonalAccountConfirmed()
+        {
+            Boolean success = false;
+            success = SQLManager.sqlConnectionDeleteUser(adminID);
             if (success == true)
             {
-                return RedirectToAction("ManagePersonalAccount");
+                SecurityUtility.baseLogOut();
+                return RedirectToAction(nameof(HomeController.Index),"Home");
             }
-            return RedirectToAction("ManageAccounts");
+            return RedirectToAction("DeletePersonalAccount");
         }
 
         #endregion
@@ -540,6 +752,20 @@ namespace MESACCA.Controllers
                 return RedirectToAction("ManageAccounts");
             }
             return View();
+        }
+        //This method does a username comparison between a User object and all Users in a List.
+        //Returns a Boolean value based on comparisons.
+        private Boolean UserNameCheck(List<User> userList, User newUser)
+        {
+            Boolean userNameFound = false;
+            foreach (var item in userList)
+            {
+                if (item.Username.Equals(newUser.Username))
+                {
+                    userNameFound = true;
+                }
+            }
+            return userNameFound;
         }
     }
 }

@@ -3,12 +3,16 @@
 @{
     ViewData["Title"] = "Add Staff Account";
 }
+@if (ViewBag.Message != null)
+{
+    <span>@ViewBag.Message</span>
+}
 @using (Html.BeginForm("AddStaffAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @*Adding First Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", value = @ViewData["FirstName"] })
+        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
         <font color="red">
             @Html.ValidationMessageFor(model => model.FirstName)
         </font>
@@ -16,7 +20,7 @@
     @*Adding Last Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", value = @ViewData["LastName"] })
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
         <font color="red">
             @Html.ValidationMessageFor(model => model.LastName)
         </font>
@@ -24,28 +28,39 @@
     @*@Adding readonly Account Type textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC", value = @ViewData["AccountType"] })
+        @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
-    @*Adding a inline Center dropbox*@
-    <div class="form-group">
-        <div class="form-inline">
-            @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
-            <div class="form-control">
-                @Html.DropDownList("Center", new List<SelectListItem>
-                {
-                    new SelectListItem {Text ="Center 1", Value="Center 1" },
-                    new SelectListItem {Text ="Center 2", Value="Center 2" }
-                },
-                "Select Center")
+    if (ViewData["CreatorAccountType"].Equals("Admin"))
+    {
+        @*Adding a inline Center dropbox*@
+        <div class="form-group">
+            <div class="form-inline">
+                @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
+                <div class="form-control">
+                    @Html.DropDownList("Center", new List<SelectListItem>
+                    {
+                        new SelectListItem {Text ="Center 1", Value="Center 1" },
+                        new SelectListItem {Text ="Center 2", Value="Center 2" }
+                    },
+                    "Select Center")
+                </div>
             </div>
+            <div class="col-md-offset-2">
+                <small class="text-muted">Current centers in the database</small>
+            </div>
+            <font color="red">
+                @Html.ValidationMessageFor(model => model.Center)
+            </font>
         </div>
-        <div class="col-md-offset-2">
-            <small class="text-muted">Current centers in the database</small>
+    }
+    else if(ViewData["CreatorAccountType"].Equals("Director"))
+    { 
+        @*@Adding readonly Center textfield*@
+        <div class="form-group">
+            @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
+            @Html.TextBoxFor(model => model.Center, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
         </div>
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.Center)
-        </font>
-    </div>
+    }
     @*Adding Email textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
@@ -105,28 +120,28 @@
                 <tbody>
                     <tr>
                         <td>
-                            @Html.CheckBoxFor(model => model.Home, new { @checked = "checked" })
+                            @Html.CheckBoxFor(model => model.Home)
                         </td>
                         <td>
-                            @Html.CheckBoxFor(model => model.About_Us, new { @checked = "checked" })
+                            @Html.CheckBoxFor(model => model.About_Us)
                         </td>
                         <td>
-                            @Html.CheckBoxFor(model => model.Vision_Mission_Values, new { @checked = "checked" })
+                            @Html.CheckBoxFor(model => model.Vision_Mission_Values)
                         </td>
                         <td>
-                            @Html.CheckBoxFor(model => model.MESA_Schools_Program, new { @checked = "checked" })
+                            @Html.CheckBoxFor(model => model.MESA_Schools_Program)
                         </td>
                         <td>
-                            @Html.CheckBoxFor(model => model.MESA_Community_College_Program, new { @checked = "checked" })
+                            @Html.CheckBoxFor(model => model.MESA_Community_College_Program)
                         </td>
                         <td>
-                            @Html.CheckBoxFor(model => model.MESA_Engineering_Program, new { @checked = "checked" })
+                            @Html.CheckBoxFor(model => model.MESA_Engineering_Program)
                         </td>
                         <td>
-                            @Html.CheckBoxFor(model => model.News, new { @checked = "checked" })
+                            @Html.CheckBoxFor(model => model.News)
                         </td>
                         <td>
-                            @Html.CheckBoxFor(model => model.Donate, new { @checked = "checked" })
+                            @Html.CheckBoxFor(model => model.Donate)
                         </td>
                     </tr>
                 </tbody>
