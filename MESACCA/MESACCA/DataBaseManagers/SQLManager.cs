@@ -6,6 +6,7 @@ using MESACCA.Utilities;
 using MESACCA.Models;
 using S = System.Data.SqlClient;
 using T = System.Threading;
+using System.Text.RegularExpressions;
 
 namespace MESACCA.DataBaseManagers
 {
@@ -109,13 +110,58 @@ namespace MESACCA.DataBaseManagers
                         var iterator = dataReader.GetEnumerator();
                         while (iterator.MoveNext())
                         {
-                            NewsArticleExtention article = new NewsArticleExtention();
+                            NewsArticleExtension article = new NewsArticleExtension();
                             //Getting the SQL entry information 
                             //I trim all of the found User data because the SQL server seems to add spaces.
                             article.ArticleTitle = dataReader.GetString(0).TrimEnd(' ');
                             article.ArticleBody = dataReader.GetString(1).TrimEnd(' ');
                             article.DateOfArticle = dataReader.GetDateTime(2);
                             article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
+                            returnValue.Add(article);
+                        }
+                        //Closing SQL connection
+                        sqlConnection.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return returnValue;
+
+        }
+
+        public static List<NewsArticleExtension> getNewsPostsForAdmin()
+        {
+            List<NewsArticleExtension> returnValue = new List<NewsArticleExtension>();
+            try
+            {
+                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
+                {
+                    using (var dbCommand = sqlConnection.CreateCommand())
+                    {
+
+                        //Opening SQL connection
+                        sqlConnection.Open();
+                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
+                        dbCommand.CommandText = @"SELECT n.ArticleID, n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName FROM NewsArticles as n INNER JOIN Users as u on u.ID = n.CreatedByUser order by DateOfArticle desc";
+                        var dataReader = dbCommand.ExecuteReader();
+                        var iterator = dataReader.GetEnumerator();
+                        while (iterator.MoveNext())
+                        {
+                            NewsArticleExtension article = new NewsArticleExtension();
+                            //Getting the SQL entry information 
+                            //I trim all of the found User data because the SQL server seems to add spaces.
+                            article.ArticleID = dataReader.GetInt32(0);
+                            article.ArticleTitle = dataReader.GetString(1);
+                            //if article body text is less than 50 chars long return that, else return the first 50
+                            string articleBodyFormatted = dataReader.GetString(2);
+                            articleBodyFormatted = Regex.Replace(articleBodyFormatted, "<.*?>", string.Empty);
+                            article.ArticleBody = articleBodyFormatted.Length < 50 ? articleBodyFormatted : articleBodyFormatted.Substring(0, 50) + "...";
+                            article.DateOfArticle = dataReader.GetDateTime(3);
+                            article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
                             returnValue.Add(article);
                         }
                         //Closing SQL connection
@@ -568,6 +614,121 @@ namespace MESACCA.DataBaseManagers
                 return success;
             }
         }
-        
+        public static Boolean sqlConnectionDeleteNews(int ID)
+        {
+            Boolean success = false;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    success = accessDatabaseToDeleteNews(ID);
+                    //Break if new post from the SQL database was found to be gone
+                    if (success == true)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return success;
+        }
+        public static Boolean accessDatabaseToDeleteNews(int ID)
+        {
+            Boolean success = false;
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @" DELETE FROM NewsArticles WHERE ArticleID = @ID
+                                               SELECT * FROM NewsArticles WHERE ArticleID = @ID";
+                    dbCommand.Parameters.AddWithValue("@ID", ID);
+                    //Building data reader
+                    var dataReader = dbCommand.ExecuteReader();
+                    dataReader.Read();
+                    //If the User can't be found, then the User was successfully deleted 
+                    if (dataReader.HasRows == false)
+                    {
+                        success = true;
+                    }
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return success;
+            }
+        }
+        public static Boolean sqlConnectionAddNews(NewsArticle na)
+        {
+            Boolean success = false;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    success = accessDatabaseToAddNews(na);
+                    //Break if new post from the SQL database was found to be gone
+                    if (success == true)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return success;
+        }
+        public static Boolean accessDatabaseToAddNews(NewsArticle na)
+        {
+            Boolean success = false;
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"INSERT INTO NewsArticles (ArticleTitle, ArticleBody, CreatedByUser, DateofArticle)
+                                              Values (@ArticleTitle, @ArticleBody, @CreatedByUser, @DateofArticle)";
+
+                    dbCommand.Parameters.AddWithValue("@ArticleTitle", na.ArticleTitle);
+                    dbCommand.Parameters.AddWithValue("@ArticleBody", na.ArticleBody);
+                    dbCommand.Parameters.AddWithValue("@CreatedByUser", na.CreatedByUser);
+                    dbCommand.Parameters.AddWithValue("@DateofArticle", na.DateOfArticle);
+                    //Building data reader
+                    int dataReader = dbCommand.ExecuteNonQuery();
+
+                    if (dataReader == 1)
+                        success = true;
+                }
+                //Closing SQL connection
+                sqlConnection.Close();
+            }
+            return success;
+        }
+
     }
 }

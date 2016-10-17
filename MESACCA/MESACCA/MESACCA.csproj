@@ -195,7 +195,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MCCA.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\NewsArticleExtention.cs" />
+    <Compile Include="Models\NewsArticleExtension.cs" />
     <Compile Include="Users.cs">
       <DependentUpon>MCCA.tt</DependentUpon>
     </Compile>
@@ -247,6 +247,7 @@
     <Compile Include="ViewModels\Member\AddCenterViewModel.cs" />
     <Compile Include="ViewModels\Member\EditViewModel.cs" />
     <Compile Include="ViewModels\Member\ManagePersonalAccountViewModel.cs" />
+    <Compile Include="ViewModels\News\SelectNewsViewModel.cs" />
     <Compile Include="ViewModels\News\AddNewsViewModel.cs" />
     <Compile Include="ViewModels\Staff\ManagePersonalAccountViewModel.cs" />
   </ItemGroup>
@@ -600,6 +601,7 @@
     <Content Include="Views\Member\AddDirectorAccount.cshtml" />
     <Content Include="Views\Member\AddStaffAccount.cshtml" />
     <Content Include="Views\Member\DeletePersonalAccount.cshtml" />
+    <Content Include="Views\News\SelectNews.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

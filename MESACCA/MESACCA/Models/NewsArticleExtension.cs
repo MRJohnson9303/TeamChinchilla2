@@ -6,7 +6,7 @@ using MESACCA;
 
 namespace MESACCA.Models
 {
-    public class NewsArticleExtention : NewsArticle
+    public class NewsArticleExtension : NewsArticle
     {
         public string AuthorName { get; set; }
     }

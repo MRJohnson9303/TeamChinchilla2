@@ -593,7 +593,7 @@ namespace MESACCA.Controllers
                 case "MESA Engineering Program":
                     return RedirectToAction("ManagePersonalAccount");
                 case "News":
-                    return RedirectToAction("AddNews", "News", new { referrer = "Admin" });
+                    return RedirectToAction("SelectNews", "News", new { referrer = "Admin" });
                 case "Donate":
                     return RedirectToAction("ManagePersonalAccount");
                 default:
