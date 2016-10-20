@@ -614,6 +614,298 @@ namespace MESACCA.DataBaseManagers
                 return success;
             }
         }
+        //This method invokes "accessDatabaseForCenter" to attempt to connect to the SQL database and returns a Center object
+        public static Models.Center sqlConnectionForCenter(int ID)
+        {
+            Models.Center foundCenter = new Models.Center();
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 5;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    foundCenter = accessDatabaseForCenter(ID);
+                    //Break if a center from the SQL database was found 
+                    if (foundCenter.CenterType != null)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return foundCenter;
+        }
+
+        //This method connects to the database, reads the database and finding an entry with the same information
+        //as the provided ID and returns a Center object with all information of the Center
+        public static Models.Center accessDatabaseForCenter(int ID)
+        {
+            Models.Center foundCenter = new Models.Center();
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"SELECT * FROM Centers WHERE ID = @ID";
+                    dbCommand.Parameters.AddWithValue("@ID", ID);
+                    //Building data reader
+                    var dataReader = dbCommand.ExecuteReader();
+                    //Advancing to the next record which is the first and only record in this case
+                    dataReader.Read();
+                    //Getting the SQL entry information 
+                    //I trim all of the found Center data because the SQL server seems to add spaces.
+                    foundCenter.ID = dataReader.GetInt32(0);
+                    foundCenter.Name = dataReader.GetString(1).TrimEnd(' ');
+                    foundCenter.Address = dataReader.GetString(2).TrimEnd(' ');
+                    foundCenter.Location = dataReader.GetString(3).TrimEnd(' ');
+                    foundCenter.CenterType = dataReader.GetString(4).TrimEnd(' ');
+                    foundCenter.DirectorName = dataReader.GetString(5).TrimEnd(' ');
+                    foundCenter.OfficeNumber = dataReader.GetString(6).TrimEnd(' ');
+                    foundCenter.URL = dataReader.GetString(7).TrimEnd(' ');
+                    foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return foundCenter;
+            }
+        }
+        //This method invokes "accessDatabaseForCenters" to attempt to connect to the SQL database and returns a List object containing all Centers
+        public static List<Models.Center> sqlConnectionForCentersList()
+        {
+            List<Models.Center> centerList = new List<Models.Center>();
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    centerList = accessDatabaseForCenters();
+                    //Break if the List object is not empty
+                    if (centerList.Count > 0)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return centerList;
+        }
+
+        //This method connects to the database, collects all the entries in the Centers table into a list
+        //and returns a List object.
+        public static List<Models.Center> accessDatabaseForCenters()
+        {
+            List<Models.Center> centerList = new List<Models.Center>();
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"SELECT * FROM Centers";
+                    var dataReader = dbCommand.ExecuteReader();
+                    var iterator = dataReader.GetEnumerator();
+                    while (iterator.MoveNext())
+                    {
+                        Models.Center foundCenter = new Models.Center();
+                        //Getting the SQL entry information 
+                        //I trim all of the found User data because the SQL server seems to add spaces.
+                        foundCenter.ID = dataReader.GetInt32(0);
+                        foundCenter.Name = dataReader.GetString(1).TrimEnd(' ');
+                        foundCenter.Address = dataReader.GetString(2).TrimEnd(' ');
+                        foundCenter.Location = dataReader.GetString(3).TrimEnd(' ');
+                        foundCenter.CenterType = dataReader.GetString(4).TrimEnd(' ');
+                        foundCenter.DirectorName = dataReader.GetString(5).TrimEnd(' ');
+                        foundCenter.OfficeNumber = dataReader.GetString(6).TrimEnd(' ');
+                        foundCenter.URL = dataReader.GetString(7).TrimEnd(' ');
+                        foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
+                        centerList.Add(foundCenter);
+                    }
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return centerList;
+            }
+        }
+        //This method invokes "updateCenterDatabase" to attempt to connect to the SQL database and returns a Boolean value regarding update confirmation
+        public static Boolean sqlConnectionUpdateCenter(int ID, Models.Center updatedCenter)
+        {
+            Boolean success = false;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    success = updateCenterDatabase(ID, updatedCenter);
+                    //Break if an account from the SQL database was found 
+                    if (success == true)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return success;
+        }
+
+        //This method connects to the database, updates the specified SQL entry by the Center's ID, collects the 
+        //SQL entry for comparison and return a Boolean value based on the comparisons performed.
+        public static Boolean updateCenterDatabase(int ID, Models.Center updatedCenter)
+        {
+            Boolean success = false;
+            Models.Center foundCenter = new Models.Center();
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query that updates the SQL table entry and returns the updated table entry
+                    dbCommand.CommandText = @"UPDATE Centers 
+									  SET Name = @Name, Address = @Address, Location = @Location, CenterType = @CenterType, DirectorName = @DirectorName,
+										  OfficeNumber = @OfficeNumber, URL = @URL, Description = @Description
+									  WHERE ID = @ID
+									  SELECT * FROM Centers WHERE ID = @ID";
+                    //Updating User information based on comparison with current and new User information
+                    //I trim the end of all fields to remove empty spaces
+                    dbCommand.Parameters.AddWithValue("@Name", updatedCenter.Name.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@Address", updatedCenter.Address.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@Location", updatedCenter.Location.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@CenterType", updatedCenter.CenterType.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@DirectorName", updatedCenter.DirectorName.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@OfficeNumber", updatedCenter.OfficeNumber.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@URL", updatedCenter.URL.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@Description", updatedCenter.Description.TrimEnd(' '));
+                    //Specifing update by ID number to ensure correct User's information is updated
+                    dbCommand.Parameters.AddWithValue("@ID", ID);
+                    //Building data reader
+                    var dataReader = dbCommand.ExecuteReader();
+                    dataReader.Read();
+                    //Getting the updated SQL entry information for comparison testing to verify the update was successful
+                    //I trim all of the found User data because the SQL server seems to add spaces.
+                    foundCenter.ID = dataReader.GetInt32(0);
+                    foundCenter.Name = dataReader.GetString(1).TrimEnd(' ');
+                    foundCenter.Address = dataReader.GetString(2).TrimEnd(' ');
+                    foundCenter.Location = dataReader.GetString(3).TrimEnd(' ');
+                    foundCenter.CenterType = dataReader.GetString(4).TrimEnd(' ');
+                    foundCenter.DirectorName = dataReader.GetString(5).TrimEnd(' ');
+                    foundCenter.OfficeNumber = dataReader.GetString(6).TrimEnd(' ');
+                    foundCenter.URL = dataReader.GetString(7).TrimEnd(' ');
+                    foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
+                    //Determining if the update was successfully executed by checking if an entry is returned and comparing
+                    //all of the returned entry's information with the updated information provided by the user.
+                    if (dataReader.HasRows == true && updatedCenter.Name.Equals(foundCenter.Name) &&
+                        updatedCenter.Address.Equals(foundCenter.Address) &&
+                        updatedCenter.Location.Equals(foundCenter.Location) &&
+                        updatedCenter.CenterType.Equals(foundCenter.CenterType) &&
+                        updatedCenter.DirectorName.Equals(foundCenter.DirectorName) &&
+                        updatedCenter.OfficeNumber.Equals(foundCenter.OfficeNumber) &&
+                        updatedCenter.URL.Equals(foundCenter.URL) &&
+                        updatedCenter.Description.Equals(foundCenter.Description))
+                    {
+                        success = true;
+                    }
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return success;
+            }
+        }
+        //This method invokes "accessDatabaseToDeleteCenter" to attempt to connect to the SQL database and returns a Boolean value regarding deletion confirmation
+        public static Boolean sqlConnectionDeleteCenter(int ID)
+        {
+            Boolean success = false;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    success = accessDatabaseToDeleteCenter(ID);
+                    //Break if an account from the SQL database was found to be gone
+                    if (success == true)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return success;
+        }
+
+        //This method connects to the database, delete the entry with the given ID, connects with the database again
+        //to check if the entry is gone and returns the Boolean result of the check.
+        public static Boolean accessDatabaseToDeleteCenter(int ID)
+        {
+            Boolean success = false;
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"DELETE FROM Centers WHERE ID = @ID
+									  SELECT * FROM Centers WHERE ID = @ID";
+                    dbCommand.Parameters.AddWithValue("@ID", ID);
+                    //Building data reader
+                    var dataReader = dbCommand.ExecuteReader();
+                    dataReader.Read();
+                    //If the Center can't be found, then the Center was successfully deleted 
+                    if (dataReader.HasRows == false)
+                    {
+                        success = true;
+                    }
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return success;
+            }
+        }
         public static Boolean sqlConnectionDeleteNews(int ID)
         {
             Boolean success = false;

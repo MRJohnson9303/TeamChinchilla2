@@ -1,0 +1,68 @@
+﻿@model MESACCA.ViewModels.Member.DeleteCenterViewModel
+@{
+    ViewData["Title"] = "Delete Center";
+}
+<h2>Delete Center</h2>
+@if (ViewBag.Message != null)
+{
+    <span>@ViewBag.Message</span>
+}
+@using (Html.BeginForm("DeleteCenter", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @*Adding Name textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Name, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </div>
+    @*Adding Address textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Address, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Address, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </div>
+    @*Adding Location textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Location, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.Location, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </div>
+    @*Adding Center Type textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.CenterType, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.CenterType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </div>
+    @*Adding Director Name textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.DirectorName, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.DirectorName, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </div>
+    @*Adding Office Number textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.OfficeNumber, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.OfficeNumber, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </div>
+    @*Adding URL textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.URL, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.URL, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </div>
+    @*Adding URL textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.Description, new { @class = "col-md-2 control-label" })
+        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </div>
+    @*Adding save button*@
+    <div class="form-group">
+        @if (ViewData["success"].Equals(true))
+        {
+            <button style="margin-left:30px" type="submit" name="button" value="delete" class="btn btn-default">Delete</button>
+            <button type="submit" name="button" value="back" class="btn btn-default">Back to List</button>
+        }
+        else
+        {
+            <button style="margin-left:30px" type="submit" name="button" value="back" class="btn btn-default">Back to List</button>
+        }
+
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

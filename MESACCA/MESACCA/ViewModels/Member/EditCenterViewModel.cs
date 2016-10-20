@@ -7,7 +7,7 @@ using System.Web;
 
 namespace MESACCA.ViewModels.Member
 {
-    public class AddCenterViewModel
+    public class EditCenterViewModel
     {
         //ID used by database
         public int ID { get; set; }
@@ -33,10 +33,10 @@ namespace MESACCA.ViewModels.Member
         [Required]
         [StringLength(30)]
         public string URL { get; set; }
+        [Required]
         [StringLength(250)]
         public string Description { get; set; }
         [Required]
         public HttpPostedFileBase Picture { get; set; }
     }
 }
-

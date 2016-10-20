@@ -1,67 +1,64 @@
 ﻿@model IEnumerable<MESACCA.Models.Center>
-@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
 @{
     ViewData["Title"] = "Manage Centers";
 }
 <h2>Manage Centers</h2>
-<fieldset>
+@using (Html.BeginForm("ManageCenters", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
     @*Adding a create center button*@
-    <button type="submit"  onclick="location.href='@Url.Action("AddCenter", "Member")'" class="btn btn-primary">Add Center</button>
-    <button type="submit"  onclick="location.href='@Url.Action("PictureTest", "Member")'" class="btn btn-primary">Picture Test</button>
-</fieldset>
+    <button type="submit" name="button" value="Add Center" class="btn btn-primary">Add Center</button>
+    <button type="submit" name="button" value="Picture Test" class="btn btn-primary">Picture Test</button>
+}
 @*Adding a hard-coded table*@
 <table class="table" style="margin-top:20px;">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Address)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DirectorName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.OfficeNumber)
-        </th>
-        <th></th>
-    </tr>
-    <tr>
-        <td>
-            California State University, Sacramento
-        </td>
-        <td>
-            6000 J Street, Sacramento, CA 95819
-        </td>
-        <td>
-            Jaime White
-        </td>
-        <td>
-            (916) 278-5468
-        </td>
-        <td>
-            <a asp-action="Edit" asp-route-id="">Edit</a> |
-            <a asp-action="Delete" asp-route-id="">Delete</a>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            UC Davis
-        </td>
-        <td>
-            1 Shields Avenue, Davis, CA 95616
-        </td>
-        <td>
-            Rosalyn Earl-Clark
-        </td>
-        <td>
-            (530) 752-2195
-        </td>
-        <td>
-            <a asp-action="Edit" asp-route-id="">Edit</a> |
-            <a asp-action="Delete" asp-route-id="">Delete</a>
-        </td>
-    </tr>
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CenterType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DirectorName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OfficeNumber)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @*Table information provided by the SQL server from the Users table excluding the Admin with an Edit and Delete
+            link for each entry*@
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CenterType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DirectorName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OfficeNumber)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditCenter", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "DeleteCenter", new { id = item.ID })
+
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>

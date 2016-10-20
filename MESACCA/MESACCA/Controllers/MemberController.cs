@@ -530,9 +530,37 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult ManageCenters()
         {
-            return View();
+            List<Models.Center> centerList = new List<Models.Center>();
+            //Storing the List object returned which contains all Centers
+            centerList = SQLManager.sqlConnectionForCentersList();
+            centerList.Sort(delegate (Models.Center x, Models.Center y)
+            {
+                return x.Name.CompareTo(y.Name);
+            });
+            return View(centerList);
         }
-
+        [HttpPost]
+        [ValidateUser]
+        public ActionResult ManageCenters(String button)
+        {
+            List<Models.Center> centerList = new List<Models.Center>();
+            //Storing the List object returned which contains all Centers
+            centerList = SQLManager.sqlConnectionForCentersList();
+            centerList.Sort(delegate (Models.Center x, Models.Center y)
+            {
+                return x.Name.CompareTo(y.Name);
+            });
+            //Redirecting User if the Add Center button is clicked.
+            if (button.Equals("Add Center"))
+            {
+                return RedirectToAction("AddCenter");
+            }
+            else if (button.Equals("Picture Test"))
+            {
+                return RedirectToAction("PictureTest");
+            }
+            return View(centerList);
+        }
         //This method returns the AddCenter View
         [HttpGet]
         [ValidateUser]
@@ -554,6 +582,119 @@ namespace MESACCA.Controllers
                 return RedirectToAction("ManageAccounts");
             }
             return RedirectToAction("ManageCenters");
+        }
+
+        //This method returns the EditCenter View with the EditCenterViewModel passed in to display center information
+        [HttpGet]
+        [ValidateUser]
+        public ActionResult EditCenter(int ID)
+        {
+            Models.Center foundCenter = new Models.Center();
+            EditCenterViewModel model = new EditCenterViewModel();
+            //Getting User information based on User ID
+            foundCenter = SQLManager.sqlConnectionForCenter(ID);
+            //Storing the information in ViewData to be used to fill in the Edit form
+            model.ID = foundCenter.ID;
+            model.Name = foundCenter.Name;
+            model.Address = foundCenter.Address;
+            model.Location = foundCenter.Location;
+            model.CenterType = foundCenter.CenterType;
+            model.DirectorName = foundCenter.DirectorName;
+            model.OfficeNumber = foundCenter.OfficeNumber;
+            model.URL = foundCenter.URL;
+            model.Description = foundCenter.Description;
+            return View(model);
+        }
+
+        //This method allows the Admin or Director to edit centers displayed in Manage Centers and saves changes in the SQL database
+        [HttpPost]
+        [ValidateUser]
+        public ActionResult EditCenter(EditCenterViewModel model)
+        {
+            Boolean success = false;
+            Models.Center foundCenter = new Models.Center();
+            //Getting SQL table entry based on User ID to obtain the user's password.
+            foundCenter = SQLManager.sqlConnectionForCenter(model.ID);
+            Models.Center updatedCenter = new Models.Center();
+            //Getting ViewModel model information given in the textfields of the Manage Personal Account page
+            updatedCenter.Name = model.Name;
+            updatedCenter.Address = model.Address;
+            updatedCenter.Location = model.Location;
+            updatedCenter.CenterType = model.CenterType;
+            updatedCenter.DirectorName = model.DirectorName;
+            updatedCenter.OfficeNumber = model.OfficeNumber;
+            updatedCenter.URL = model.URL;
+            updatedCenter.Description = model.Description;
+            updatedCenter.Picture = model.Picture;
+            //Getting Boolean result of SQL entry information update
+            success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
+            //If the update was successful, redirect the User to the Manage Centers page
+            if (success == true)
+            {
+                return RedirectToAction("ManageCenters");
+            }
+            else
+            {
+                ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+            }
+            return View(model);
+        }
+        //This method sends an entry's information from Manage Centers into the View when the Delete link is clicked on
+        [HttpGet]
+        [ValidateUser]
+        public ActionResult DeleteCenter(int ID)
+        {
+            Boolean success = false;
+            Models.Center foundCenter = new Models.Center();
+            DeleteCenterViewModel model = new DeleteCenterViewModel();
+            foundCenter = SQLManager.sqlConnectionForCenter(ID);
+            if (foundCenter.Name != null)
+            {
+                success = true;
+                model.ID = foundCenter.ID;
+                model.Name = foundCenter.Name;
+                model.Address = foundCenter.Address;
+                model.Location = foundCenter.Location;
+                model.CenterType = foundCenter.CenterType;
+                model.DirectorName = foundCenter.DirectorName;
+                model.OfficeNumber = foundCenter.OfficeNumber;
+                model.URL = foundCenter.URL;
+                model.Description = foundCenter.Description;
+            }
+            if (success == false)
+            {
+                ViewBag.Message = "Database error. Please click on 'Back to List' and try again. If the problem persists, contact the Administrator.";
+            }
+            //Passing success value into the View. If the Center could not be found, the 'Delete' button will be hidden to prevent the Use from
+            //possibly deleting the Center anyway.
+            ViewData["success"] = success;
+            return View(model);
+        }
+
+        //This method deletes the Center from the database if the delete button in the Edit View is clicked on and sends the User
+        //to Manage Accounts and if the back button is clicked, then the Admin is sent back to ManageCenters.
+        [HttpPost]
+        [ValidateUser]
+        public ActionResult DeleteCenter(DeleteCenterViewModel model, string button)
+        {
+            Boolean success = false;
+            if (button.Contains("delete"))
+            {
+                success = SQLManager.sqlConnectionDeleteCenter(model.ID);
+            }
+            else if (button.Contains("back"))
+            {
+                return RedirectToAction("ManageCenters");
+            }
+            if (success == true)
+            {
+                return RedirectToAction("ManageCenters");
+            }
+            else
+            {
+                ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+            }
+            return View(model);
         }
 
         #endregion
