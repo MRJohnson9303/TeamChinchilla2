@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Add, Edit, or Delete a News Posting";
 }
-
+<br /><br />
 <h2>Add, Edit, or Delete a News Posting</h2>
 
 @if (ViewBag.Message != null)
@@ -57,7 +57,7 @@
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "EditNews", new { id = Article.ArticleID }) |
-                        @Html.ActionLink("Delete", "DeleteNews", new { id = Article.ArticleID })
+                        @Html.ActionLink("Delete", "ConfirmDeleteNews", new { id = Article.ArticleID, title = Article.ArticleTitle })
 
                     </td>
                 </tr>

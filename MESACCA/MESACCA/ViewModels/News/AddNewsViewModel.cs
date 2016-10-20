@@ -12,6 +12,7 @@ namespace MESACCA.ViewModels.News
     {
         public int ArticleID { get; set; }
         [Required]
+        [StringLength(100, ErrorMessage = "The title of your posting must be 100 characters or less.")]
         [DisplayName("Title of News Posting")]
         public string ArticleTitle { get; set; }
         [Required]

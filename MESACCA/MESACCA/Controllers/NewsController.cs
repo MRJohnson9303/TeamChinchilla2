@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MESACCA.ViewModels.News;
 using System.Configuration;
 using System.Data.SqlClient;
+using MESACCA.FilterAttributes;
 using MESACCA.DataBaseManagers;
 using MESACCA.Utilities;
 
@@ -16,12 +17,14 @@ namespace MESACCA.Controllers
     {
         private MCCA_DatabaseEntities mccaDB = new MCCA_DatabaseEntities();
         // GET: News
+        [ValidateUser]
         public ActionResult AddNews()
         {
             return View();
         }
 
         [HttpPost]
+        [ValidateUser]
         public ActionResult AddNews(AddNewsViewModel model)
         {
             if (ModelState.IsValid)
@@ -49,7 +52,7 @@ namespace MESACCA.Controllers
 
             return View(model);
         }
-
+        [ValidateUser]
         public ActionResult SelectNews()
         {
             try
@@ -70,7 +73,7 @@ namespace MESACCA.Controllers
             }
             return RedirectToAction("Index", "Member");
         }
-
+        [ValidateUser]
         public ActionResult DeleteNews(int id)
         {
             Boolean success = false;
@@ -84,6 +87,30 @@ namespace MESACCA.Controllers
                 {
                     TempData["Message"] = "Database error. Please try again and if the problem persists, contact the Administrator.";
                 }
+
+            return RedirectToAction("SelectNews");
+
+        }
+        [HttpGet]
+        [ValidateUser]
+        public ActionResult ConfirmDeleteNews(int id, string title)
+        {
+            ConfirmDeleteNewsViewModel cdvnm = new ConfirmDeleteNewsViewModel()
+            {
+                ArticleID = id,
+                ArticleTitle = title
+            };
+            return View(cdvnm);
+        }
+
+        [HttpPost]
+        [ValidateUser]
+        public ActionResult ConfirmDeleteNews(ConfirmDeleteNewsViewModel cdnvm, string button)
+        {
+            if (button.Contains("delete"))
+            {
+                return RedirectToAction("DeleteNews", "News", new { id = cdnvm.ArticleID });
+            }
 
             return RedirectToAction("SelectNews");
 

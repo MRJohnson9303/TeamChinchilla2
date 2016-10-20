@@ -249,6 +249,7 @@
     <Compile Include="ViewModels\Member\EditCenterViewModel.cs" />
     <Compile Include="ViewModels\Member\EditViewModel.cs" />
     <Compile Include="ViewModels\Member\ManagePersonalAccountViewModel.cs" />
+    <Compile Include="ViewModels\News\ConfirmDeleteNewsViewModel.cs" />
     <Compile Include="ViewModels\News\SelectNewsViewModel.cs" />
     <Compile Include="ViewModels\News\AddNewsViewModel.cs" />
     <Compile Include="ViewModels\Staff\ManagePersonalAccountViewModel.cs" />
@@ -606,6 +607,7 @@
     <Content Include="Views\News\SelectNews.cshtml" />
     <Content Include="Views\Member\DeleteCenter.cshtml" />
     <Content Include="Views\Member\EditCenter.cshtml" />
+    <Content Include="Views\News\ConfirmDeleteNews.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
