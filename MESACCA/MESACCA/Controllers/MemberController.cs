@@ -576,12 +576,48 @@ namespace MESACCA.Controllers
             /*if(String.IsNullOrEmpty(model.Name) == false)
             {
                 return RedirectToAction("ManageAccounts");
-            }*/
+            }
             if (model.Picture.ContentLength > 0)
             {
                 return RedirectToAction("ManageAccounts");
+            }*/
+            Boolean success = false;
+            Models.Center newCenter = new Models.Center();
+            //ID initialized for comparison
+            int ID = 1;
+            List<Models.Center> centerList = new List<Models.Center>();
+            //Storing the SortedList object returned which contains all Users
+            centerList = SQLManager.sqlConnectionForCentersList();
+            //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
+            //a User ID then break the loop and use the new ID value for the new User account ID.
+            //This means if a User is deleted, then a new User will get the old ID
+            if (centerList.Capacity > 0)
+            {
+                foreach (var item in centerList)
+                {
+                    if (ID != item.ID)
+                    {
+                        break;
+                    }
+                    ID += 1;
+                }
             }
-            return RedirectToAction("ManageCenters");
+            newCenter.Name = model.Name;
+            newCenter.Address = model.Address;
+            newCenter.Location = model.Location;
+            newCenter.CenterType = model.CenterType;
+            newCenter.DirectorName = model.DirectorName;
+            newCenter.OfficeNumber = model.OfficeNumber;
+            newCenter.URL = model.URL;
+            newCenter.Description = model.Description;
+
+            success = SQLManager.sqlConnectionAddCenter(ID, newCenter);
+            if (success == true)
+            {
+                return RedirectToAction("ManageCenters");
+            }
+
+            return View();
         }
 
         //This method returns the EditCenter View with the EditCenterViewModel passed in to display center information

@@ -750,6 +750,102 @@ namespace MESACCA.DataBaseManagers
                 return centerList;
             }
         }
+
+        public static Boolean sqlConnectionAddCenter(int newID, Models.Center newCenter)
+        {
+            Boolean success = false;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    success = accessDatabaseToAddCenter(newID, newCenter);
+                    //Break if an account added to the SQL database 
+                    if (success == true)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return success;
+        }
+        //This method connects to the database, adds to the Users table, collects Users from the table for comparison,
+        //and returns Boolean value regarding success
+        public static Boolean accessDatabaseToAddCenter(int newID, Models.Center newCenter)
+        {
+            Boolean success = false;
+            Models.Center foundCenter = new Models.Center();
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"INSERT INTO Centers (ID, Name, Address, Location, CenterType, DirectorName,
+                                                                   OfficeNumber, URL, Description)
+                                              Values (@ID, @Name, @Address, @Location, @CenterType,
+                                                      @DirectorName, @OfficeNumber, @URL, @Description)
+                                              Select * FROM Centers WHERE ID = @ID";
+                    dbCommand.Parameters.AddWithValue("@ID", newID);
+                    //I trim the ends of empty spaces
+                    dbCommand.Parameters.AddWithValue("@Name", newCenter.Name.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@Address", newCenter.Address.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@Location", newCenter.Location.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@CenterType", newCenter.CenterType.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@DirectorName", newCenter.DirectorName.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@OfficeNumber", newCenter.OfficeNumber.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@URL", newCenter.URL.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@Description", newCenter.Description.TrimEnd(' '));
+
+                    //Building data reader
+                    var dataReader = dbCommand.ExecuteReader();
+                    //Advancing to the next record which is the first and only record in this case
+                    dataReader.Read();
+                    //Storing information from found sql entry into a User object 
+                    //I trim all of the found User data because the SQL server seems to add spaces.
+                    foundCenter.ID = dataReader.GetInt32(0);
+                    foundCenter.Name = dataReader.GetString(1).TrimEnd(' ');
+                    foundCenter.Address = dataReader.GetString(2).TrimEnd(' ');
+                    foundCenter.Location = dataReader.GetString(3).TrimEnd(' ');
+                    foundCenter.CenterType = dataReader.GetString(4).TrimEnd(' ');
+                    foundCenter.DirectorName = dataReader.GetString(5).TrimEnd(' ');
+                    foundCenter.OfficeNumber = dataReader.GetString(6).TrimEnd(' ');
+                    foundCenter.URL = dataReader.GetString(7).TrimEnd(' ');
+                    foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
+                    //Determining if the table entry was successfully executed by checking if an entry is returned
+                    //and comparing all of the returned entry's information with the new User's information.
+                    if (dataReader.HasRows == true && newCenter.Name.Equals(foundCenter.Name) &&
+                        newCenter.Address.Equals(foundCenter.Address) &&
+                        newCenter.Location.Equals(foundCenter.Location) &&
+                        newCenter.CenterType.Equals(foundCenter.CenterType) &&
+                        newCenter.OfficeNumber.Equals(foundCenter.OfficeNumber) &&
+                        newCenter.OfficeNumber.Equals(foundCenter.OfficeNumber) &&
+                        newCenter.URL.Equals(foundCenter.URL) &&
+                        newCenter.Description.Equals(foundCenter.Description))
+                    {
+                        success = true;
+                    }
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return success;
+            }
+
+        }
+
         //This method invokes "updateCenterDatabase" to attempt to connect to the SQL database and returns a Boolean value regarding update confirmation
         public static Boolean sqlConnectionUpdateCenter(int ID, Models.Center updatedCenter)
         {
