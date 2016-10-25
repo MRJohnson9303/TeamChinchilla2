@@ -10,6 +10,10 @@ using System.Web.Mvc;
 using MESACCA.FilterAttributes;
 using MESACCA.DataBaseManagers;
 using MESACCA.Utilities;
+using Microsoft.Azure; // Namespace for CloudConfigurationManager
+using Microsoft.WindowsAzure.Storage; // Namespace for CloudStorageAccount
+using Microsoft.WindowsAzure.Storage.Blob; // Namespace for Blob storage types
+
 
 namespace MESACCA.Controllers
 {
@@ -21,6 +25,7 @@ namespace MESACCA.Controllers
         //Used to sort account list for directors as well as for account creation
         private static String userAccountType;
         private static String center;
+        BlobService blobService = new BlobService();
         //This method is a simple hello to the user when he or she signs in as well as saving the ID for personal account
         //management
         [ValidateUser]
@@ -495,7 +500,7 @@ namespace MESACCA.Controllers
             foundUser = SQLManager.sqlConnectionForUser(ID);
             return View(foundUser);
         }
-        
+
         //This method deletes the user from the system if the delete button in the Edit View is clicked on and sends the User
         //to Manage Accounts and if the back button is clicked, then the Admin is sent back to ManageAccounts.
         [HttpPost]
@@ -749,7 +754,7 @@ namespace MESACCA.Controllers
             foundUser = SQLManager.sqlConnectionForUser(adminID);
             return View(foundUser);
         }
-        
+
         //This methods sends the user to the appropriate View based on which button was clicked.
         [HttpPost]
         [ValidateUser]
@@ -906,7 +911,7 @@ namespace MESACCA.Controllers
             if (success == true)
             {
                 SecurityUtility.baseLogOut();
-                return RedirectToAction(nameof(HomeController.Index),"Home");
+                return RedirectToAction(nameof(HomeController.Index), "Home");
             }
             return RedirectToAction("DeletePersonalAccount");
         }
@@ -917,6 +922,12 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult PictureTest()
         {
+            /*
+            model.Blob_Name = "";
+            model.Uri_Name = "";
+            model.Container_Name = "";
+            */
+
             return View();
         }
 
@@ -924,12 +935,57 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult PictureTest(HttpPostedFileBase File)
         {
-            if(File.ContentLength > 0)
+            /* if(File.ContentLength > 0)
+             {
+                 return RedirectToAction("ManageAccounts");
+             }
+             return View();*/
+
+            // Boolean success = false;
+            // int ID = 1;
+            // Boolean userNameFound = false;
+            // List<BlobData> userList = new List<BlobData>();
+            //userList = SQLManager.sqlConnectionForUsersList();
+
+            if (File.ContentLength > 0)
             {
-                return RedirectToAction("ManageAccounts");
+
+                CloudBlobContainer blobContainer = blobService.GetCloudBlobContainer();
+                CloudBlockBlob blob = blobContainer.GetBlockBlobReference(File.FileName);
+                blob.UploadFromStream(File.InputStream);
+
+                BlobData BlobTest = new BlobData();
+
+
+
+                BlobTest.name = blob.Name;
+                BlobTest.uri_name = blob.Uri.ToString();
+                BlobTest.container_name = blob.Container.Name;
+
+                BlobTest.name = "222";
+                BlobTest.uri_name = "333";
+                BlobTest.container_name = "444444";
+
+                /* AddBlobViewModel bb = new AddBlobViewModel();
+
+                 bb.Blob_Name = name;
+                 bb.Uri_Name = uri_name;
+                 bb.Container_Name = container_name;
+                 */
+
+                return RedirectToAction("ViewBlob", new { BlobTest });
             }
-            return View();
+            return RedirectToAction("ManageCenters");
+
+
         }
+        [HttpGet]
+        public ActionResult ViewBlob(BlobData bb)
+        {
+            return View(bb);
+        }
+
+
         //This method does a username comparison between a User object and all Users in a List.
         //Returns a Boolean value based on comparisons.
         private Boolean UserNameCheck(List<User> userList, User newUser)
