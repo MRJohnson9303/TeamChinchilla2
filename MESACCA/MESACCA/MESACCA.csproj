@@ -641,6 +641,7 @@
     <Content Include="Views\Member\EditCenter.cshtml" />
     <Content Include="Views\News\ConfirmDeleteNews.cshtml" />
     <Content Include="Views\Member\ViewBlob.cshtml" />
+    <Content Include="Views\News\EditNews.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -53,6 +53,51 @@ namespace MESACCA.Controllers
             return View(model);
         }
         [ValidateUser]
+        public ActionResult EditNews(int id)
+        {
+            NewsArticle na = new NewsArticle();
+            AddNewsViewModel model = new AddNewsViewModel();
+            //Getting User information based on User ID
+            na = SQLManager.sqlConnectionGetNews(id);
+            //Storing the information in ViewData to be used to fill in the Edit form
+            model.ArticleID = na.ArticleID;
+            model.ArticleTitle = na.ArticleTitle;
+            model.ArticleBody = na.ArticleBody;
+            model.DateOfArticle = na.DateOfArticle;
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateUser]
+        public ActionResult EditNews(AddNewsViewModel anvm)
+        {
+            if (ModelState.IsValid)
+            {
+                var newsArticle = new NewsArticle()
+                {
+                    ArticleID = anvm.ArticleID,
+                    ArticleTitle = anvm.ArticleTitle,
+                    ArticleBody = anvm.ArticleBody,
+                    DateOfArticle = DateTime.Now,
+                    CreatedByUser = MyUserManager.GetUser().ID
+                };
+
+                Boolean success = false;
+
+                success = SQLManager.sqlConnectionEditNews(newsArticle);
+                if (success == true)
+                {
+                    TempData["Message"] = "News Article Updated Successfully.";
+                }
+                else
+                {
+                    TempData["Message"] = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                }
+                return RedirectToAction("SelectNews");
+            }
+
+            return View(anvm);
+        }
+        [ValidateUser]
         public ActionResult SelectNews()
         {
             try

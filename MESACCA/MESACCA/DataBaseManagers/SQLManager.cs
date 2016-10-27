@@ -1117,6 +1117,123 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
+        public static NewsArticle sqlConnectionGetNews(int id)
+        {
+            NewsArticle na = new NewsArticle();
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    na = accessDatabaseToGetNews(id);
+                    //Break if an account from the SQL database was found 
+                    if (na.ArticleID != 0)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return na;
+        }
+        public static NewsArticle accessDatabaseToGetNews(int id)
+        {
+            NewsArticle na = new NewsArticle();
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"SELECT ArticleID, ArticleTitle, ArticleBody, DateOfArticle FROM NewsArticles WHERE ArticleID = @ID";
+                    dbCommand.Parameters.AddWithValue("@ID", id);
+                    //Building data reader
+                    var dataReader = dbCommand.ExecuteReader();
+                    //Advancing to the next record which is the first and only record in this case
+                    dataReader.Read();
+                    //Storing information from found sql entry into a User object and returning it
+                    na.ArticleID = dataReader.GetInt32(0);
+                    na.ArticleTitle = dataReader.GetString(1);
+                    na.ArticleBody = dataReader.GetString(2);
+                    na.DateOfArticle = dataReader.GetDateTime(3);
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return na;
+            }
+        }
+        public static Boolean sqlConnectionEditNews(NewsArticle na)
+        {
+            Boolean success = false;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    success = accessDatabaseToEditNews(na);
+                    //Break if new post from the SQL database was found to be gone
+                    if (success == true)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return success;
+        }
+        public static Boolean accessDatabaseToEditNews(NewsArticle na)
+        {
+            Boolean success = false;
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"UPDATE NewsArticles 
+                                            SET ArticleTitle = @ArticleTitle, ArticleBody = @ArticleBody, CreatedByUser = @CreatedByUser, DateofArticle = @DateofArticle
+                                            WHERE ArticleID = @id";
+
+                    dbCommand.Parameters.AddWithValue("@ArticleTitle", na.ArticleTitle);
+                    dbCommand.Parameters.AddWithValue("@ArticleBody", na.ArticleBody);
+                    dbCommand.Parameters.AddWithValue("@CreatedByUser", na.CreatedByUser);
+                    dbCommand.Parameters.AddWithValue("@DateofArticle", na.DateOfArticle);
+                    dbCommand.Parameters.AddWithValue("@id", na.ArticleID);
+                    //Building data reader
+                    int dataReader = dbCommand.ExecuteNonQuery();
+
+                    if (dataReader == 1)
+                        success = true;
+                }
+                //Closing SQL connection
+                sqlConnection.Close();
+            }
+            return success;
+        }
 
     }
 }
