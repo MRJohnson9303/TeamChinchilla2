@@ -9,6 +9,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">35 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.FirstName)
         </font>
@@ -17,6 +20,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">35 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.LastName)
         </font>
@@ -45,5 +51,3 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
-
-

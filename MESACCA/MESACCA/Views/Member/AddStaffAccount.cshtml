@@ -13,6 +13,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">35 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.FirstName)
         </font>
@@ -21,6 +24,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">35 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.LastName)
         </font>
@@ -37,11 +43,7 @@
             <div class="form-inline">
                 @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
                 <div class="form-control">
-                    @Html.DropDownList("Center", new List<SelectListItem>
-                    {
-                        new SelectListItem {Text ="Center 1", Value="Center 1" },
-                        new SelectListItem {Text ="Center 2", Value="Center 2" }
-                    },
+                    @Html.DropDownList("Center", (SelectList)ViewData["centerNamesList"],
                     "Select Center")
                 </div>
             </div>
@@ -53,8 +55,8 @@
             </font>
         </div>
     }
-    else if(ViewData["CreatorAccountType"].Equals("Director"))
-    { 
+    else if (ViewData["CreatorAccountType"].Equals("Director"))
+    {
         @*@Adding readonly Center textfield*@
         <div class="form-group">
             @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
@@ -66,7 +68,7 @@
         @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
         <div class="col-md-offset-2">
-            <small class="text-muted">Example: mesa@yahoo.com</small>
+            <small class="text-muted">Example: mesa@yahoo.com. 30 character limit.</small>
         </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.Email)
@@ -152,6 +154,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">20 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.Username)
         </font>
@@ -161,7 +166,7 @@
         @Html.LabelFor(model => model.Password, new { @class = "col-md-2 control-label" })
         @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
         <div class="col-md-offset-2">
-            <small class="text-muted">Please use a combination of letters, numbers, symbols</small>
+            <small class="text-muted">Please use a combination of letters, numbers, symbols. 20 character limit.</small>
         </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.Password)
@@ -177,12 +182,9 @@
     </div>
     @*Adding add account button*@
     <div class="form-group">
-        <button style="margin-left:15px" type="submit" class="btn btn-primary">Create Account</button>
+        <button style="margin-left:30px" type="submit" class="btn btn-primary">Create Account</button>
     </div>
 }
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
-
-
-

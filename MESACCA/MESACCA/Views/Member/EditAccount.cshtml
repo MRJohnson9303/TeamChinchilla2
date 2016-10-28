@@ -1,8 +1,8 @@
-﻿@model MESACCA.ViewModels.Member.EditViewModel
+﻿@model MESACCA.ViewModels.Member.EditAccountViewModel
 @{
     ViewData["Title"] = "Edit Account";
 }
-<h2>Edit</h2>
+<h2>Edit Account</h2>
 @if (ViewBag.Message != null)
 {
     <span>@ViewBag.Message</span>
@@ -13,6 +13,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", value = Model.FirstName })
+        <div class="col-md-offset-2">
+            <small class="text-muted">35 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.FirstName)
         </font>
@@ -21,6 +24,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", value = Model.LastName })
+        <div class="col-md-offset-2">
+            <small class="text-muted">35 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.LastName)
         </font>
@@ -44,47 +50,53 @@
             @Html.ValidationMessageFor(model => model.AccountType)
         </font>
     </div>
-    @*Adding a inline Center dropbox*@
-    <div class="form-group">
-        <div class="form-inline">
-            @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
-            <div class="form-control">
-                @Html.DropDownList("Center", new List<SelectListItem>
-            {
-                new SelectListItem {Text =Model.Center.ToString(), Value=Model.Center.ToString()},
-                new SelectListItem {Text ="Center 1", Value="Center 1" },
-                new SelectListItem {Text ="Center 2", Value="Center 2" }
-            })
+    if (ViewData["EditorAccountType"].Equals("Admin"))
+    {
+        @*Adding a inline Center dropbox*@
+        <div class="form-group">
+            <div class="form-inline">
+                @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
+                <div class="form-control">
+                    @Html.DropDownList("Center", (SelectList)ViewData["centerNamesList"])
+                </div>
             </div>
+            <div class="col-md-offset-2">
+                <small class="text-muted">Current centers in the database</small>
+            </div>
+            <font color="red">
+                @Html.ValidationMessageFor(model => model.Center)
+            </font>
         </div>
-        <div class="col-md-offset-2">
-            <small class="text-muted">Current centers in the database</small>
+    }
+    else if (ViewData["EditorAccountType"].Equals("Director"))
+    {
+        @*@Adding readonly Center textfield*@
+        <div class="form-group">
+            @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
+            @Html.TextBoxFor(model => model.Center, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
         </div>
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.Center)
-        </font>
-    </div>
+    }
     @*Adding Email textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Email, new { @class = "form-control", value = Model.Email })
+        <div class="col-md-offset-2">
+            <small class="text-muted">Example: mesa@yahoo.com. 30 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.Email)
         </font>
-        <div class="col-md-offset-2">
-            <small class="text-muted">Example: mesa@yahoo.com</small>
-        </div>
     </div>
     @*Adding Phone Number textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", value = Model.PhoneNumber })
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.PhoneNumber)
-        </font>
         <div class="col-md-offset-2">
             <small class="text-muted">Example: 916-555-5555</small>
         </div>
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.PhoneNumber)
+        </font>
     </div>
     @*Adding a label and a table containing a row of check boxes for user rights*@
     <div class="form-group">
@@ -189,6 +201,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Username, new { @class = "form-control", value = Model.Username })
+        <div class="col-md-offset-2">
+            <small class="text-muted">20 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.Username)
         </font>
@@ -197,12 +212,12 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Password, new { @class = "col-md-2 control-label" })
         @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">Please use a combination of letters, numbers, symbols. 20 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.Password)
         </font>
-        <div class="col-md-offset-2">
-            <small class="text-muted">Please use a combination of letters, numbers, symbols</small>
-        </div>
     </div>
     @*Adding Confirmation Password textfield*@
     <div class="form-group">

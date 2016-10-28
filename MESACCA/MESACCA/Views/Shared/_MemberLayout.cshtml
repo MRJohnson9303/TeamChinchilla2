@@ -19,7 +19,10 @@
                         {
                             <li>@Html.ActionLink("Manage Centers", "ManageCenters", "Member", routeValues: null, htmlAttributes: new { id = "ManageCentersLink" })</li>
                         }
-
+                        else if (userRights.ToLower() == UserRoles.director.ToString())
+                        {
+                            <li>@Html.ActionLink("Manage Center", "ManageCenter", "Member", routeValues: null, htmlAttributes: new { id = "ManageCenterLink" })</li>
+                        }
                     }
                     <li>@Html.ActionLink("Manage Site", "ManageSite", "Member", routeValues: null, htmlAttributes: new { id = "ManageSiteLink" })</li>
                     <li>@Html.ActionLink("Manage Personal Account", "ManagePersonalAccount", "Member", routeValues: null, htmlAttributes: new { id = "ManagePersonalAccountLink" })</li>

@@ -214,6 +214,7 @@
     <Compile Include="Center.cs">
       <DependentUpon>MCCA.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataBaseManagers\BlobManager.cs" />
     <Compile Include="Models\BlobData.cs" />
     <Compile Include="Utilities\MyUserManager.cs" />
     <Compile Include="C__MigrationHistory.cs">
@@ -279,7 +280,7 @@
     <Compile Include="ViewModels\Member\AddCenterViewModel.cs" />
     <Compile Include="ViewModels\Member\DeleteCenterViewModel.cs" />
     <Compile Include="ViewModels\Member\EditCenterViewModel.cs" />
-    <Compile Include="ViewModels\Member\EditViewModel.cs" />
+    <Compile Include="ViewModels\Member\EditAccountViewModel.cs" />
     <Compile Include="ViewModels\Member\ManagePersonalAccountViewModel.cs" />
     <Compile Include="ViewModels\News\ConfirmDeleteNewsViewModel.cs" />
     <Compile Include="ViewModels\News\SelectNewsViewModel.cs" />
@@ -642,6 +643,7 @@
     <Content Include="Views\News\ConfirmDeleteNews.cshtml" />
     <Content Include="Views\Member\ViewBlob.cshtml" />
     <Content Include="Views\News\EditNews.cshtml" />
+    <Content Include="Views\Member\ManageCenter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

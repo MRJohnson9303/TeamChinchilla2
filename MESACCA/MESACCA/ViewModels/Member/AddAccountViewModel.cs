@@ -9,10 +9,10 @@ namespace MESACCA.ViewModels.Member
     public class AddAccountViewModel
     {
         [Required]
-        [StringLength(12)]
+        [StringLength(35)]
         public string FirstName { get; set; }
         [Required]
-        [StringLength(12)]
+        [StringLength(35)]
         public string LastName { get; set; }
         [Required]
         public string AccountType { get; set; }
@@ -25,9 +25,10 @@ namespace MESACCA.ViewModels.Member
         [Required]
         [StringLength(12)]
         [DataType(DataType.PhoneNumber)]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Not a valid phone number")]
         public string PhoneNumber { get; set; }
         [Required]
-        [StringLength(12)]
+        [StringLength(20)]
         public string Username { get; set; }
         [Required]
         [StringLength(20)]

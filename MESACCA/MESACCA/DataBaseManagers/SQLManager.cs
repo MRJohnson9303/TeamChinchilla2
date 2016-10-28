@@ -54,7 +54,7 @@ namespace MESACCA.DataBaseManagers
        
         //This method connects to the database, reads the database and finding an entry with the same information
         //as the provided username and password and returns a User object with some information 
-        public static Users accessDatabase(string username, string password)
+        private static Users accessDatabase(string username, string password)
         {
             String _username = username;
             String _password = password;
@@ -212,7 +212,7 @@ namespace MESACCA.DataBaseManagers
 
         //This method connects to the database, reads the database and finding an entry with the same information
         //as the provided username and password and returns a User object with all information of the User
-        public static User accessDatabaseForUser(int ID)
+        private static User accessDatabaseForUser(int ID)
         {
             User foundUser = new User();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
@@ -287,7 +287,7 @@ namespace MESACCA.DataBaseManagers
 
         //This method connects to the database, updates the specified SQL entry by the User's ID, collects the 
         //SQL entry for comparison and return a Boolean value based on the comparisons performed.
-        public static Boolean updateUserDatabase(int ID, User updatedUser)
+        private static Boolean updateUserDatabase(int ID, User updatedUser)
         {
             Boolean success = false;
             User foundUser = new User();
@@ -412,7 +412,7 @@ namespace MESACCA.DataBaseManagers
 
         //This method connects to the database, collects all the entries in the Users table into a list
         //based on Users' account type and returns the list.
-        public static List<User> accessDatabaseForUsers()
+        private static List<User> accessDatabaseForUsers()
         {
             List<User> userList = new List<User>();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
@@ -482,7 +482,7 @@ namespace MESACCA.DataBaseManagers
         
         //This method connects to the database, adds to the Users table, collects Users from the table for comparison,
         //and returns Boolean value regarding success
-        public static Boolean accessDatabaseToAddUser(int newID, User newUser)
+        private static Boolean accessDatabaseToAddUser(int newID, User newUser)
         {
             Boolean success = false;
             User foundUser = new User();
@@ -586,7 +586,7 @@ namespace MESACCA.DataBaseManagers
         
         //This method connects to the database, delete the entry with the given ID, connects with the database again
         //to check if the entry is gone and returns the Boolean result of the check.
-        public static Boolean accessDatabaseToDeleteUser(int ID)
+        private static Boolean accessDatabaseToDeleteUser(int ID)
         {
             Boolean success = false;
             User foundUser = new User();
@@ -648,7 +648,7 @@ namespace MESACCA.DataBaseManagers
 
         //This method connects to the database, reads the database and finding an entry with the same information
         //as the provided ID and returns a Center object with all information of the Center
-        public static Models.Center accessDatabaseForCenter(int ID)
+        private static Models.Center accessDatabaseForCenter(int ID)
         {
             Models.Center foundCenter = new Models.Center();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
@@ -681,6 +681,75 @@ namespace MESACCA.DataBaseManagers
                 return foundCenter;
             }
         }
+
+        //This method invokes "accessDatabaseForCenter" to attempt to connect to the SQL database and returns a Center object
+        public static Models.Center sqlConnectionForCenter(string name)
+        {
+            Models.Center foundCenter = new Models.Center();
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 5;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    foundCenter = accessDatabaseForCenter(name);
+                    //Break if a center from the SQL database was found 
+                    if (foundCenter.CenterType != null)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return foundCenter;
+        }
+
+        //This method connects to the database, reads the database and finding an entry with the same information
+        //as the provided name and returns a Center object with all information of the Center
+        private static Models.Center accessDatabaseForCenter(string name)
+        {
+            Models.Center foundCenter = new Models.Center();
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"SELECT * FROM Centers WHERE Name = @Name";
+                    dbCommand.Parameters.AddWithValue("@Name", name);
+                    //Building data reader
+                    var dataReader = dbCommand.ExecuteReader();
+                    //Advancing to the next record which is the first and only record in this case
+                    dataReader.Read();
+                    //Getting the SQL entry information 
+                    //I trim all of the found Center data because the SQL server seems to add spaces.
+                    foundCenter.ID = dataReader.GetInt32(0);
+                    foundCenter.Name = dataReader.GetString(1).TrimEnd(' ');
+                    foundCenter.Address = dataReader.GetString(2).TrimEnd(' ');
+                    foundCenter.Location = dataReader.GetString(3).TrimEnd(' ');
+                    foundCenter.CenterType = dataReader.GetString(4).TrimEnd(' ');
+                    foundCenter.DirectorName = dataReader.GetString(5).TrimEnd(' ');
+                    foundCenter.OfficeNumber = dataReader.GetString(6).TrimEnd(' ');
+                    foundCenter.URL = dataReader.GetString(7).TrimEnd(' ');
+                    foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return foundCenter;
+            }
+        }
+
         //This method invokes "accessDatabaseForCenters" to attempt to connect to the SQL database and returns a List object containing all Centers
         public static List<Models.Center> sqlConnectionForCentersList()
         {
@@ -715,7 +784,7 @@ namespace MESACCA.DataBaseManagers
 
         //This method connects to the database, collects all the entries in the Centers table into a list
         //and returns a List object.
-        public static List<Models.Center> accessDatabaseForCenters()
+        private static List<Models.Center> accessDatabaseForCenters()
         {
             List<Models.Center> centerList = new List<Models.Center>();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
@@ -781,9 +850,9 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
-        //This method connects to the database, adds to the Users table, collects Users from the table for comparison,
+        //This method connects to the database, adds to the Centers table, collects Users from the table for comparison,
         //and returns Boolean value regarding success
-        public static Boolean accessDatabaseToAddCenter(int newID, Models.Center newCenter)
+        private static Boolean accessDatabaseToAddCenter(int newID, Models.Center newCenter)
         {
             Boolean success = false;
             Models.Center foundCenter = new Models.Center();
@@ -795,10 +864,10 @@ namespace MESACCA.DataBaseManagers
                     sqlConnection.Open();
                     //Creating SQL query
                     dbCommand.CommandText = @"INSERT INTO Centers (ID, Name, Address, Location, CenterType, DirectorName,
-                                                                   OfficeNumber, URL, Description)
-                                              Values (@ID, @Name, @Address, @Location, @CenterType,
-                                                      @DirectorName, @OfficeNumber, @URL, @Description)
-                                              Select * FROM Centers WHERE ID = @ID";
+														   OfficeNumber, URL, Description, ImageURL)
+									  Values (@ID, @Name, @Address, @Location, @CenterType,
+											  @DirectorName, @OfficeNumber, @URL, @Description, @ImageURL)
+									  Select * FROM Centers WHERE ID = @ID";
                     dbCommand.Parameters.AddWithValue("@ID", newID);
                     //I trim the ends of empty spaces
                     dbCommand.Parameters.AddWithValue("@Name", newCenter.Name.TrimEnd(' '));
@@ -809,7 +878,7 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.Parameters.AddWithValue("@OfficeNumber", newCenter.OfficeNumber.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@URL", newCenter.URL.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Description", newCenter.Description.TrimEnd(' '));
-
+                    dbCommand.Parameters.AddWithValue("@ImageURL", newCenter.ImageURL);
                     //Building data reader
                     var dataReader = dbCommand.ExecuteReader();
                     //Advancing to the next record which is the first and only record in this case
@@ -831,7 +900,7 @@ namespace MESACCA.DataBaseManagers
                         newCenter.Address.Equals(foundCenter.Address) &&
                         newCenter.Location.Equals(foundCenter.Location) &&
                         newCenter.CenterType.Equals(foundCenter.CenterType) &&
-                        newCenter.OfficeNumber.Equals(foundCenter.OfficeNumber) &&
+                        newCenter.DirectorName.Equals(foundCenter.DirectorName) &&
                         newCenter.OfficeNumber.Equals(foundCenter.OfficeNumber) &&
                         newCenter.URL.Equals(foundCenter.URL) &&
                         newCenter.Description.Equals(foundCenter.Description))
@@ -843,7 +912,6 @@ namespace MESACCA.DataBaseManagers
                 }
                 return success;
             }
-
         }
 
         //This method invokes "updateCenterDatabase" to attempt to connect to the SQL database and returns a Boolean value regarding update confirmation
@@ -862,7 +930,7 @@ namespace MESACCA.DataBaseManagers
                         T.Thread.Sleep(1000 * retryIntervalSeconds);
                         retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
                     }
-                    success = updateCenterDatabase(ID, updatedCenter);
+                    success = updateDatabaseForCenter(ID, updatedCenter);
                     //Break if an account from the SQL database was found 
                     if (success == true)
                     {
@@ -880,7 +948,7 @@ namespace MESACCA.DataBaseManagers
 
         //This method connects to the database, updates the specified SQL entry by the Center's ID, collects the 
         //SQL entry for comparison and return a Boolean value based on the comparisons performed.
-        public static Boolean updateCenterDatabase(int ID, Models.Center updatedCenter)
+        private static Boolean updateDatabaseForCenter(int ID, Models.Center updatedCenter)
         {
             Boolean success = false;
             Models.Center foundCenter = new Models.Center();
@@ -975,7 +1043,7 @@ namespace MESACCA.DataBaseManagers
 
         //This method connects to the database, delete the entry with the given ID, connects with the database again
         //to check if the entry is gone and returns the Boolean result of the check.
-        public static Boolean accessDatabaseToDeleteCenter(int ID)
+        private static Boolean accessDatabaseToDeleteCenter(int ID)
         {
             Boolean success = false;
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
@@ -1032,7 +1100,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
-        public static Boolean accessDatabaseToDeleteNews(int ID)
+        private static Boolean accessDatabaseToDeleteNews(int ID)
         {
             Boolean success = false;
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
@@ -1089,7 +1157,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
-        public static Boolean accessDatabaseToAddNews(NewsArticle na)
+        private static Boolean accessDatabaseToAddNews(NewsArticle na)
         {
             Boolean success = false;
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
@@ -1147,7 +1215,7 @@ namespace MESACCA.DataBaseManagers
             }
             return na;
         }
-        public static NewsArticle accessDatabaseToGetNews(int id)
+        private static NewsArticle accessDatabaseToGetNews(int id)
         {
             NewsArticle na = new NewsArticle();
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
@@ -1204,7 +1272,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
-        public static Boolean accessDatabaseToEditNews(NewsArticle na)
+        private static Boolean accessDatabaseToEditNews(NewsArticle na)
         {
             Boolean success = false;
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))

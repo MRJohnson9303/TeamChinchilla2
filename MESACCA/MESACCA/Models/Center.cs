@@ -19,5 +19,6 @@ namespace MESACCA.Models
         public string URL { get; set; }
         public string Description { get; set; }
         public HttpPostedFileBase Picture { get; set; }
+        public string ImageURL { get; set; }
     }
 }

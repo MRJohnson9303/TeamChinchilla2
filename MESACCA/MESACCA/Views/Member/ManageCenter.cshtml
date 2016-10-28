@@ -1,23 +1,15 @@
-﻿@model MESACCA.ViewModels.Member.AddCenterViewModel
+@model MESACCA.ViewModels.Member.EditCenterViewModel
 @{
-    ViewData["Title"] = "Add Center";
+    ViewData["Title"] = "Manage Center";
 }
-<h2>Add Center</h2>
-<h3>@ViewData["test1"] .</h3>
-<h3>@ViewData["test2"] .</h3>
-<h3>@ViewData["test3"] .</h3>
-<h3>@ViewData["test4"] .</h3>
-<h3>@ViewData["test5"] .</h3>
-<h3>@ViewData["test6"] .</h3>
-<h3>@ViewData["test7"] .</h3>
-<h3>@ViewData["test8"] .</h3>
-<h3>@ViewData["test9"] .</h3>
+<h2>Manage Center</h2>
 @if (ViewBag.Message != null)
 {
     <span>@ViewBag.Message</span>
 }
-@using (Html.BeginForm("AddCenter", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
+@using (Html.BeginForm("ManageCenter", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(model => model.ID)
     @*Adding Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Name, new { @class = "col-md-2 control-label" })
@@ -118,22 +110,22 @@
         </font>
     </div>
     @*Adding Picture file dialog input*@
+    @*<div class="form-group">
+        @Html.LabelFor(model => model.Picture, new { @class = "col-md-2 control-label" })
+        <input name="Picture" type="file" class="form-control" />
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.Picture)
+        </font>
+    </div>*@
+    @*Adding a submit button that adds new center information to the database*@
     <div class="form-group">
-            @Html.LabelFor(model => model.Picture, new { @class = "col-md-2 control-label" })
-            <input name="Picture" type="file" class="form-control" />
-            <font color="red">
-                @Html.ValidationMessageFor(model => model.Picture)
-            </font>
-        </div>
-    @*Adding a submit button that adds new center information to the database and add the new center to the Center page*@
-    <div class="form-group">
-        <button style="margin-left:30px" type="submit" class="btn btn-primary">Create Center</button>
+        @if (ViewData["success"].Equals(true))
+        {
+            <button style="margin-left:30px" type="submit" class="btn btn-primary">Save</button>
+        }
     </div>
 }
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
-
-
-
 

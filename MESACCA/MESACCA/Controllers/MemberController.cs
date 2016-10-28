@@ -188,13 +188,11 @@ namespace MESACCA.Controllers
         //passed in information, but the account type textfield is readonly.
         [HttpGet]
         [ValidateUser]
-        public ActionResult AddDirectorAccount(string firstName, string lastName, string accountType, string message)
+        public ActionResult AddDirectorAccount(string firstName, string lastName, string accountType)
         {
-            if (message != null)
-            {
-                ViewBag.Message = message;
-            }
             AddAccountViewModel model = new AddAccountViewModel();
+            List<Models.Center> centerList = new List<Models.Center>();
+            List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
             model.FirstName = firstName;
             model.LastName = lastName;
             model.AccountType = accountType;
@@ -206,6 +204,15 @@ namespace MESACCA.Controllers
             model.MESA_Engineering_Program = true;
             model.News = true;
             model.Donate = true;
+            //This is to populate the Centers dropbox in the View.
+            centerList = SQLManager.sqlConnectionForCentersList();
+            //Storing all center names into the SelectListItem List.
+            foreach (var item in centerList)
+            {
+                centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+            }
+            //Passing the items inside a SelectList into the View using ViewBag.
+            ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
             return View(model);
         }
 
@@ -217,7 +224,7 @@ namespace MESACCA.Controllers
             User newUser = new User();
             //ID initialized for comparison
             int ID = 1;
-            //userNameNoFound initialized for comparison
+            //userNameFound initialized for comparison
             Boolean userNameFound = false;
             List<User> userList = new List<User>();
             //Storing the List object returned which contains all Users
@@ -281,6 +288,8 @@ namespace MESACCA.Controllers
         public ActionResult AddStaffAccount(string firstName, string lastName, string accountType)
         {
             AddAccountViewModel model = new AddAccountViewModel();
+            List<Models.Center> centerList = new List<Models.Center>();
+            List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
             model.FirstName = firstName;
             model.LastName = lastName;
             model.AccountType = accountType;
@@ -292,11 +301,22 @@ namespace MESACCA.Controllers
             model.MESA_Engineering_Program = true;
             model.News = true;
             model.Donate = true;
+            //Passing User's account type into the View using ViewData for comparisons.
             ViewData["CreatorAccountType"] = userAccountType;
             if (userAccountType.Equals("Director"))
             {
+                //Giving model.Center the Director's global center value
                 model.Center = center;
             }
+            //This is to populate the Centers dropbox in the View.
+            centerList = SQLManager.sqlConnectionForCentersList();
+            //Storing all center names into the SelectListItem List.
+            foreach (var item in centerList)
+            {
+                centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+            }
+            //Passing the items inside a SelectList into the View using ViewBag.
+            ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
             return View(model);
         }
 
@@ -371,13 +391,15 @@ namespace MESACCA.Controllers
 
         #region EditAccounts
 
-        //This method returns the Edit View with the EditViewModel passed in to display account information
+        //This method returns the EditAccount View with the EditViewModel passed in to display account information
         [HttpGet]
         [ValidateUser]
         public ActionResult EditAccount(int ID)
         {
             User foundUser = new User();
-            EditViewModel model = new EditViewModel();
+            EditAccountViewModel model = new EditAccountViewModel();
+            List<Models.Center> centerList = new List<Models.Center>();
+            List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
             //Getting User information based on User ID
             foundUser = SQLManager.sqlConnectionForUser(ID);
             //Storing the information in ViewData to be used to fill in the Edit form
@@ -397,13 +419,31 @@ namespace MESACCA.Controllers
             model.MESA_Engineering_Program = Convert.ToBoolean(foundUser.MESA_Engineering_Program);
             model.News = Convert.ToBoolean(foundUser.News);
             model.Donate = Convert.ToBoolean(foundUser.Donate);
+            //Passing the User's account type into the View for comparison.
+            //This will cause a change in the form such as an Admin given a dropbox for Centers and a Director,
+            //will be given a readonly Center textbox.
+            ViewData["EditorAccountType"] = userAccountType;
+            //This is to populate the Centers dropbox in the View.
+            centerList = SQLManager.sqlConnectionForCentersList();
+            //Storing the edited User's center in the list first, so it appears first on the list in the View.
+            centerNamesListItems.Add(new SelectListItem { Text = foundUser.Center, Value = foundUser.Center });
+            //Storing all other center names into the SelectListItem List.
+            foreach (var item in centerList)
+            {
+                if (item.Name.Equals(model.Center) != true)
+                {
+                    centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                }
+            }
+            //Passing the items inside a SelectList into the View using ViewBag.
+            ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
             return View(model);
         }
 
-        //This method allows the Admin to edit accounts displayed in Manage Accounts and saves changes in the SQL database
+        //This method allows the Admin to edit accounts displayed in Manage Accounts and saves changes in the SQL database.
         [HttpPost]
         [ValidateUser]
-        public ActionResult EditAccount(EditViewModel model)
+        public ActionResult EditAccount(EditAccountViewModel model)
         {
             Boolean success = false;
             //userNameFound and userList is for username comparison
@@ -491,7 +531,7 @@ namespace MESACCA.Controllers
 
         #region DeleteAccounts
 
-        //This method sends an entry's information from Manage Accounts into the View when the Delete link is clicked on
+        //This method sends an entry's information from ManageAccounts into the View when the Delete link is clicked on
         [HttpGet]
         [ValidateUser]
         public ActionResult DeleteAccount(int ID)
@@ -501,8 +541,8 @@ namespace MESACCA.Controllers
             return View(foundUser);
         }
 
-        //This method deletes the user from the system if the delete button in the Edit View is clicked on and sends the User
-        //to Manage Accounts and if the back button is clicked, then the Admin is sent back to ManageAccounts.
+        //This method deletes the user from the system if the delete button in the EditAccount View is clicked on and sends the User
+        //to Manage Accounts and if the back button is clicked, then the User is sent back to ManageAccounts.
         [HttpPost]
         [ValidateUser]
         public ActionResult DeleteAccount(User model, string button)
@@ -529,8 +569,9 @@ namespace MESACCA.Controllers
 
         #endregion
 
-        #region Centers
+        #region ManageCenters
 
+        //This method returns the ManageCenters View displaying all Centers in the database in alphabetical order.
         [HttpGet]
         [ValidateUser]
         public ActionResult ManageCenters()
@@ -544,6 +585,8 @@ namespace MESACCA.Controllers
             });
             return View(centerList);
         }
+
+        //This method redirects the User to AddCenter, EditCenter or DeleteCenter based on input.
         [HttpPost]
         [ValidateUser]
         public ActionResult ManageCenters(String button)
@@ -566,6 +609,77 @@ namespace MESACCA.Controllers
             }
             return View(centerList);
         }
+
+        //This method returns the ManageCenters View displaying a Director's center information in the View.
+        //This is for Directors.
+        [HttpGet]
+        [ValidateUser]
+        public ActionResult ManageCenter()
+        {
+            Boolean success = false;
+            EditCenterViewModel model = new EditCenterViewModel();
+            Models.Center foundCenter = new Models.Center();
+            //Getting User information based on the Director's center
+            foundCenter = SQLManager.sqlConnectionForCenter(center);
+            //Checking if the returned center object has null values which occurs if there is a problem with a SQL database.
+            //If center object has a null value like Name, then display an error message and hide the save button in the View.
+            if (foundCenter.Name != null)
+            {
+                success = true;
+                model.ID = foundCenter.ID;
+                model.Name = foundCenter.Name;
+                model.Address = foundCenter.Address;
+                model.Location = foundCenter.Location;
+                model.CenterType = foundCenter.CenterType;
+                model.DirectorName = foundCenter.DirectorName;
+                model.OfficeNumber = foundCenter.OfficeNumber;
+                model.URL = foundCenter.URL;
+                model.Description = foundCenter.Description;
+            }
+            if (success == false)
+            {
+                ViewBag.Message = "Database error. Please refresh the page. If the problem persists, contact the Administrator.";
+            }
+            //Passing success value into the View. If the Center could not be found, the 'Save' button will be hidden to prevent the User from
+            //possibly updating the Center anyway.
+            ViewData["success"] = success;
+            return View(model);
+        }
+
+        //This saves changes in the Center fields for a Director center in the SQL database.
+        [HttpPost]
+        [ValidateUser]
+        public ActionResult ManageCenter(EditCenterViewModel model)
+        {
+            Boolean success = false;
+            Models.Center updatedCenter = new Models.Center();
+            //Getting ViewModel model information given in the textfields of the Edit Center page
+            updatedCenter.Name = model.Name;
+            updatedCenter.Address = model.Address;
+            updatedCenter.Location = model.Location;
+            updatedCenter.CenterType = model.CenterType;
+            updatedCenter.DirectorName = model.DirectorName;
+            updatedCenter.OfficeNumber = model.OfficeNumber;
+            updatedCenter.URL = model.URL;
+            updatedCenter.Description = model.Description;
+            //Getting Boolean result of SQL entry information update
+            success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
+            //If the update was successful, redirect the User to the Manage Centers page
+            if (success == true)
+            {
+                ViewBag.Message = "Center was successfully updated";
+            }
+            else
+            {
+                ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+            }
+            //To make the submit button appear for the Director to try again in the event of an error.
+            return View(model);
+        }
+
+        #endregion
+
+        #region AddCenters
         //This method returns the AddCenter View
         [HttpGet]
         [ValidateUser]
@@ -574,90 +688,110 @@ namespace MESACCA.Controllers
             return View();
         }
 
+        //This method adds a Center with provided information to the SQL database and redirects the Admin to ManageCenters
+        //if successful.
         [HttpPost]
         [ValidateUser]
         public ActionResult AddCenter(AddCenterViewModel model)
         {
-            /*if(String.IsNullOrEmpty(model.Name) == false)
-            {
-                return RedirectToAction("ManageAccounts");
-            }
-            if (model.Picture.ContentLength > 0)
-            {
-                return RedirectToAction("ManageAccounts");
-            }*/
             Boolean success = false;
             Models.Center newCenter = new Models.Center();
             //ID initialized for comparison
             int ID = 1;
             List<Models.Center> centerList = new List<Models.Center>();
-            //Storing the SortedList object returned which contains all Users
-            centerList = SQLManager.sqlConnectionForCentersList();
-            //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
-            //a User ID then break the loop and use the new ID value for the new User account ID.
-            //This means if a User is deleted, then a new User will get the old ID
-            if (centerList.Capacity > 0)
+            if (model.Picture.ContentLength > 0)
             {
-                foreach (var item in centerList)
+                newCenter.Picture = model.Picture;
+                newCenter.ImageURL = BlobManager.getCenterImageBLOBURI(newCenter);
+                //Storing the SortedList object returned which contains all Centers
+                centerList = SQLManager.sqlConnectionForCentersList();
+                //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
+                //a User ID then break the loop and use the new ID value for the new User account ID.
+                //This means if a User is deleted, then a new User will get the old ID
+                if (centerList.Count > 0)
                 {
-                    if (ID != item.ID)
+                    foreach (var item in centerList)
                     {
-                        break;
+                        if (ID != item.ID)
+                        {
+                            break;
+                        }
+                        ID += 1;
                     }
-                    ID += 1;
+                }
+                newCenter.Name = model.Name;
+                newCenter.Address = model.Address;
+                newCenter.Location = model.Location;
+                newCenter.CenterType = model.CenterType;
+                newCenter.DirectorName = model.DirectorName;
+                newCenter.OfficeNumber = model.OfficeNumber;
+                newCenter.URL = model.URL;
+                newCenter.Description = model.Description;
+                success = SQLManager.sqlConnectionAddCenter(ID, newCenter);
+                if (success == true)
+                {
+                    return RedirectToAction("ManageCenters");
+                }
+                else
+                {
+                    ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
                 }
             }
-            newCenter.Name = model.Name;
-            newCenter.Address = model.Address;
-            newCenter.Location = model.Location;
-            newCenter.CenterType = model.CenterType;
-            newCenter.DirectorName = model.DirectorName;
-            newCenter.OfficeNumber = model.OfficeNumber;
-            newCenter.URL = model.URL;
-            newCenter.Description = model.Description;
-
-            success = SQLManager.sqlConnectionAddCenter(ID, newCenter);
-            if (success == true)
+            else
             {
-                return RedirectToAction("ManageCenters");
+                ViewBag.Message = "Please provide an image.";
             }
-
             return View();
         }
+
+        #endregion
+
+        #region EditCenters
 
         //This method returns the EditCenter View with the EditCenterViewModel passed in to display center information
         [HttpGet]
         [ValidateUser]
         public ActionResult EditCenter(int ID)
         {
+            Boolean success = false;
             Models.Center foundCenter = new Models.Center();
             EditCenterViewModel model = new EditCenterViewModel();
             //Getting User information based on User ID
             foundCenter = SQLManager.sqlConnectionForCenter(ID);
-            //Storing the information in ViewData to be used to fill in the Edit form
-            model.ID = foundCenter.ID;
-            model.Name = foundCenter.Name;
-            model.Address = foundCenter.Address;
-            model.Location = foundCenter.Location;
-            model.CenterType = foundCenter.CenterType;
-            model.DirectorName = foundCenter.DirectorName;
-            model.OfficeNumber = foundCenter.OfficeNumber;
-            model.URL = foundCenter.URL;
-            model.Description = foundCenter.Description;
+            //Checking if the returned center object has null values which occurs if there is a problem with a SQL database.
+            //If center object has a null value like Name, then display an error message and hide the save button in the View.
+            if (foundCenter.Name != null)
+            {
+                success = true;
+                model.ID = foundCenter.ID;
+                model.Name = foundCenter.Name;
+                model.Address = foundCenter.Address;
+                model.Location = foundCenter.Location;
+                model.CenterType = foundCenter.CenterType;
+                model.DirectorName = foundCenter.DirectorName;
+                model.OfficeNumber = foundCenter.OfficeNumber;
+                model.URL = foundCenter.URL;
+                model.Description = foundCenter.Description;
+            }
+            if (success == false)
+            {
+                ViewBag.Message = "Database error. Please refresh the page. If the problem persists, contact the Administrator.";
+            }
+            //Passing success value into the View. If the Center could not be found, the 'Save' button will be hidden to prevent the User from
+            //possibly updating the Center anyway.
+            ViewData["success"] = success;
             return View(model);
         }
 
-        //This method allows the Admin or Director to edit centers displayed in Manage Centers and saves changes in the SQL database
+        //This method allows the Admin to edit centers displayed in Manage Centers and saves changes in the SQL database. If 
+        //succesful, then the Admin is redirected to Manage Centers.
         [HttpPost]
         [ValidateUser]
         public ActionResult EditCenter(EditCenterViewModel model)
         {
             Boolean success = false;
-            Models.Center foundCenter = new Models.Center();
-            //Getting SQL table entry based on User ID to obtain the user's password.
-            foundCenter = SQLManager.sqlConnectionForCenter(model.ID);
             Models.Center updatedCenter = new Models.Center();
-            //Getting ViewModel model information given in the textfields of the Manage Personal Account page
+            //Getting ViewModel model information given in the textfields of the Edit Center page
             updatedCenter.Name = model.Name;
             updatedCenter.Address = model.Address;
             updatedCenter.Location = model.Location;
@@ -678,8 +812,14 @@ namespace MESACCA.Controllers
             {
                 ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
             }
+            //To make the submit button appear for the Admin to try again in the event of an error.
+            ViewData["success"] = true;
             return View(model);
         }
+
+        #endregion
+
+        #region DeleteCenters
         //This method sends an entry's information from Manage Centers into the View when the Delete link is clicked on
         [HttpGet]
         [ValidateUser]
@@ -689,6 +829,8 @@ namespace MESACCA.Controllers
             Models.Center foundCenter = new Models.Center();
             DeleteCenterViewModel model = new DeleteCenterViewModel();
             foundCenter = SQLManager.sqlConnectionForCenter(ID);
+            //Checking if the returned center object has null values which occurs if there is a problem with a SQL database.
+            //If center object does not have a null value like 'Name', then update the 'success' boolean, display an error message and hide the save button in the View.
             if (foundCenter.Name != null)
             {
                 success = true;
@@ -704,7 +846,7 @@ namespace MESACCA.Controllers
             }
             if (success == false)
             {
-                ViewBag.Message = "Database error. Please click on 'Back to List' and try again. If the problem persists, contact the Administrator.";
+                ViewBag.Message = "Database error. Please refresh the page. If the problem persists, contact the Administrator.";
             }
             //Passing success value into the View. If the Center could not be found, the 'Delete' button will be hidden to prevent the Use from
             //possibly deleting the Center anyway.
@@ -735,6 +877,8 @@ namespace MESACCA.Controllers
             {
                 ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
             }
+            //To make the submit button appear for the Admin to try again in the event of an error.
+            ViewData["success"] = true;
             return View(model);
         }
 
