@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using MESACCA.Models;
 using S = System.Data.SqlClient;
@@ -1093,31 +1094,51 @@ namespace MESACCA.Controllers
 
             if (File.ContentLength > 0)
             {
+                string ext = Path.GetExtension(File.FileName);
 
-                CloudBlobContainer blobContainer = blobService.GetCloudBlobContainer();
-                CloudBlockBlob blob = blobContainer.GetBlockBlobReference(File.FileName);
-                blob.UploadFromStream(File.InputStream);
+                System.Diagnostics.Debug.WriteLine(ext);
+                //Check for the type of upload see if it's empty, or not the correct type of images.
+                if (String.IsNullOrEmpty(ext) ||
+                   (!ext.Equals(".png", StringComparison.OrdinalIgnoreCase) && !ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase)))
+                {
+                    //return new ValidationResult("This file is not a PDF!");
 
-                BlobData BlobTest = new BlobData();
+                    return View();
+                }
+                else
+                {
+
+                    BlobData BlobTest = new BlobData();
+
+                    CloudBlobContainer blobContainer = blobService.GetCloudBlobContainer();
+                    CloudBlockBlob blob = blobContainer.GetBlockBlobReference(File.FileName);
+
+
+                    BlobTest.name = blob.Name;
+                    BlobTest.uri_name = blob.Uri.ToString();
+                    BlobTest.container_name = blob.Container.Name;
+
+                    
+                    blob.UploadFromStream(File.InputStream);
 
 
 
-                BlobTest.name = blob.Name;
-                BlobTest.uri_name = blob.Uri.ToString();
-                BlobTest.container_name = blob.Container.Name;
 
-                BlobTest.name = "222";
-                BlobTest.uri_name = "333";
-                BlobTest.container_name = "444444";
 
-                /* AddBlobViewModel bb = new AddBlobViewModel();
+                    BlobTest.name = blob.Name;
+                    BlobTest.uri_name = blob.Uri.ToString();
+                    BlobTest.container_name = blob.Container.Name;
 
-                 bb.Blob_Name = name;
-                 bb.Uri_Name = uri_name;
-                 bb.Container_Name = container_name;
-                 */
 
-                return RedirectToAction("ViewBlob", new { BlobTest });
+                    /* AddBlobViewModel bb = new AddBlobViewModel();
+
+                     bb.Blob_Name = name;
+                     bb.Uri_Name = uri_name;
+                     bb.Container_Name = container_name;
+                     */
+
+                    return RedirectToAction("ViewBlob", BlobTest);
+                }
             }
             return RedirectToAction("ManageCenters");
 
@@ -1126,7 +1147,17 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult ViewBlob(BlobData bb)
         {
+            var uploadedImage = string.Empty;
+            if(bb.uri_name != null)
+            {
+                ViewBag.uploadedImage = bb.uri_name;
+            }
             return View(bb);
+        }
+
+        public ActionResult ViewPDF()
+        {
+            return View();
         }
 
 
