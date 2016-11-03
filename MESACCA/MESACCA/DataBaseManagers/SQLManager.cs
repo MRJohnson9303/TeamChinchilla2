@@ -962,10 +962,13 @@ namespace MESACCA.DataBaseManagers
                     //Opening SQL connection
                     sqlConnection.Open();
                     //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                    dbCommand.CommandText = @"UPDATE Centers 
+                    dbCommand.CommandText = @"UPDATE Users
+                                              SET Center = @Name
+                                              WHERE Center IN (SELECT [Name] FROM Centers WHERE ID = @ID)
+                                              UPDATE Centers 
 									          SET Name = @Name, Address = @Address, Location = @Location, CenterType = @CenterType, DirectorName = @DirectorName,
 										      OfficeNumber = @OfficeNumber, URL = @URL, Description = @Description, ImageURL = @ImageURL
-									          WHERE ID = @ID 
+									          WHERE ID = @ID
 									          SELECT * FROM Centers WHERE ID = @ID";
                     //Updating User information based on comparison with current and new User information
                     //I trim the end of all fields to remove empty spaces
@@ -1057,8 +1060,10 @@ namespace MESACCA.DataBaseManagers
                     //Opening SQL connection
                     sqlConnection.Open();
                     //Creating SQL query
-                    dbCommand.CommandText = @"DELETE FROM Centers WHERE ID = @ID
-									  SELECT * FROM Centers WHERE ID = @ID";
+                    dbCommand.CommandText = @"DELETE FROM Users
+                                              WHERE Center IN (SELECT [Name] FROM Centers WHERE ID = @ID)
+                                              DELETE FROM Centers WHERE ID = @ID
+									          SELECT * FROM Centers WHERE ID = @ID";
                     dbCommand.Parameters.AddWithValue("@ID", ID);
                     //Building data reader
                     var dataReader = dbCommand.ExecuteReader();

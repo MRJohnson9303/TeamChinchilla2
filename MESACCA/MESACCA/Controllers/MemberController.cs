@@ -667,6 +667,8 @@ namespace MESACCA.Controllers
             //If no image is provided, then keep the current ImageURL and update the database.
             if (model.Picture == null)
             {
+                //Update the global variable used by Directors
+                center = model.Name;
                 updatedCenter.ImageURL = model.ImageURL;
                 //Getting Boolean result of SQL entry information update
                 success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
