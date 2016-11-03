@@ -675,6 +675,7 @@ namespace MESACCA.DataBaseManagers
                     foundCenter.OfficeNumber = dataReader.GetString(6).TrimEnd(' ');
                     foundCenter.URL = dataReader.GetString(7).TrimEnd(' ');
                     foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
+                    foundCenter.ImageURL = dataReader.GetString(9).TrimEnd(' ');
                     //Closing SQL connection
                     sqlConnection.Close();
                 }
@@ -743,6 +744,7 @@ namespace MESACCA.DataBaseManagers
                     foundCenter.OfficeNumber = dataReader.GetString(6).TrimEnd(' ');
                     foundCenter.URL = dataReader.GetString(7).TrimEnd(' ');
                     foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
+                    foundCenter.ImageURL = dataReader.GetString(9).TrimEnd(' ');
                     //Closing SQL connection
                     sqlConnection.Close();
                 }
@@ -811,6 +813,7 @@ namespace MESACCA.DataBaseManagers
                         foundCenter.OfficeNumber = dataReader.GetString(6).TrimEnd(' ');
                         foundCenter.URL = dataReader.GetString(7).TrimEnd(' ');
                         foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
+                        foundCenter.ImageURL = dataReader.GetString(9).TrimEnd(' ');
                         centerList.Add(foundCenter);
                     }
                     //Closing SQL connection
@@ -865,9 +868,9 @@ namespace MESACCA.DataBaseManagers
                     //Creating SQL query
                     dbCommand.CommandText = @"INSERT INTO Centers (ID, Name, Address, Location, CenterType, DirectorName,
 														   OfficeNumber, URL, Description, ImageURL)
-									  Values (@ID, @Name, @Address, @Location, @CenterType,
+									          Values (@ID, @Name, @Address, @Location, @CenterType,
 											  @DirectorName, @OfficeNumber, @URL, @Description, @ImageURL)
-									  Select * FROM Centers WHERE ID = @ID";
+									          Select * FROM Centers WHERE ID = @ID";
                     dbCommand.Parameters.AddWithValue("@ID", newID);
                     //I trim the ends of empty spaces
                     dbCommand.Parameters.AddWithValue("@Name", newCenter.Name.TrimEnd(' '));
@@ -960,10 +963,10 @@ namespace MESACCA.DataBaseManagers
                     sqlConnection.Open();
                     //Creating SQL query that updates the SQL table entry and returns the updated table entry
                     dbCommand.CommandText = @"UPDATE Centers 
-									  SET Name = @Name, Address = @Address, Location = @Location, CenterType = @CenterType, DirectorName = @DirectorName,
-										  OfficeNumber = @OfficeNumber, URL = @URL, Description = @Description
-									  WHERE ID = @ID
-									  SELECT * FROM Centers WHERE ID = @ID";
+									          SET Name = @Name, Address = @Address, Location = @Location, CenterType = @CenterType, DirectorName = @DirectorName,
+										      OfficeNumber = @OfficeNumber, URL = @URL, Description = @Description, ImageURL = @ImageURL
+									          WHERE ID = @ID 
+									          SELECT * FROM Centers WHERE ID = @ID";
                     //Updating User information based on comparison with current and new User information
                     //I trim the end of all fields to remove empty spaces
                     dbCommand.Parameters.AddWithValue("@Name", updatedCenter.Name.TrimEnd(' '));
@@ -974,6 +977,7 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.Parameters.AddWithValue("@OfficeNumber", updatedCenter.OfficeNumber.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@URL", updatedCenter.URL.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Description", updatedCenter.Description.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@ImageURL", updatedCenter.ImageURL);
                     //Specifing update by ID number to ensure correct User's information is updated
                     dbCommand.Parameters.AddWithValue("@ID", ID);
                     //Building data reader

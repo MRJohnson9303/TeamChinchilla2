@@ -23,8 +23,9 @@ namespace MESACCA.Controllers
         public ActionResult Centers()
         {
             ViewData["Message"] = "Centers Page";
-
-            return View();
+            List<Models.Center> centerList = SQLManager.sqlConnectionForCentersList();
+            Models.Center center = SQLManager.sqlConnectionForCenter(1);
+            return View(centerList);
         }
         public ActionResult VisionMissionValues()
         {

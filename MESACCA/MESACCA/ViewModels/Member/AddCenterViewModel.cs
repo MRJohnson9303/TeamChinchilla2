@@ -34,6 +34,7 @@ namespace MESACCA.ViewModels.Member
         [Required]
         [StringLength(30)]
         public string URL { get; set; }
+        [Required]
         [StringLength(250)]
         public string Description { get; set; }
         [Required]

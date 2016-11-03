@@ -5,6 +5,10 @@
     ViewData["Title"] = "File Upload";
 }
 <h2>File Upload</h2>
+@if (ViewBag.Message != null)
+{
+    <span>@ViewBag.Message</span>
+}
 @using (Html.BeginForm("PictureTest", "Member", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <input type="file" ID ="File" name="File" />

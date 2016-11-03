@@ -3,15 +3,6 @@
     ViewData["Title"] = "Add Center";
 }
 <h2>Add Center</h2>
-<h3>@ViewData["test1"] .</h3>
-<h3>@ViewData["test2"] .</h3>
-<h3>@ViewData["test3"] .</h3>
-<h3>@ViewData["test4"] .</h3>
-<h3>@ViewData["test5"] .</h3>
-<h3>@ViewData["test6"] .</h3>
-<h3>@ViewData["test7"] .</h3>
-<h3>@ViewData["test8"] .</h3>
-<h3>@ViewData["test9"] .</h3>
 @if (ViewBag.Message != null)
 {
     <span>@ViewBag.Message</span>
@@ -100,7 +91,7 @@
         @Html.LabelFor(model => model.URL, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.URL, new { @class = "form-control" })
         <div class="col-md-offset-2">
-            <small class="text-muted">Example: www.mesa.edu. 30 character limit.</small>
+            <small class="text-muted">Example: http://www.mesa.edu. 30 character limit.</small>
         </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.URL)

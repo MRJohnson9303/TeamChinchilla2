@@ -36,7 +36,7 @@ namespace MESACCA.ViewModels.Member
         [Required]
         [StringLength(250)]
         public string Description { get; set; }
-        [Required]
         public HttpPostedFileBase Picture { get; set; }
+        public string ImageURL { get; set; }
     }
 }
