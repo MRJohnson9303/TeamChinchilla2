@@ -68,6 +68,12 @@ namespace MESACCA.Controllers
         {
             return View();
         }
+
+        public ActionResult Collaboration()
+        {
+            return View();
+        }
+        
         
     }
 }
