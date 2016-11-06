@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -25,17 +26,41 @@ namespace MESACCA.Controllers
 
         [HttpPost]
         [ValidateUser]
-        public ActionResult AddNews(AddNewsViewModel model)
+        public ActionResult AddNews(AddNewsViewModel model, HttpPostedFileBase File)
         {
+
+
             if (ModelState.IsValid)
             {
+                System.Diagnostics.Debug.WriteLine("Starting here.");
+                String FileUri = "";
+                System.Diagnostics.Debug.WriteLine(File.FileName);
+                //check to see if there's a file attached, then read the file
+                if (File != null)
+                {//get string
+                    string ext = Path.GetExtension(File.FileName);
+
+                    //Check for the type of upload see if it's empty, or not the correct type of images.
+                    if (String.IsNullOrEmpty(ext) == false &&
+                 (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".pdf", StringComparison.OrdinalIgnoreCase) == true))
+                    {
+                        System.Diagnostics.Debug.WriteLine("storign into blob");
+                        //Storing the image into the BLOB and getting the URI string from the BLOB to display image later.
+                        FileUri = BlobManager.uploadAndGetImageBLOBURI(File);
+                        //Storing the SortedList object returned which contains all Centers
+                        System.Diagnostics.Debug.WriteLine("FileUri " + FileUri);
+                    }
+                }
+
+
                 var newsArticle = new NewsArticle()
                 {
                     ArticleTitle = model.ArticleTitle,
                     ArticleBody = model.ArticleBody,
                     DateOfArticle = DateTime.Now,
-                    CreatedByUser = MyUserManager.GetUser().ID
-            };
+                    CreatedByUser = MyUserManager.GetUser().ID,
+                    Attach1URL = FileUri
+                };
                 Boolean success = false;
 
                 success = SQLManager.sqlConnectionAddNews(newsArticle);
@@ -48,6 +73,7 @@ namespace MESACCA.Controllers
                     TempData["Message"] = "Database error. Please try again and if the problem persists, contact the Administrator.";
                 }
                 return RedirectToAction("SelectNews");
+
             }
 
             return View(model);
@@ -111,7 +137,7 @@ namespace MESACCA.Controllers
                 }
                 return View(snvm);
             }
-            
+
             catch (Exception ex)
             {
 
@@ -123,15 +149,15 @@ namespace MESACCA.Controllers
         {
             Boolean success = false;
 
-                success = SQLManager.sqlConnectionDeleteNews(id);
-                if (success == true)
-                {
-                    TempData["Message"] = "Successfully deleted news posting.";
-                }
-                else
-                {
-                    TempData["Message"] = "Database error. Please try again and if the problem persists, contact the Administrator.";
-                }
+            success = SQLManager.sqlConnectionDeleteNews(id);
+            if (success == true)
+            {
+                TempData["Message"] = "Successfully deleted news posting.";
+            }
+            else
+            {
+                TempData["Message"] = "Database error. Please try again and if the problem persists, contact the Administrator.";
+            }
 
             return RedirectToAction("SelectNews");
 

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace MESACCA.ViewModels.News
 {
@@ -24,6 +25,8 @@ namespace MESACCA.ViewModels.News
         [DisplayName("Date of Publication")]
         [DataType(DataType.Date)]
         public DateTime DateOfArticle { get; set; }
+
+        public string Attach1File { get; set; }
     }
 }
 

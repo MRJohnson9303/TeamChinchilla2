@@ -51,7 +51,7 @@ namespace MESACCA.DataBaseManagers
             }
             return foundUser;
         }
-       
+
         //This method connects to the database, reads the database and finding an entry with the same information
         //as the provided username and password and returns a User object with some information 
         private static Users accessDatabase(string username, string password)
@@ -91,7 +91,7 @@ namespace MESACCA.DataBaseManagers
                 return foundUser;
             }
         }
-        
+
         public static List<NewsArticle> getNewsPosts()
         {
             List<NewsArticle> returnValue = new List<NewsArticle>();
@@ -105,7 +105,7 @@ namespace MESACCA.DataBaseManagers
                         //Opening SQL connection
                         sqlConnection.Open();
                         //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                        dbCommand.CommandText = @"SELECT n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName FROM (SELECT top 100 * FROM NewsArticles order by DateOfArticle desc) as n INNER JOIN Users as u on u.ID = n.CreatedByUser";
+                        dbCommand.CommandText = @"SELECT n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL  FROM (SELECT top 100 * FROM NewsArticles order by DateOfArticle desc) as n INNER JOIN Users as u on u.ID = n.CreatedByUser";
                         var dataReader = dbCommand.ExecuteReader();
                         var iterator = dataReader.GetEnumerator();
                         while (iterator.MoveNext())
@@ -117,6 +117,7 @@ namespace MESACCA.DataBaseManagers
                             article.ArticleBody = dataReader.GetString(1).TrimEnd(' ');
                             article.DateOfArticle = dataReader.GetDateTime(2);
                             article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
+                            article.Attach1URL = dataReader.GetString(5).TrimEnd(' ');
                             returnValue.Add(article);
                         }
                         //Closing SQL connection
@@ -146,7 +147,7 @@ namespace MESACCA.DataBaseManagers
                         //Opening SQL connection
                         sqlConnection.Open();
                         //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                        dbCommand.CommandText = @"SELECT n.ArticleID, n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName FROM NewsArticles as n INNER JOIN Users as u on u.ID = n.CreatedByUser order by DateOfArticle desc";
+                        dbCommand.CommandText = @"SELECT n.ArticleID, n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL FROM NewsArticles as n INNER JOIN Users as u on u.ID = n.CreatedByUser order by DateOfArticle desc";
                         var dataReader = dbCommand.ExecuteReader();
                         var iterator = dataReader.GetEnumerator();
                         while (iterator.MoveNext())
@@ -162,6 +163,7 @@ namespace MESACCA.DataBaseManagers
                             article.ArticleBody = articleBodyFormatted.Length < 50 ? articleBodyFormatted : articleBodyFormatted.Substring(0, 50) + "...";
                             article.DateOfArticle = dataReader.GetDateTime(3);
                             article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
+                            article.Attach1URL = dataReader.GetString(6).TrimEnd(' ');
                             returnValue.Add(article);
                         }
                         //Closing SQL connection
@@ -252,7 +254,7 @@ namespace MESACCA.DataBaseManagers
                 return foundUser;
             }
         }
-        
+
         //This method invokes "updateUserDatabase" to attempt to connect to the SQL database and returns a Boolean value regarding update confirmation
         public static Boolean sqlConnectionUpdateUser(int ID, User updatedUser)
         {
@@ -376,7 +378,7 @@ namespace MESACCA.DataBaseManagers
                 return success;
             }
         }
-        
+
         //This method invokes "accessDatabaseForUsers" to attempt to connect to the SQL database and returns a List object containing all Users
         public static List<User> sqlConnectionForUsersList()
         {
@@ -479,7 +481,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
-        
+
         //This method connects to the database, adds to the Users table, collects Users from the table for comparison,
         //and returns Boolean value regarding success
         private static Boolean accessDatabaseToAddUser(int newID, User newUser)
@@ -551,7 +553,7 @@ namespace MESACCA.DataBaseManagers
                 return success;
             }
         }
-        
+
         //This method invokes "accessDatabaseToDeleteUser" to attempt to connect to the SQL database and returns a Boolean value regarding deletion confirmation
         public static Boolean sqlConnectionDeleteUser(int ID)
         {
@@ -583,7 +585,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
-        
+
         //This method connects to the database, delete the entry with the given ID, connects with the database again
         //to check if the entry is gone and returns the Boolean result of the check.
         private static Boolean accessDatabaseToDeleteUser(int ID)
@@ -1176,13 +1178,15 @@ namespace MESACCA.DataBaseManagers
                     //Opening SQL connection
                     sqlConnection.Open();
                     //Creating SQL query
-                    dbCommand.CommandText = @"INSERT INTO NewsArticles (ArticleTitle, ArticleBody, CreatedByUser, DateofArticle)
-                                              Values (@ArticleTitle, @ArticleBody, @CreatedByUser, @DateofArticle)";
+                    dbCommand.CommandText = @"INSERT INTO NewsArticles (ArticleTitle, ArticleBody, CreatedByUser, DateofArticle, Attach1URL)
+                                              Values (@ArticleTitle, @ArticleBody, @CreatedByUser, @DateofArticle, @Attach1URLL)";
 
                     dbCommand.Parameters.AddWithValue("@ArticleTitle", na.ArticleTitle);
                     dbCommand.Parameters.AddWithValue("@ArticleBody", na.ArticleBody);
                     dbCommand.Parameters.AddWithValue("@CreatedByUser", na.CreatedByUser);
                     dbCommand.Parameters.AddWithValue("@DateofArticle", na.DateOfArticle);
+                    dbCommand.Parameters.AddWithValue("@Attach1URLL", na.Attach1URL);
+
                     //Building data reader
                     int dataReader = dbCommand.ExecuteNonQuery();
 

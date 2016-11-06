@@ -22,5 +22,15 @@ namespace MESACCA.DataBaseManagers
             blob.UploadFromStream(model.Picture.InputStream);
             return blobURI = blob.Uri.ToString();
         }
+
+        public static String uploadAndGetImageBLOBURI(HttpPostedFileBase File)
+        {
+            String blobURI = "";
+            CloudBlobContainer blobContainer = blobService.GetCloudBlobContainer();
+            CloudBlockBlob blob = blobContainer.GetBlockBlobReference(File.FileName);
+            blob.UploadFromStream(File.InputStream);
+            return blobURI = blob.Uri.ToString();
+        }
+
     }
 }
