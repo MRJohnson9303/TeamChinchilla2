@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MESACCA.Models.Center>
+﻿@model List<MESACCA.Models.Center>
 @{
     ViewData["Title"] = "Centers";
     String centerName;
@@ -74,9 +74,9 @@
     @*Line across page*@
     <hr color="black"/>
     <div class="row" style="margin-top:20px;">
-        <div class="col-md-4">
             @foreach (var item in Model)
             {
+
                 if (item.CenterType.ToString().Equals("MEP") == true)
                 {
                     centerName = item.Name;
@@ -87,21 +87,22 @@
                     centerURL = item.URL;
                     centerImageURL = item.ImageURL;
                     centerDescription = item.Description;
-                    <a href=@centerURL target="_blank">
-                        <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
-                            <img src=@centerImageURL height="192" width="186" />
-                            <br />@centerName
-                            <br />@centerAddress
-                            <br />@centerLocation
-                            <br />Director: @centerDirector
-                            <br />OfficeNumber: @centerOfficeNumber
-                            <br />@centerURL
-                            <br />@centerDescription
-                        </div>
-                    </a>
+                    <div class="col-md-4"> 
+                        <a href=@centerURL target="_blank">
+                            <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
+                                <img src=@centerImageURL height="192" width="186" />
+                                <br />@centerName
+                                <br />@centerAddress
+                                <br />@centerLocation
+                                <br />Director: @centerDirector
+                                <br />Office Number: @centerOfficeNumber
+                                <br />@centerURL
+                                <br />@centerDescription
+                            </div>
+                        </a>
+                    </div>
                 }
             }
-        </div>
     </div>
     @*Community colleges*@
     <h4 style="margin-top:20px">Community College - MCCP</h4>
@@ -121,18 +122,20 @@
                     centerURL = item.URL;
                     centerImageURL = item.ImageURL;
                     centerDescription = item.Description;
-                    <a href=@centerURL target="_blank">
-                        <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
-                            <img src=@centerImageURL height="192" width="186" />
-                            <br />@centerName
-                            <br />@centerAddress
-                            <br />@centerLocation
-                            <br />Director: @centerDirector
-                            <br />OfficeNumber: @centerOfficeNumber
-                            <br />@centerURL
-                            <br />@centerDescription
-                        </div>
-                    </a>
+                    <div class="col-md-4">
+                        <a href=@centerURL target="_blank">
+                            <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
+                                <img src=@centerImageURL height="192" width="186" />
+                                <br />@centerName
+                                <br />@centerAddress
+                                <br />@centerLocation
+                                <br />Director: @centerDirector
+                                <br />Office Number: @centerOfficeNumber
+                                <br />@centerURL
+                                <br />@centerDescription
+                            </div>
+                        </a>
+                    </div>
                 }
             }
         </div>
@@ -155,18 +158,20 @@
                     centerURL = item.URL;
                     centerImageURL = item.ImageURL;
                     centerDescription = item.Description;
-                    <a href=@centerURL target="_blank">
-                    <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
-                        <img src=@centerImageURL height="192" width="186" />
-                        <br />@centerName
-                        <br />@centerAddress
-                        <br />@centerLocation
-                        <br />Director: @centerDirector
-                        <br />OfficeNumber: @centerOfficeNumber
-                        <br />@centerURL
-                        <br />@centerDescription
+                    <div class="col-md-4">
+                        <a href=@centerURL target="_blank">
+                            <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
+                                <img src=@centerImageURL height="192" width="186" />
+                                <br />@centerName
+                                <br />@centerAddress
+                                <br />@centerLocation
+                                <br />Director: @centerDirector
+                                <br />Office Number: @centerOfficeNumber
+                                <br />@centerURL
+                                <br />@centerDescription
+                            </div>
+                        </a>
                     </div>
-                    </a>
                 }
             }
         </div>
