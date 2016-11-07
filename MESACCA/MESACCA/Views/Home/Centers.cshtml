@@ -70,110 +70,105 @@
 </section>
 <div class="container">
     @*Universities*@
-    <h4 >University - MEP</h4>
+    <h4>University - MEP</h4>
     @*Line across page*@
-    <hr color="black"/>
+    <hr color="black" />
     <div class="row" style="margin-top:20px;">
-            @foreach (var item in Model)
+        @foreach (var item in Model)
+        {
+            if (item.CenterType.ToString().Equals("MEP") == true)
             {
-
-                if (item.CenterType.ToString().Equals("MEP") == true)
-                {
-                    centerName = item.Name;
-                    centerAddress = item.Address;
-                    centerLocation = item.Location;
-                    centerDirector = item.DirectorName;
-                    centerOfficeNumber = item.OfficeNumber;
-                    centerURL = item.URL;
-                    centerImageURL = item.ImageURL;
-                    centerDescription = item.Description;
-                    <div class="col-md-4"> 
-                        <a href=@centerURL target="_blank">
-                            <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
-                                <img src=@centerImageURL height="192" width="186" />
-                                <br />@centerName
-                                <br />@centerAddress
-                                <br />@centerLocation
-                                <br />Director: @centerDirector
-                                <br />Office Number: @centerOfficeNumber
-                                <br />@centerURL
-                                <br />@centerDescription
-                            </div>
-                        </a>
-                    </div>
-                }
+                centerName = item.Name;
+                centerAddress = item.Address;
+                centerLocation = item.Location;
+                centerDirector = item.DirectorName;
+                centerOfficeNumber = item.OfficeNumber;
+                centerURL = item.URL;
+                centerImageURL = item.ImageURL;
+                centerDescription = item.Description;
+                <div class="col-md-4" style="margin-top:20px;">
+                    <a href=@centerURL target="_blank">
+                        <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
+                            <img src=@centerImageURL height="192" width="186" />
+                            <br />@centerName
+                            <br />@centerAddress
+                            <br />@centerLocation
+                            <br />Director: @centerDirector
+                            <br />Office Number: @centerOfficeNumber
+                            <br />@centerURL
+                            <br />@centerDescription
+                        </div>
+                    </a>
+                </div>
             }
+        }
     </div>
     @*Community colleges*@
     <h4 style="margin-top:20px">Community College - MCCP</h4>
     @*Line across page*@
     <hr color="black" />
     <div class="row" style="margin-top:20px;">
-        <div class="col-md-4">
-            @foreach (var item in Model)
+        @foreach (var item in Model)
+        {
+            if (item.CenterType.ToString().Equals("MCCP") == true)
             {
-                if (item.CenterType.ToString().Equals("MCCP") == true)
-                {
-                    centerName = item.Name;
-                    centerAddress = item.Address;
-                    centerLocation = item.Location;
-                    centerDirector = item.DirectorName;
-                    centerOfficeNumber = item.OfficeNumber;
-                    centerURL = item.URL;
-                    centerImageURL = item.ImageURL;
-                    centerDescription = item.Description;
-                    <div class="col-md-4">
-                        <a href=@centerURL target="_blank">
-                            <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
-                                <img src=@centerImageURL height="192" width="186" />
-                                <br />@centerName
-                                <br />@centerAddress
-                                <br />@centerLocation
-                                <br />Director: @centerDirector
-                                <br />Office Number: @centerOfficeNumber
-                                <br />@centerURL
-                                <br />@centerDescription
-                            </div>
-                        </a>
-                    </div>
-                }
+                centerName = item.Name;
+                centerAddress = item.Address;
+                centerLocation = item.Location;
+                centerDirector = item.DirectorName;
+                centerOfficeNumber = item.OfficeNumber;
+                centerURL = item.URL;
+                centerImageURL = item.ImageURL;
+                centerDescription = item.Description;
+                <div class="col-md-4" style="margin-top:20px;">
+                    <a href=@centerURL target="_blank">
+                        <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
+                            <img src=@centerImageURL height="192" width="186" />
+                            <br />@centerName
+                            <br />@centerAddress
+                            <br />@centerLocation
+                            <br />Director: @centerDirector
+                            <br />Office Number: @centerOfficeNumber
+                            <br />@centerURL
+                            <br />@centerDescription
+                        </div>
+                    </a>
+                </div>
             }
-        </div>
+        }
     </div>
     @*School programs*@
     <h4 style="margin-top:20px">Pre-College - MSP</h4>
     @*Line across page*@
     <hr color="black" />
     <div class="row" style="margin-top:20px;">
-        <div class="col-md-4">
-            @foreach (var item in Model)
+        @foreach (var item in Model)
+        {
+            if (item.CenterType.ToString().Equals("MSP") == true)
             {
-                if (item.CenterType.ToString().Equals("MSP") == true)
-                {
-                    centerName = item.Name;
-                    centerAddress = item.Address;
-                    centerLocation = item.Location;
-                    centerDirector = item.DirectorName;
-                    centerOfficeNumber = item.OfficeNumber;
-                    centerURL = item.URL;
-                    centerImageURL = item.ImageURL;
-                    centerDescription = item.Description;
-                    <div class="col-md-4">
-                        <a href=@centerURL target="_blank">
-                            <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
-                                <img src=@centerImageURL height="192" width="186" />
-                                <br />@centerName
-                                <br />@centerAddress
-                                <br />@centerLocation
-                                <br />Director: @centerDirector
-                                <br />Office Number: @centerOfficeNumber
-                                <br />@centerURL
-                                <br />@centerDescription
-                            </div>
-                        </a>
-                    </div>
-                }
+                centerName = item.Name;
+                centerAddress = item.Address;
+                centerLocation = item.Location;
+                centerDirector = item.DirectorName;
+                centerOfficeNumber = item.OfficeNumber;
+                centerURL = item.URL;
+                centerImageURL = item.ImageURL;
+                centerDescription = item.Description;
+                <div class="col-md-4" style="margin-top:20px;">
+                    <a href=@centerURL target="_blank">
+                        <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
+                            <img src=@centerImageURL height="192" width="186" />
+                            <br />@centerName
+                            <br />@centerAddress
+                            <br />@centerLocation
+                            <br />Director: @centerDirector
+                            <br />Office Number: @centerOfficeNumber
+                            <br />@centerURL
+                            <br />@centerDescription
+                        </div>
+                    </a>
+                </div>
             }
-        </div>
+        }
     </div>
 </div>
