@@ -59,9 +59,7 @@ namespace MESACCA.Controllers
 
         public ActionResult Donate()
         {
-            ViewData["Message"] = "Donate Page";
-
-            return View();
+            return View(SQLManager.sqlConnectionGetDonation());
         }
 
         public ActionResult Error()

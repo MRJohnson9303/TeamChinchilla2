@@ -214,6 +214,7 @@
     <Compile Include="Center.cs">
       <DependentUpon>MCCA.tt</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\DonationController.cs" />
     <Compile Include="DataBaseManagers\BlobManager.cs" />
     <Compile Include="Models\BlobData.cs" />
     <Compile Include="Utilities\MyUserManager.cs" />
@@ -266,6 +267,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\Donation\DonationViewModel.cs" />
     <Compile Include="ViewModels\Member\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\Member\AddBlobViewModel.cs" />
     <Compile Include="ViewModels\Member\AddCenterViewModel.cs" />
@@ -622,6 +624,7 @@
     <Content Include="Views\News\EditNews.cshtml" />
     <Content Include="Views\Member\ManageCenter.cshtml" />
     <Content Include="Views\Home\Collaboration.cshtml" />
+    <Content Include="Views\Donation\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

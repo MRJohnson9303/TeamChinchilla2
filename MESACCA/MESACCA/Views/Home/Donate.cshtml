@@ -1,6 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model MESACCA.ViewModels.Donation.DonationViewModel
 @{
     ViewData["Title"] = "Donate";
 }
@@ -11,7 +9,11 @@
         <div class="col-md-12">
             <div class="center-heading">
                 <h2>How your donations are used</h2>
-                <span class="center-line"></span>
+                <div>
+                    @Html.Raw(Model.ArticleBody)
+                </div>
+
+                <div class="divide30"></div>
                 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
                     <input type="hidden" name="cmd" value="_donations">
                     <input type="hidden" name="business" value="RYP5JAQE2EG78">
@@ -23,10 +25,6 @@
                     <input type="hidden" name="no_shipping" value="1">
                     <input type="hidden" name="currency_code" value="USD">
                     <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted">
-                    <table class="col-sm-12" style="margin-bottom: 6px">
-                        <tr><td><input type="hidden" name="on0" value="MEMO">MEMO</td></tr>
-                        <tr><td><input type="text" name="os0" maxlength="200"></td></tr>
-                    </table>
                     <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
                     <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
                 </form>

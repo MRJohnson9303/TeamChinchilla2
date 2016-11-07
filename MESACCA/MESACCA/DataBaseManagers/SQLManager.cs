@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using MESACCA.Utilities;
 using MESACCA.Models;
+using MESACCA.ViewModels.Donation;
 using S = System.Data.SqlClient;
 using T = System.Threading;
 using System.Text.RegularExpressions;
@@ -12,6 +13,8 @@ namespace MESACCA.DataBaseManagers
 {
     public static class SQLManager
     {
+
+        #region ConnectionStrings
         ///This method returns an ADO.NET connection string. 
         public static string GetSqlConnectionString()
         {
@@ -52,6 +55,10 @@ namespace MESACCA.DataBaseManagers
             return foundUser;
         }
 
+        #endregion
+
+        #region User
+
         //This method connects to the database, reads the database and finding an entry with the same information
         //as the provided username and password and returns a User object with some information 
         private static Users accessDatabase(string username, string password)
@@ -90,94 +97,6 @@ namespace MESACCA.DataBaseManagers
                 }
                 return foundUser;
             }
-        }
-
-        public static List<NewsArticle> getNewsPosts()
-        {
-            List<NewsArticle> returnValue = new List<NewsArticle>();
-            try
-            {
-                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
-                {
-                    using (var dbCommand = sqlConnection.CreateCommand())
-                    {
-
-                        //Opening SQL connection
-                        sqlConnection.Open();
-                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                        dbCommand.CommandText = @"SELECT n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL  FROM (SELECT top 100 * FROM NewsArticles order by DateOfArticle desc) as n INNER JOIN Users as u on u.ID = n.CreatedByUser";
-                        var dataReader = dbCommand.ExecuteReader();
-                        var iterator = dataReader.GetEnumerator();
-                        while (iterator.MoveNext())
-                        {
-                            NewsArticleExtension article = new NewsArticleExtension();
-                            //Getting the SQL entry information 
-                            //I trim all of the found User data because the SQL server seems to add spaces.
-                            article.ArticleTitle = dataReader.GetString(0).TrimEnd(' ');
-                            article.ArticleBody = dataReader.GetString(1).TrimEnd(' ');
-                            article.DateOfArticle = dataReader.GetDateTime(2);
-                            article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
-                            article.Attach1URL = dataReader.GetString(5).TrimEnd(' ');
-                            returnValue.Add(article);
-                        }
-                        //Closing SQL connection
-                        sqlConnection.Close();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            return returnValue;
-
-        }
-
-        public static List<NewsArticleExtension> getNewsPostsForAdmin()
-        {
-            List<NewsArticleExtension> returnValue = new List<NewsArticleExtension>();
-            try
-            {
-                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
-                {
-                    using (var dbCommand = sqlConnection.CreateCommand())
-                    {
-
-                        //Opening SQL connection
-                        sqlConnection.Open();
-                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                        dbCommand.CommandText = @"SELECT n.ArticleID, n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL FROM NewsArticles as n INNER JOIN Users as u on u.ID = n.CreatedByUser order by DateOfArticle desc";
-                        var dataReader = dbCommand.ExecuteReader();
-                        var iterator = dataReader.GetEnumerator();
-                        while (iterator.MoveNext())
-                        {
-                            NewsArticleExtension article = new NewsArticleExtension();
-                            //Getting the SQL entry information 
-                            //I trim all of the found User data because the SQL server seems to add spaces.
-                            article.ArticleID = dataReader.GetInt32(0);
-                            article.ArticleTitle = dataReader.GetString(1);
-                            //if article body text is less than 50 chars long return that, else return the first 50
-                            string articleBodyFormatted = dataReader.GetString(2);
-                            articleBodyFormatted = Regex.Replace(articleBodyFormatted, "<.*?>", string.Empty);
-                            article.ArticleBody = articleBodyFormatted.Length < 50 ? articleBodyFormatted : articleBodyFormatted.Substring(0, 50) + "...";
-                            article.DateOfArticle = dataReader.GetDateTime(3);
-                            article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
-                            article.Attach1URL = dataReader.GetString(6).TrimEnd(' ');
-                            returnValue.Add(article);
-                        }
-                        //Closing SQL connection
-                        sqlConnection.Close();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            return returnValue;
-
         }
 
         //This method invokes "accessDatabaseForUser" to attempt to connect to the SQL database and returns a User object
@@ -616,6 +535,11 @@ namespace MESACCA.DataBaseManagers
                 return success;
             }
         }
+
+        #endregion
+
+        #region Centers
+
         //This method invokes "accessDatabaseForCenter" to attempt to connect to the SQL database and returns a Center object
         public static Models.Center sqlConnectionForCenter(int ID)
         {
@@ -855,6 +779,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
+        
         //This method connects to the database, adds to the Centers table, collects Users from the table for comparison,
         //and returns Boolean value regarding success
         private static Boolean accessDatabaseToAddCenter(int newID, Models.Center newCenter)
@@ -1018,6 +943,7 @@ namespace MESACCA.DataBaseManagers
                 return success;
             }
         }
+       
         //This method invokes "accessDatabaseToDeleteCenter" to attempt to connect to the SQL database and returns a Boolean value regarding deletion confirmation
         public static Boolean sqlConnectionDeleteCenter(int ID)
         {
@@ -1081,6 +1007,99 @@ namespace MESACCA.DataBaseManagers
                 return success;
             }
         }
+
+        #endregion
+
+        #region News
+
+        public static List<NewsArticle> getNewsPosts()
+        {
+            List<NewsArticle> returnValue = new List<NewsArticle>();
+            try
+            {
+                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
+                {
+                    using (var dbCommand = sqlConnection.CreateCommand())
+                    {
+
+                        //Opening SQL connection
+                        sqlConnection.Open();
+                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
+                        dbCommand.CommandText = @"SELECT n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL  FROM (SELECT top 100 * FROM NewsArticles order by DateOfArticle desc) as n INNER JOIN Users as u on u.ID = n.CreatedByUser";
+                        var dataReader = dbCommand.ExecuteReader();
+                        var iterator = dataReader.GetEnumerator();
+                        while (iterator.MoveNext())
+                        {
+                            NewsArticleExtension article = new NewsArticleExtension();
+                            //Getting the SQL entry information 
+                            //I trim all of the found User data because the SQL server seems to add spaces.
+                            article.ArticleTitle = dataReader.GetString(0).TrimEnd(' ');
+                            article.ArticleBody = dataReader.GetString(1).TrimEnd(' ');
+                            article.DateOfArticle = dataReader.GetDateTime(2);
+                            article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
+                            article.Attach1URL = dataReader.GetString(5).TrimEnd(' ');
+                            returnValue.Add(article);
+                        }
+                        //Closing SQL connection
+                        sqlConnection.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return returnValue;
+
+        }
+
+        public static List<NewsArticleExtension> getNewsPostsForAdmin()
+        {
+            List<NewsArticleExtension> returnValue = new List<NewsArticleExtension>();
+            try
+            {
+                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
+                {
+                    using (var dbCommand = sqlConnection.CreateCommand())
+                    {
+
+                        //Opening SQL connection
+                        sqlConnection.Open();
+                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
+                        dbCommand.CommandText = @"SELECT n.ArticleID, n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL FROM NewsArticles as n INNER JOIN Users as u on u.ID = n.CreatedByUser order by DateOfArticle desc";
+                        var dataReader = dbCommand.ExecuteReader();
+                        var iterator = dataReader.GetEnumerator();
+                        while (iterator.MoveNext())
+                        {
+                            NewsArticleExtension article = new NewsArticleExtension();
+                            //Getting the SQL entry information 
+                            //I trim all of the found User data because the SQL server seems to add spaces.
+                            article.ArticleID = dataReader.GetInt32(0);
+                            article.ArticleTitle = dataReader.GetString(1);
+                            //if article body text is less than 50 chars long return that, else return the first 50
+                            string articleBodyFormatted = dataReader.GetString(2);
+                            articleBodyFormatted = Regex.Replace(articleBodyFormatted, "<.*?>", string.Empty);
+                            article.ArticleBody = articleBodyFormatted.Length < 50 ? articleBodyFormatted : articleBodyFormatted.Substring(0, 50) + "...";
+                            article.DateOfArticle = dataReader.GetDateTime(3);
+                            article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
+                            article.Attach1URL = dataReader.GetString(6).TrimEnd(' ');
+                            returnValue.Add(article);
+                        }
+                        //Closing SQL connection
+                        sqlConnection.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return returnValue;
+
+        }
+
         public static Boolean sqlConnectionDeleteNews(int ID)
         {
             Boolean success = false;
@@ -1111,6 +1130,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
+
         private static Boolean accessDatabaseToDeleteNews(int ID)
         {
             Boolean success = false;
@@ -1138,6 +1158,7 @@ namespace MESACCA.DataBaseManagers
                 return success;
             }
         }
+
         public static Boolean sqlConnectionAddNews(NewsArticle na)
         {
             Boolean success = false;
@@ -1168,6 +1189,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
+
         private static Boolean accessDatabaseToAddNews(NewsArticle na)
         {
             Boolean success = false;
@@ -1198,6 +1220,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
+
         public static NewsArticle sqlConnectionGetNews(int id)
         {
             NewsArticle na = new NewsArticle();
@@ -1228,6 +1251,7 @@ namespace MESACCA.DataBaseManagers
             }
             return na;
         }
+
         private static NewsArticle accessDatabaseToGetNews(int id)
         {
             NewsArticle na = new NewsArticle();
@@ -1256,6 +1280,7 @@ namespace MESACCA.DataBaseManagers
                 return na;
             }
         }
+
         public static Boolean sqlConnectionEditNews(NewsArticle na)
         {
             Boolean success = false;
@@ -1286,6 +1311,7 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
+
         private static Boolean accessDatabaseToEditNews(NewsArticle na)
         {
             Boolean success = false;
@@ -1316,6 +1342,125 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
+        #endregion
 
+        #region Donation
+
+        public static DonationViewModel sqlConnectionGetDonation()
+        {
+            DonationViewModel na = null;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    na = accessDatabaseGetDonation();
+                    //Break if an account from the SQL database was found 
+                    if (na != null)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return na;
+        }
+
+        private static DonationViewModel accessDatabaseGetDonation()
+        {
+            DonationViewModel na = null;
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"SELECT top 1 * from Donation";
+                    //Building data reader
+                    var dataReader = dbCommand.ExecuteReader();
+                    //Advancing to the next record which is the first and only record in this case
+                    dataReader.Read();
+
+                    na = new DonationViewModel();
+
+                    na.ArticleBody = dataReader.GetString(0);
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return na;
+            }
+        }
+        
+        public static Boolean sqlConnectionUpdateDonation(DonationViewModel na)
+        {
+            Boolean success = false;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 1;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    success = accessDatabaseUpdateDonation(na);
+                    //Break if new post from the SQL database was found to be gone
+                    if (success == true)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return success;
+        }
+
+        private static Boolean accessDatabaseUpdateDonation(DonationViewModel na)
+        {
+            Boolean success = false;
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"UPDATE Donation set Body = @ArticleBody";
+
+                    dbCommand.Parameters.AddWithValue("@ArticleBody", SecurityUtility.ParseSQL(na.ArticleBody));
+
+                    //Building data reader
+                    int dataReader = dbCommand.ExecuteNonQuery();
+
+                    if (dataReader == 1)
+                        success = true;
+                }
+                //Closing SQL connection
+                sqlConnection.Close();
+            }
+            return success;
+        }
+
+
+        #endregion
     }
 }

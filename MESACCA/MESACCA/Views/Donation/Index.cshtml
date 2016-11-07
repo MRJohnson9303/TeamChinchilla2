@@ -1,0 +1,59 @@
+﻿@model MESACCA.ViewModels.Donation.DonationViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<script>
+    $(document).ready(function () {
+        CKEDITOR.replace('ArticleBody',
+            {
+                "extraPlugins": 'imagebrowser',
+                "imageBrowser_listUrl": "/ckeditor-imagebrowser/demo/images/images_list.json"
+            });
+    });
+</script>
+
+<div class="col-sm-8 col-sm-offset-4">
+    <h2>Edit Donation Page</h2>
+
+    @if (ViewBag.Message != null)
+    {
+        <span>@ViewBag.Message</span>
+    }
+
+    @using (Html.BeginForm("UpdateDonation", "Donation", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ArticleBody, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-8">
+                    @Html.TextAreaFor(model => model.ArticleBody, 4, 20, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ArticleBody, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="btn-toolbar">
+
+                <input type="submit" value="Update" class="btn btn-default" />
+
+            </div>
+
+
+
+        </div>
+
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+
+

@@ -1003,7 +1003,7 @@ namespace MESACCA.Controllers
                 case "News":
                     return RedirectToAction("SelectNews", "News", new { referrer = "Admin" });
                 case "Donate":
-                    return RedirectToAction("ManagePersonalAccount");
+                    return RedirectToAction("Index", "Donation");
                 default:
                     break;
             }
