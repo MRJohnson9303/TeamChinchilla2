@@ -1238,7 +1238,7 @@ namespace MESACCA.DataBaseManagers
                     //Opening SQL connection
                     sqlConnection.Open();
                     //Creating SQL query
-                    dbCommand.CommandText = @"SELECT ArticleID, ArticleTitle, ArticleBody, DateOfArticle FROM NewsArticles WHERE ArticleID = @ID";
+                    dbCommand.CommandText = @"SELECT ArticleID, ArticleTitle, ArticleBody, DateOfArticle, Attach1URL FROM NewsArticles WHERE ArticleID = @ID";
                     dbCommand.Parameters.AddWithValue("@ID", id);
                     //Building data reader
                     var dataReader = dbCommand.ExecuteReader();
@@ -1249,6 +1249,7 @@ namespace MESACCA.DataBaseManagers
                     na.ArticleTitle = dataReader.GetString(1);
                     na.ArticleBody = dataReader.GetString(2);
                     na.DateOfArticle = dataReader.GetDateTime(3);
+                    na.Attach1URL = dataReader.GetString(4);
                     //Closing SQL connection
                     sqlConnection.Close();
                 }
