@@ -26,7 +26,7 @@ namespace MESACCA.ViewModels.News
         [DataType(DataType.Date)]
         public DateTime DateOfArticle { get; set; }
 
-        public string Attach1File { get; set; }
+        public string Attach1URL { get; set; }
     }
 }
 
