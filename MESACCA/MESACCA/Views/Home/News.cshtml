@@ -8,35 +8,43 @@
     <div class="container">
         <div class="NewsContainer" style="width: 100%;">
 
-            <div style="font-size:30px;">
+            <div style="font-size:30px; margin-bottom:30px;">
                 News and Updates
             </div>
 
             @foreach (var x in Model)
             {
-            <div style="border: 1px solid; margin-top: 15px">
-                <!-- Header Div ie, who posted, date it was posted Div-->
-                <div style="padding: 5px; font-size: 20px; border-bottom: 1px solid;">
-                    @x.ArticleTitle
+                <div class="row">
+                    <div class="col-md-1"><span class="datecircle">@x.DateOfArticle.ToString("MMM")<br/><span class="datecircleyear">@x.DateOfArticle.ToString("dd")</span></span></div>
+                    <div class="col-md-7 text-left">
+                        <!-- Header Div ie, who posted, date it was posted Div-->
+                        <div class="center-heading">
+                            <h2>@x.ArticleTitle</h2>
+                            
+
+                           
+                            <em>Posted on @x.DateOfArticle.ToString("MM.dd.yyyy") by @x.AuthorName</em>
+
+                        </div>
+
+                        <!-- Content Div-->
+                        <span class="center-line"></span>
+                            @Html.Raw(x.ArticleBody)
+
+                        <!-- Attachment Div-->
+                        @if (x.Attach1URL != "")
+                        {
+                            <div style="padding-top: 5px;">
+                                Download documents related to this article below:<br />
+                                <a href="@x.Attach1URL" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-download-alt"></span> Download </a>
+                            </div>
+                        }
+
+                    </div>
+                    <div class="col-md-offset-4"></div>
                 </div>
 
-                <!-- Author info-->
-                <div style="font-size: 11px; font-style: italic; margin: 0 10px; text-align: right;">
-                    Author: <div style="display: inline-block; position: relative; font-size: 12px; font-style: initial;">@x.AuthorName </div>
-                    Created on: <div style="display: inline-block; position: relative; font-size: 12px; font-style: initial;">@x.DateOfArticle</div>
-                </div>
 
-                <!-- Content Div-->
-                <div style="padding:8px; border-bottom: 1px solid;">
-                    @Html.Raw(x.ArticleBody)
-                </div>
-
-                <!-- Attachment Div-->
-                <div style="padding: 5px;">
-                    <a href="@x.Attach1URL"> Attached file </a>
-                </div>
-
-            </div>
             }
 
         </div>

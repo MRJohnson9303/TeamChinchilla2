@@ -34,7 +34,7 @@ namespace MESACCA.Controllers
             {
                 System.Diagnostics.Debug.WriteLine("Starting here.");
                 String FileUri = "";
-                System.Diagnostics.Debug.WriteLine(File.FileName);
+                //System.Diagnostics.Debug.WriteLine(File.FileName);
                 //check to see if there's a file attached, then read the file
                 if (File != null)
                 {//get string
@@ -44,7 +44,7 @@ namespace MESACCA.Controllers
                     if (String.IsNullOrEmpty(ext) == false &&
                  (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".pdf", StringComparison.OrdinalIgnoreCase) == true))
                     {
-                        System.Diagnostics.Debug.WriteLine("storign into blob");
+                        System.Diagnostics.Debug.WriteLine("storing into blob");
                         //Storing the image into the BLOB and getting the URI string from the BLOB to display image later.
                         FileUri = BlobManager.uploadAndGetImageBLOBURI(File);
                         //Storing the SortedList object returned which contains all Centers
