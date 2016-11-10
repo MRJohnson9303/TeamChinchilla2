@@ -50,6 +50,7 @@
         @Html.LabelFor(model => model.Description, new { @class = "col-md-2 control-label" })
         @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
+    @Html.HiddenFor(model => model.ImageURL)
     @*Adding save button*@
     <div class="form-group">
         @if (ViewData["success"].Equals(true))

@@ -667,30 +667,60 @@ namespace MESACCA.Controllers
             //If no image is provided, then keep the current ImageURL and update the database.
             if (model.Picture == null)
             {
-                //Update the global variable used by Directors
-                center = model.Name;
                 updatedCenter.ImageURL = model.ImageURL;
                 //Getting Boolean result of SQL entry information update
                 success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
+                //If the update was successful, display a 'success' message for the Director.
+                if (success == true)
+                {
+                    //Update the global variable used by Directors
+                    center = model.Name;
+                    ViewBag.Message = "Center was successfully updated";
+                }
+                else
+                {
+                    ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                }
             }
             //Otherwise store the provided image into the BLOB, store the new ImageURL in the Center object and update the database.
             else
             {
-                updatedCenter.Picture = model.Picture;
-                updatedCenter.ImageURL = BlobManager.getCenterImageBLOBURI(updatedCenter);
-                //Updating the model's ImageURL so the new proper center image appears.
-                model.ImageURL = updatedCenter.ImageURL;
-                //Getting Boolean result of SQL entry information update
-                success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
-            }
-            //If the update was successful, display a 'success' message for the Director.
-            if (success == true)
-            {
-                ViewBag.Message = "Center was successfully updated";
-            }
-            else
-            {
-                ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                //Getting file extension.
+                string ext = Path.GetExtension(model.Picture.FileName);
+                //Check for the type of upload see if it's not the correct type of images.
+                if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    //Check if the Admin provides an image with spaces or '/'s in it. This is to prevent problems with the BLOB and image deletion.
+                    //If any are found, prevent progress and give a message.
+                    if (model.Picture.FileName.Contains(" ") == false && model.Picture.FileName.Contains("/") == false)
+                    {
+                        updatedCenter.Picture = model.Picture;
+                        updatedCenter.ImageURL = BlobManager.uploadAndGetCenterImageBLOBURI(updatedCenter);
+                        //Updating the model's ImageURL so the new proper center image appears.
+                        model.ImageURL = updatedCenter.ImageURL;
+                        //Getting Boolean result of SQL entry information update
+                        success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
+                        //If the update was successful, display a 'success' message for the Director.
+                        if (success == true)
+                        {
+                            //Update the global variable used by Directors
+                            center = model.Name;
+                            ViewBag.Message = "Center was successfully updated";
+                        }
+                        else
+                        {
+                            ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                        }
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Please provide a '.jpeg' or '.png' type image with no spaces or '/'s in the name.";
+                    }
+                }
+                else
+                {
+                    ViewBag.Message = "Please provide a '.jpeg' or '.png' type image.";
+                }
             }
             //To make the submit button appear for the Admin to try again in the event of an error.
             ViewData["success"] = true;
@@ -725,83 +755,85 @@ namespace MESACCA.Controllers
             {
                 //Getting file extension.
                 string ext = Path.GetExtension(model.Picture.FileName);
-                //Check for the type of upload see if it's empty, or not the correct type of images.
-                if (String.IsNullOrEmpty(ext) == false &&
-                  (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase) == true))
-                { 
-                    newCenter.Picture = model.Picture;
-                    //Storing the image into the BLOB and getting the URI string from the BLOB to display image later.
-                    newCenter.ImageURL = BlobManager.getCenterImageBLOBURI(newCenter);
-                    //Storing the SortedList object returned which contains all Centers
-                    centerList = SQLManager.sqlConnectionForCentersList();
-                    //If there is a problem with the SQL database, then null values will be given to values in the Center object.
-                    //Check for possible SQL errors using the "Name" field and if there is, set errorCenterList to true which prevents further progress and
-                    //displays an error message for the Admin.
-                    foreach (var item in centerList)
+                //Check for the type of upload see if it's not the correct type of images.
+                if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    //Check if the Admin provides an image with spaces or '/'s in it. This is to prevent problems with the BLOB and image deletion.
+                    //If any are found, prevent progress and give a message.
+                    if (model.Picture.FileName.Contains(" ") == false && model.Picture.FileName.Contains("/") == false)
                     {
-                        if (item.Name == null)
+                        newCenter.Picture = model.Picture;
+                        //Storing the image into the BLOB and getting the URI string from the BLOB to display image later.
+                        newCenter.ImageURL = BlobManager.uploadAndGetCenterImageBLOBURI(newCenter);
+                        //Storing the List object returned which contains all Centers for name comparison.
+                        centerList = SQLManager.sqlConnectionForCentersList();
+                        //If there is a problem with the SQL database, then null values will be given to values in the Center object.
+                        //Check for possible SQL errors using the "Name" field and if there is, prevent further progress and
+                        //displays an error message for the Admin.
+                        errorCenterList = ErrorCenterListCheck(centerList);
+                        if (errorCenterList == false)
                         {
-                            errorCenterList = true;
-                        }
-                    }
-                    if (errorCenterList == false)
-                    {
-                        //ID is compared with the ID value of all Centers and is incremented by 1 in each loop. If ID doesn't match
-                        //a Center ID then break the loop and use the new ID value for the new User account ID.
-                        //This means if a Center is deleted, then a new Center will get the old ID
-                        if (centerList.Count > 0)
-                        {
-                            foreach (var item in centerList)
+                            //ID is compared with the ID value of all Centers and is incremented by 1 in each loop. If ID doesn't match
+                            //a Center ID then break the loop and use the new ID value for the new User account ID.
+                            //This means if a Center is deleted, then a new Center will get the old ID
+                            if (centerList.Count > 0)
                             {
-                                if (ID != item.ID)
+                                foreach (var item in centerList)
                                 {
-                                    break;
+                                    if (ID != item.ID)
+                                    {
+                                        break;
+                                    }
+                                    ID += 1;
                                 }
-                                ID += 1;
                             }
-                        }
-                        newCenter.Name = model.Name;
-                        newCenter.Address = model.Address;
-                        newCenter.Location = model.Location;
-                        newCenter.CenterType = model.CenterType;
-                        newCenter.DirectorName = model.DirectorName;
-                        newCenter.OfficeNumber = model.OfficeNumber;
-                        newCenter.URL = model.URL;
-                        newCenter.Description = model.Description;
-                        //Before creating an account all center names are compared to the provided center name. If there is a match,
-                        //then centerNameNotFound becomes true.
-                        centerNameFound = CenterNameCheck(centerList, newCenter);
-                        //If a center name in the database matches the provided center name, then provide an error message.
-                        //If a center name in the database does not match the provided center name, then create a center.
-                        if (centerNameFound == false)
-                        {
-                            success = SQLManager.sqlConnectionAddCenter(ID, newCenter);
-                            if (success == true)
+                            newCenter.Name = model.Name;
+                            newCenter.Address = model.Address;
+                            newCenter.Location = model.Location;
+                            newCenter.CenterType = model.CenterType;
+                            newCenter.DirectorName = model.DirectorName;
+                            newCenter.OfficeNumber = model.OfficeNumber;
+                            newCenter.URL = model.URL;
+                            newCenter.Description = model.Description;
+                            //Before creating a center all center names are compared to the provided center name. If there is a match,
+                            //then centerNameNotFound becomes true.
+                            centerNameFound = CenterNameCheck(centerList, newCenter);
+                            //If a center name in the database matches the provided center name, then provide an error message.
+                            //If a center name in the database does not match the provided center name, then create a center.
+                            if (centerNameFound == false)
                             {
-                                return RedirectToAction("ManageCenters");
+                                success = SQLManager.sqlConnectionAddCenter(ID, newCenter);
+                                if (success == true)
+                                {
+                                    return RedirectToAction("ManageCenters");
+                                }
+                                else
+                                {
+                                    ViewBag.Message = "Center creation database error. Please try again and if the problem persists, contact the Administrator.";
+                                }
                             }
-                            //If success is false.
+                            //If centerNameFound is true.
                             else
                             {
-                                ViewBag.Message = "Center creation database error. Please try again and if the problem persists, contact the Administrator.";
+                                ViewBag.Message = "The center name provided is currently in use. Please provide another name.";
                             }
                         }
-                        //If centerNameFound is true.
+                        //If errorCenterList is true.
                         else
                         {
-                            ViewBag.Message = "The center name provided is currently in use. Please provide another name.";
+                            ViewBag.Message = "Center list load database error. Please try again and if the problem persists, contact the Administrator.";
                         }
                     }
-                    //If errorCenterList is true.
+                    //If there are spaces or '/'s in the files name.
                     else
                     {
-                        ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                        ViewBag.Message = "Please provide a '.jpeg' or '.png' type image with no spaces or '/'s in the name.";
                     }
                 }
-                //If the upload was empty or an invalid image file was provided.
+                //If an invalid image file was provided.
                 else
                 {
-                    ViewBag.Message = "Please provide a '.jpg' or '.png' type image";
+                    ViewBag.Message = "Please provide a '.jpeg' or '.png' type image.";
                 }
             }
             //If model.Picture is null
@@ -809,7 +841,7 @@ namespace MESACCA.Controllers
             {
                 ViewBag.Message = "Please provide an image.";
             }
-            return View();
+            return View(model);
         }
 
         #endregion
@@ -859,40 +891,96 @@ namespace MESACCA.Controllers
         public ActionResult EditCenter(EditCenterViewModel model)
         {
             Boolean success = false;
+            Boolean errorCenterList = false;
+            Boolean centerNameFound = false;
             Models.Center updatedCenter = new Models.Center();
-            //Getting ViewModel model information given in the textfields of the Edit Center page
-            updatedCenter.Name = model.Name;
-            updatedCenter.Address = model.Address;
-            updatedCenter.Location = model.Location;
-            updatedCenter.CenterType = model.CenterType;
-            updatedCenter.DirectorName = model.DirectorName;
-            updatedCenter.OfficeNumber = model.OfficeNumber;
-            updatedCenter.URL = model.URL;
-            updatedCenter.Description = model.Description;
-            //If no image is provided, then keep the current ImageURL and update the database.
-            if (model.Picture == null)
+            List<Models.Center> centerList = new List<Models.Center>();
+            //Storing the List object returned which contains all Centers
+            centerList = SQLManager.sqlConnectionForCentersList();
+            //If there is a problem with the SQL database, then null values will be given to values in the Center object.
+            //Check for possible SQL errors using the "Name" field and if there is, prevent further progress and
+            //displays an error message for the Admin or Director.
+            errorCenterList = ErrorCenterListCheck(centerList);
+            if (errorCenterList == false)
             {
-                //updatedCenter.Picture = model.Picture;
-                updatedCenter.ImageURL = model.ImageURL;
-                //Getting Boolean result of SQL entry information update
-                success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
+                //Getting ViewModel model information given in the textfields of the Edit Center page
+                updatedCenter.ID = model.ID;
+                updatedCenter.Name = model.Name;
+                updatedCenter.Address = model.Address;
+                updatedCenter.Location = model.Location;
+                updatedCenter.CenterType = model.CenterType;
+                updatedCenter.DirectorName = model.DirectorName;
+                updatedCenter.OfficeNumber = model.OfficeNumber;
+                updatedCenter.URL = model.URL;
+                updatedCenter.Description = model.Description;
+                //Before creating a center all center names are compared to the provided center name. If there is a match,
+                //then centerNameNotFound becomes true.
+                centerNameFound = CenterNameCheck(centerList, updatedCenter);
+                if (centerNameFound == false)
+                {
+                    //If no image is provided, then keep the current ImageURL and update the database.
+                    if (model.Picture == null)
+                    {
+                        updatedCenter.ImageURL = model.ImageURL;
+                        //Getting Boolean result of SQL entry information update
+                        success = SQLManager.sqlConnectionUpdateCenter(updatedCenter.ID, updatedCenter);
+                        //If the update was successful, redirect the Admin to the Manage Centers page
+                        if (success == true)
+                        {
+                            return RedirectToAction("ManageCenters");
+                        }
+                        else
+                        {
+                            ViewBag.Message = "Center edit database error. Please try again and if the problem persists, contact the Administrator.";
+                        }
+                    }
+                    //Otherwise store the provided image into the BLOB, store the new ImageURL in the Center object and update the database.
+                    else
+                    {
+                        //Getting file extension.
+                        string ext = Path.GetExtension(model.Picture.FileName);
+                        //Check for the type of upload see if it's not the correct type of images.
+                        if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true)
+                        {
+                            //Check if the Admin provides an image with spaces or '/'s in it. This is to prevent problems with the BLOB and image deletion.
+                            //If any are found, prevent progress and give a message.
+                            if (model.Picture.FileName.Contains(" ") == false && model.Picture.FileName.Contains("/") == false)
+                            {
+                                updatedCenter.Picture = model.Picture;
+                                updatedCenter.ImageURL = BlobManager.uploadAndGetCenterImageBLOBURI(updatedCenter);
+                                //Getting Boolean result of SQL entry information update
+                                success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
+                                //If the update was successful, redirect the Admin to the Manage Centers page
+                                if (success == true)
+                                {
+                                    return RedirectToAction("ManageCenters");
+                                }
+                                else
+                                {
+                                    ViewBag.Message = "Center edit database error. Please try again and if the problem persists, contact the Administrator.";
+                                }
+                            }
+                            else
+                            {
+                                ViewBag.Message = "Please provide a '.jpeg' or '.png' type image with no spaces or '/'s in the name.";
+                            }
+                        }
+                        else
+                        {
+                            ViewBag.Message = "Please provide a '.jpeg' or '.png' type image.";
+                        }
+                    }
+                }
+                //If centerNameFound is true.
+                else
+                {
+                    ViewBag.Message = "The center name provided is currently in use. Please provide another name.";
+                }
             }
-            //Otherwise store the provided image into the BLOB, store the new ImageURL in the Center object and update the database.
+            //If errorCenterList is true
             else
             {
-                updatedCenter.Picture = model.Picture;
-                updatedCenter.ImageURL = BlobManager.getCenterImageBLOBURI(updatedCenter);
-                //Getting Boolean result of SQL entry information update
-                success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
-            }
-            //If the update was successful, redirect the Admin to the Manage Centers page
-            if (success == true)
-            {
-                return RedirectToAction("ManageCenters");
-            }
-            else
-            {
-                ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                ViewBag.Message = "Center list load for name comparison database error. Please try again and if the problem persists, contact the Administrator.";
             }
             //To make the submit button appear for the Admin to try again in the event of an error.
             ViewData["success"] = true;
@@ -925,6 +1013,12 @@ namespace MESACCA.Controllers
                 model.OfficeNumber = foundCenter.OfficeNumber;
                 model.URL = foundCenter.URL;
                 model.Description = foundCenter.Description;
+                //Trimming the Center's ImageURL of the URL to get the file name and passing the result into the ViewModel.
+                //The file name is used to access the Center's logo in the BLOB and delete it from the BLOB.
+                String trimName;
+                String fileName = foundCenter.ImageURL;
+                trimName = fileName.Substring(fileName.LastIndexOf("/") + 1);
+                model.ImageURL = trimName;
             }
             if (success == false)
             {
@@ -943,8 +1037,9 @@ namespace MESACCA.Controllers
         public ActionResult DeleteCenter(DeleteCenterViewModel model, string button)
         {
             Boolean success = false;
+            Models.Center deletedCenter = new Models.Center();
             if (button.Contains("delete"))
-            {
+            { 
                 success = SQLManager.sqlConnectionDeleteCenter(model.ID);
             }
             else if (button.Contains("back"))
@@ -953,6 +1048,8 @@ namespace MESACCA.Controllers
             }
             if (success == true)
             {
+                deletedCenter.ImageURL = model.ImageURL;
+                BlobManager.deleteCenterImageFromBLOB(deletedCenter);
                 return RedirectToAction("ManageCenters");
             }
             else
@@ -1256,18 +1353,36 @@ namespace MESACCA.Controllers
             }
             return userNameFound;
         }
+        //This method does a center name comparison between a Center object and all Centers in a List.
+        //Returns a Boolean value based on comparisons.
         private Boolean CenterNameCheck(List<Models.Center> centerList, Models.Center newCenter)
         {
             Boolean centerNameFound = false;
             foreach (var item in centerList)
             {
-                if (item.Name.Equals(newCenter.Name))
+                //Return true if a center with the same name with a different ID has been found.
+                //There is a chance that a name was wasn't changed in editing, so we want to prevent
+                //a false positive.
+                if (item.Name.Equals(newCenter.Name) && (item.ID != newCenter.ID))
                 {
                     centerNameFound = true;
                 }
             }
             return centerNameFound;
-
+        }
+        //This method does a center name comparison between all Center objects in a List and null.
+        //Returns a Boolean value based on comparisons.
+        private Boolean ErrorCenterListCheck(List<Models.Center> centerList)
+        {
+            Boolean errorCenterList = false;
+            foreach (var item in centerList)
+            {
+                if (item.Name == null)
+                {
+                    errorCenterList = true;
+                }
+            }
+            return errorCenterList;
         }
     }
 }

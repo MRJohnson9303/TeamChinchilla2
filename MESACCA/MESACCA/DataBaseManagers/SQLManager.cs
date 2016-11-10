@@ -989,7 +989,7 @@ namespace MESACCA.DataBaseManagers
                     sqlConnection.Open();
                     //Creating SQL query
                     dbCommand.CommandText = @"DELETE FROM Users
-                                              WHERE Center IN (SELECT [Name] FROM Centers WHERE ID = @ID)
+                                              WHERE Center IN (SELECT [Name] FROM Centers WHERE ID = @ID) AND AccountType != 'Admin'
                                               DELETE FROM Centers WHERE ID = @ID
 									          SELECT * FROM Centers WHERE ID = @ID";
                     dbCommand.Parameters.AddWithValue("@ID", ID);
