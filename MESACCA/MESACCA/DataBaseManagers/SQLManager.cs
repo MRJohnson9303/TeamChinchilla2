@@ -1038,6 +1038,9 @@ namespace MESACCA.DataBaseManagers
                             article.DateOfArticle = dataReader.GetDateTime(2);
                             article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
                             article.Attach1URL = dataReader.GetString(5).TrimEnd(' ');
+                            article.fileName = article.Attach1URL.Split('/').Last();
+                            String readthis = article.fileName;
+                            System.Diagnostics.Debug.WriteLine(article.Attach1URL);
                             returnValue.Add(article);
                         }
                         //Closing SQL connection
@@ -1084,6 +1087,10 @@ namespace MESACCA.DataBaseManagers
                             article.DateOfArticle = dataReader.GetDateTime(3);
                             article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
                             article.Attach1URL = dataReader.GetString(6).TrimEnd(' ');
+                            //if(article.Attach1URL )
+                            article.fileName = article.Attach1URL.Split('/').Last();
+                            String readthis = article.fileName;
+                            System.Diagnostics.Debug.WriteLine(article.Attach1URL);
                             returnValue.Add(article);
                         }
                         //Closing SQL connection

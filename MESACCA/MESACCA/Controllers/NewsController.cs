@@ -149,9 +149,14 @@ namespace MESACCA.Controllers
         {
             Boolean success = false;
 
+            NewsArticle nA = SQLManager.sqlConnectionGetNews(id);
+
+            string fileToDelete = nA.Attach1URL;
+
             success = SQLManager.sqlConnectionDeleteNews(id);
             if (success == true)
             {
+                BlobManager.deleteBlob(fileToDelete);
                 TempData["Message"] = "Successfully deleted news posting.";
             }
             else
