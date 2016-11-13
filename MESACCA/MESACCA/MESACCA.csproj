@@ -586,7 +586,7 @@
     <Content Include="Views\Member\ManageSite.cshtml" />
     <Content Include="Views\Member\PictureTest.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Centers.cshtml" />
+    <Content Include="Views\Home\MCCAMembers.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Donate.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />

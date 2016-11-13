@@ -20,7 +20,7 @@ namespace MESACCA.Controllers
 
             return View();
         }
-        public ActionResult Centers()
+        public ActionResult MCCAMembers()
         {
             List<Models.Center> centerList = SQLManager.sqlConnectionForCentersList();
             centerList.Sort(delegate (Models.Center x, Models.Center y)
