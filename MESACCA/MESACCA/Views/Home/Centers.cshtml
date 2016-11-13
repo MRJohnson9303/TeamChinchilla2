@@ -69,14 +69,14 @@
     </div>
 </section>
 <div class="container">
-    @*Universities*@
-    <h4>University - MEP</h4>
+    @*School programs*@
+    <h4 style="margin-top:20px">Pre-College - MSP</h4>
     @*Line across page*@
     <hr color="black" />
     <div class="row" style="margin-top:20px;">
         @foreach (var item in Model)
         {
-            if (item.CenterType.ToString().Equals("MEP") == true)
+            if (item.CenterType.ToString().Equals("MSP") == true)
             {
                 centerName = item.Name;
                 centerAddress = item.Address;
@@ -88,7 +88,7 @@
                 centerDescription = item.Description;
                 <div class="col-md-4" style="margin-top:20px;">
                     <a href=@centerURL target="_blank">
-                        <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
+                        <div style="border:1px solid gray;height:500px;text-align:center;padding:10px;">
                             <img src=@centerImageURL height="192" width="186" />
                             <br />@centerName
                             <br />@centerAddress
@@ -122,7 +122,7 @@
                 centerDescription = item.Description;
                 <div class="col-md-4" style="margin-top:20px;">
                     <a href=@centerURL target="_blank">
-                        <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
+                        <div style="border:1px solid gray;height:500px;text-align:center;padding:10px;">
                             <img src=@centerImageURL height="192" width="186" />
                             <br />@centerName
                             <br />@centerAddress
@@ -137,14 +137,14 @@
             }
         }
     </div>
-    @*School programs*@
-    <h4 style="margin-top:20px">Pre-College - MSP</h4>
+    @*Universities*@
+    <h4>University - MEP</h4>
     @*Line across page*@
     <hr color="black" />
     <div class="row" style="margin-top:20px;">
         @foreach (var item in Model)
         {
-            if (item.CenterType.ToString().Equals("MSP") == true)
+            if (item.CenterType.ToString().Equals("MEP") == true)
             {
                 centerName = item.Name;
                 centerAddress = item.Address;
@@ -156,7 +156,7 @@
                 centerDescription = item.Description;
                 <div class="col-md-4" style="margin-top:20px;">
                     <a href=@centerURL target="_blank">
-                        <div style="border:1px solid gray;height:450px;text-align:center;padding:10px;">
+                        <div style="border:1px solid gray;height:500px;text-align:center;padding:10px;">
                             <img src=@centerImageURL height="192" width="186" />
                             <br />@centerName
                             <br />@centerAddress

@@ -22,9 +22,11 @@ namespace MESACCA.Controllers
         }
         public ActionResult Centers()
         {
-            ViewData["Message"] = "Centers Page";
             List<Models.Center> centerList = SQLManager.sqlConnectionForCentersList();
-            Models.Center center = SQLManager.sqlConnectionForCenter(1);
+            centerList.Sort(delegate (Models.Center x, Models.Center y)
+            {
+                return x.Name.CompareTo(y.Name);
+            });
             return View(centerList);
         }
         public ActionResult VisionMissionValues()
