@@ -3,6 +3,10 @@
     ViewData["Title"] = "Manage Centers";
 }
 <h2>Manage Centers</h2>
+@if (ViewBag.Message != null)
+{
+    <span class="text-success">@ViewBag.Message</span>  
+}
 @using (Html.BeginForm("ManageCenters", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
 

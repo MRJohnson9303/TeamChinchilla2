@@ -5,7 +5,7 @@
 <h2>Add Center</h2>
 @if (ViewBag.Message != null)
 {
-    <span>@ViewBag.Message</span>
+    <span class="text-danger">@ViewBag.Message</span>
 }
 @using (Html.BeginForm("AddCenter", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
 {
@@ -91,7 +91,7 @@
         @Html.LabelFor(model => model.URL, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.URL, new { @class = "form-control" })
         <div class="col-md-offset-2">
-            <small class="text-muted">Example: http://www.mesa.edu. 30 character limit.</small>
+            <small class="text-muted">Example: http://www.mesa.edu. 120 character limit.</small>
         </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.URL)

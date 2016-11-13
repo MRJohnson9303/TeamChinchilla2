@@ -578,6 +578,11 @@ namespace MESACCA.Controllers
         public ActionResult ManageCenters()
         {
             List<Models.Center> centerList = new List<Models.Center>();
+            if (TempData["Message"] != null)
+            {
+                ViewBag.Message = TempData["Message"];
+                TempData.Remove("Message");
+            }
             //Storing the List object returned which contains all Centers
             centerList = SQLManager.sqlConnectionForCentersList();
             centerList.Sort(delegate (Models.Center x, Models.Center y)
@@ -692,11 +697,11 @@ namespace MESACCA.Controllers
                         {
                             //Update the global variable used by Directors
                             center = model.Name;
-                            ViewBag.Message = "Center was successfully updated";
+                            ViewBag.Message = "Center updated successfully.";
                         }
                         else
                         {
-                            ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                            ViewBag.Message = "Database error. Could not update center. Please try again and if the problem persists, contact the Administrator.";
                         }
                     }
                     //Otherwise store the provided image into the BLOB, store the new ImageURL in the Center object and update the database.
@@ -705,7 +710,8 @@ namespace MESACCA.Controllers
                         //Getting file extension.
                         string ext = Path.GetExtension(model.Picture.FileName);
                         //Check for the type of upload see if it's not the correct type of images.
-                        if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true)
+                        if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true ||
+                            ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase) == true)
                         {
                             //Check if the Admin provides an image with spaces or '/'s in it. This is to prevent problems with the BLOB and image deletion.
                             //If any are found, prevent progress and give a message.
@@ -731,25 +737,25 @@ namespace MESACCA.Controllers
                             }
                             else
                             {
-                                ViewBag.Message = "Please provide a '.jpeg' or '.png' type image with no spaces or '/'s in the name.";
+                                ViewBag.Message = "Please provide a '.jpg', '.jpeg' or '.png' type image with no spaces or '/'s in the name.";
                             }
                         }
                         else
                         {
-                            ViewBag.Message = "Please provide a '.jpeg' or '.png' type image.";
+                            ViewBag.Message = "Please provide a '.jpg', '.jpeg' or '.png' type image.";
                         }
                     }
                 }
                 //If centerNameFound is true.
                 else
                 {
-                    ViewBag.Message = "The center name provided is currently in use. Please provide another name.";
+                    ViewBag.Message = "Name error. The center name provided is currently in use. Please provide another name.";
                 }
             }
             //If errorCenterList is true
             else
             {
-                ViewBag.Message = "Center list load for name comparison database error. Please try again and if the problem persists, contact the Administrator.";
+                ViewBag.Message = "Database error. Could not load center list for name comparison. Please try again and if the problem persists, contact the Administrator.";
             }
             //To make the submit button appear for the Admin to try again in the event of an error.
             ViewData["success"] = true;
@@ -785,7 +791,8 @@ namespace MESACCA.Controllers
                 //Getting file extension.
                 string ext = Path.GetExtension(model.Picture.FileName);
                 //Check for the type of upload see if it's not the correct type of images.
-                if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true)
+                if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true ||
+                    ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase) == true)
                 {
                     //Check if the Admin provides an image with spaces or '/'s in it. This is to prevent problems with the BLOB and image deletion.
                     //If any are found, prevent progress and give a message.
@@ -834,35 +841,36 @@ namespace MESACCA.Controllers
                                 success = SQLManager.sqlConnectionAddCenter(ID, newCenter);
                                 if (success == true)
                                 {
+                                    TempData["Message"] = "Center added successfully.";
                                     return RedirectToAction("ManageCenters");
                                 }
                                 else
                                 {
-                                    ViewBag.Message = "Center creation database error. Please try again and if the problem persists, contact the Administrator.";
+                                    ViewBag.Message = "Database error. Could not add center. Please try again and if the problem persists, contact the Administrator.";
                                 }
                             }
                             //If centerNameFound is true.
                             else
                             {
-                                ViewBag.Message = "The center name provided is currently in use. Please provide another name.";
+                                ViewBag.Message = "Name error. The center name provided is currently in use. Please provide another name.";
                             }
                         }
                         //If errorCenterList is true.
                         else
                         {
-                            ViewBag.Message = "Center list load database error. Please try again and if the problem persists, contact the Administrator.";
+                            ViewBag.Message = "Database error. Could not load center list for name comparison. Please try again and if the problem persists, contact the Administrator.";
                         }
                     }
                     //If there are spaces or '/'s in the files name.
                     else
                     {
-                        ViewBag.Message = "Please provide a '.jpeg' or '.png' type image with no spaces or '/'s in the name.";
+                        ViewBag.Message = "Please provide a '.jpg', '.jpeg' or '.png' type image with no spaces or '/'s in the name.";
                     }
                 }
                 //If an invalid image file was provided.
                 else
                 {
-                    ViewBag.Message = "Please provide a '.jpeg' or '.png' type image.";
+                    ViewBag.Message = "Please provide a '.jpg', '.jpeg' or '.png'' type image.";
                 }
             }
             //If model.Picture is null
@@ -905,7 +913,7 @@ namespace MESACCA.Controllers
             }
             if (success == false)
             {
-                ViewBag.Message = "Database error. Please refresh the page. If the problem persists, contact the Administrator.";
+                ViewBag.Message = "Database error. Could not load center information. Please refresh the page. If the problem persists, contact the Administrator.";
             }
             //Passing success value into the View. If the Center could not be found, the 'Save' button will be hidden to prevent the User from
             //possibly updating the Center anyway.
@@ -956,11 +964,12 @@ namespace MESACCA.Controllers
                         //If the update was successful, redirect the Admin to the Manage Centers page
                         if (success == true)
                         {
+                            TempData["Message"] = "Center updated successfully.";
                             return RedirectToAction("ManageCenters");
                         }
                         else
                         {
-                            ViewBag.Message = "Center edit database error. Please try again and if the problem persists, contact the Administrator.";
+                            ViewBag.Message = "Database error. Could not update center. Please try again and if the problem persists, contact the Administrator.";
                         }
                     }
                     //Otherwise store the provided image into the BLOB, store the new ImageURL in the Center object and update the database.
@@ -969,7 +978,8 @@ namespace MESACCA.Controllers
                         //Getting file extension.
                         string ext = Path.GetExtension(model.Picture.FileName);
                         //Check for the type of upload see if it's not the correct type of images.
-                        if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true)
+                        if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true ||
+                            ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase) == true)
                         {
                             //Check if the Admin provides an image with spaces or '/'s in it. This is to prevent problems with the BLOB and image deletion.
                             //If any are found, prevent progress and give a message.
@@ -982,34 +992,35 @@ namespace MESACCA.Controllers
                                 //If the update was successful, redirect the Admin to the Manage Centers page
                                 if (success == true)
                                 {
+                                    TempData["Message"] = "Center updated successfully.";
                                     return RedirectToAction("ManageCenters");
                                 }
                                 else
                                 {
-                                    ViewBag.Message = "Center edit database error. Please try again and if the problem persists, contact the Administrator.";
+                                    ViewBag.Message = "Database error. Could not update center. Please try again and if the problem persists, contact the Administrator.";
                                 }
                             }
                             else
                             {
-                                ViewBag.Message = "Please provide a '.jpeg' or '.png' type image with no spaces or '/'s in the name.";
+                                ViewBag.Message = "Please provide a '.jpg', '.jpeg' or '.png' type image with no spaces or '/'s in the name.";
                             }
                         }
                         else
                         {
-                            ViewBag.Message = "Please provide a '.jpeg' or '.png' type image.";
+                            ViewBag.Message = "Please provide a '.jpg', '.jpeg' or '.png' type image.";
                         }
                     }
                 }
                 //If centerNameFound is true.
                 else
                 {
-                    ViewBag.Message = "The center name provided is currently in use. Please provide another name.";
+                    ViewBag.Message = "Name error. The center name provided is currently in use. Please provide another name.";
                 }
             }
             //If errorCenterList is true
             else
             {
-                ViewBag.Message = "Center list load for name comparison database error. Please try again and if the problem persists, contact the Administrator.";
+                ViewBag.Message = "Database error. Could not load center list for name comparison. Please try again and if the problem persists, contact the Administrator.";
             }
             //To make the submit button appear for the Admin to try again in the event of an error.
             ViewData["success"] = true;
@@ -1051,7 +1062,7 @@ namespace MESACCA.Controllers
             }
             if (success == false)
             {
-                ViewBag.Message = "Database error. Please refresh the page. If the problem persists, contact the Administrator.";
+                ViewBag.Message = "Database error. Could not load center. Please refresh the page. If the problem persists, contact the Administrator.";
             }
             //Passing success value into the View. If the Center could not be found, the 'Delete' button will be hidden to prevent the Use from
             //possibly deleting the Center anyway.
@@ -1077,13 +1088,14 @@ namespace MESACCA.Controllers
             }
             if (success == true)
             {
+                TempData["Message"] = "Successfully deleted center.";
                 deletedCenter.ImageURL = model.ImageURL;
                 BlobManager.deleteCenterImageFromBLOB(deletedCenter);
                 return RedirectToAction("ManageCenters");
             }
             else
             {
-                ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                ViewBag.Message = "Database error. Could not delete center. Please try again and if the problem persists, contact the Administrator.";
             }
             //To make the submit button appear for the Admin to try again in the event of an error.
             ViewData["success"] = true;
@@ -1392,7 +1404,7 @@ namespace MESACCA.Controllers
                 //Return true if a center with the same name with a different ID has been found.
                 //There is a chance that a name was wasn't changed in editing, so we want to prevent
                 //a false positive.
-                if (item.Name.Equals(newCenter.Name) && (item.ID != newCenter.ID))
+                if (item.Name.Equals(newCenter.Name.TrimEnd(' ')) && (item.ID != newCenter.ID))
                 {
                     centerNameFound = true;
                 }
