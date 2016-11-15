@@ -683,7 +683,7 @@ namespace MESACCA.Controllers
             {
                 //Before creating a center all center names are compared to the provided center name. If there is a match,
                 //then centerNameNotFound becomes true.
-                centerNameFound = CenterNameCheck(centerList, updatedCenter);
+                centerNameFound = EditCenterNameCheck(centerList, updatedCenter);
                 if (centerNameFound == false)
                 {
                     //If no image is provided, then keep the current ImageURL and update the database.
@@ -783,8 +783,6 @@ namespace MESACCA.Controllers
             Boolean errorCenterList = false;
             Boolean centerNameFound = false;
             Models.Center newCenter = new Models.Center();
-            //ID initialized for comparison
-            int ID = 1;
             List<Models.Center> centerList = new List<Models.Center>();
             if (model.Picture != null)
             {
@@ -809,20 +807,6 @@ namespace MESACCA.Controllers
                         errorCenterList = ErrorCenterListCheck(centerList);
                         if (errorCenterList == false)
                         {
-                            //ID is compared with the ID value of all Centers and is incremented by 1 in each loop. If ID doesn't match
-                            //a Center ID then break the loop and use the new ID value for the new User account ID.
-                            //This means if a Center is deleted, then a new Center will get the old ID
-                            if (centerList.Count > 0)
-                            {
-                                foreach (var item in centerList)
-                                {
-                                    if (ID != item.ID)
-                                    {
-                                        break;
-                                    }
-                                    ID += 1;
-                                }
-                            }
                             newCenter.Name = model.Name;
                             newCenter.Address = model.Address;
                             newCenter.Location = model.Location;
@@ -833,12 +817,12 @@ namespace MESACCA.Controllers
                             newCenter.Description = model.Description;
                             //Before creating a center all center names are compared to the provided center name. If there is a match,
                             //then centerNameNotFound becomes true.
-                            centerNameFound = CenterNameCheck(centerList, newCenter);
+                            centerNameFound = AddCenterNameCheck(centerList, newCenter);
                             //If a center name in the database matches the provided center name, then provide an error message.
                             //If a center name in the database does not match the provided center name, then create a center.
                             if (centerNameFound == false)
                             {
-                                success = SQLManager.sqlConnectionAddCenter(ID, newCenter);
+                                success = SQLManager.sqlConnectionAddCenter(newCenter);
                                 if (success == true)
                                 {
                                     TempData["Message"] = "Center added successfully.";
@@ -846,7 +830,8 @@ namespace MESACCA.Controllers
                                 }
                                 else
                                 {
-                                    ViewBag.Message = "Database error. Could not add center. Please try again and if the problem persists, contact the Administrator.";
+                                    TempData["Message"] = "Database error. Could not add center. Please try again and if the problem persists, contact the Administrator.";
+                                    return RedirectToAction("ManageCenters");
                                 }
                             }
                             //If centerNameFound is true.
@@ -858,7 +843,8 @@ namespace MESACCA.Controllers
                         //If errorCenterList is true.
                         else
                         {
-                            ViewBag.Message = "Database error. Could not load center list for name comparison. Please try again and if the problem persists, contact the Administrator.";
+                            TempData["Message"] = "Database error. Could not load center list for name comparison. Please try again and if the problem persists, contact the Administrator.";
+                            return RedirectToAction("ManageCenters");
                         }
                     }
                     //If there are spaces or '/'s in the files name.
@@ -952,7 +938,7 @@ namespace MESACCA.Controllers
                 updatedCenter.Description = model.Description;
                 //Before creating a center all center names are compared to the provided center name. If there is a match,
                 //then centerNameNotFound becomes true.
-                centerNameFound = CenterNameCheck(centerList, updatedCenter);
+                centerNameFound = EditCenterNameCheck(centerList, updatedCenter);
                 if (centerNameFound == false)
                 {
                     //If no image is provided, then keep the current ImageURL and update the database.
@@ -961,7 +947,7 @@ namespace MESACCA.Controllers
                         updatedCenter.ImageURL = model.ImageURL;
                         //Getting Boolean result of SQL entry information update
                         success = SQLManager.sqlConnectionUpdateCenter(updatedCenter.ID, updatedCenter);
-                        //If the update was successful, redirect the Admin to the Manage Centers page
+                        //Redirect the Admin to the Manage Centers page and print a message regarding success
                         if (success == true)
                         {
                             TempData["Message"] = "Center updated successfully.";
@@ -969,7 +955,8 @@ namespace MESACCA.Controllers
                         }
                         else
                         {
-                            ViewBag.Message = "Database error. Could not update center. Please try again and if the problem persists, contact the Administrator.";
+                            TempData["Message"] = "Database error. Could not update center. Please try again and if the problem persists, contact the Administrator.";
+                            return RedirectToAction("ManageCenters");
                         }
                     }
                     //Otherwise store the provided image into the BLOB, store the new ImageURL in the Center object and update the database.
@@ -997,7 +984,8 @@ namespace MESACCA.Controllers
                                 }
                                 else
                                 {
-                                    ViewBag.Message = "Database error. Could not update center. Please try again and if the problem persists, contact the Administrator.";
+                                    TempData["Message"] = "Database error. Could not update center. Please try again and if the problem persists, contact the Administrator.";
+                                    return RedirectToAction("ManageCenters");
                                 }
                             }
                             else
@@ -1020,7 +1008,8 @@ namespace MESACCA.Controllers
             //If errorCenterList is true
             else
             {
-                ViewBag.Message = "Database error. Could not load center list for name comparison. Please try again and if the problem persists, contact the Administrator.";
+                TempData["Message"] = "Database error. Could not load center list for name comparison. Please try again and if the problem persists, contact the Administrator.";
+                return RedirectToAction("ManageCenters");
             }
             //To make the submit button appear for the Admin to try again in the event of an error.
             ViewData["success"] = true;
@@ -1095,11 +1084,9 @@ namespace MESACCA.Controllers
             }
             else
             {
-                ViewBag.Message = "Database error. Could not delete center. Please try again and if the problem persists, contact the Administrator.";
+                TempData["Message"] = "Database error. Could not delete center. Please try again and if the problem persists, contact the Administrator.";
+                return RedirectToAction("ManageCenters");
             }
-            //To make the submit button appear for the Admin to try again in the event of an error.
-            ViewData["success"] = true;
-            return View(model);
         }
 
         #endregion
@@ -1394,17 +1381,32 @@ namespace MESACCA.Controllers
             }
             return userNameFound;
         }
-        //This method does a center name comparison between a Center object and all Centers in a List.
+
+        //This method does a center name comparison between a Center object and all Centers in a List when updating a Center.
         //Returns a Boolean value based on comparisons.
-        private Boolean CenterNameCheck(List<Models.Center> centerList, Models.Center newCenter)
+        private Boolean EditCenterNameCheck(List<Models.Center> centerList, Models.Center newCenter)
         {
             Boolean centerNameFound = false;
             foreach (var item in centerList)
             {
-                //Return true if a center with the same name with a different ID has been found.
+                //Return true if a center with the same name and a different ID has been found.
                 //There is a chance that a name was wasn't changed in editing, so we want to prevent
-                //a false positive.
+                //a false positive by including the ID.
                 if (item.Name.Equals(newCenter.Name.TrimEnd(' ')) && (item.ID != newCenter.ID))
+                {
+                    centerNameFound = true;
+                }
+            }
+            return centerNameFound;
+        }
+        //This method does a center name comparison between a Center object and all Centers in a List.
+        //Returns a Boolean value based on comparisons.
+        private Boolean AddCenterNameCheck(List<Models.Center> centerList, Models.Center newCenter)
+        {
+            Boolean centerNameFound = false;
+            foreach (var item in centerList)
+            {
+                if (item.Name.Equals(newCenter.Name.TrimEnd(' ')))
                 {
                     centerNameFound = true;
                 }

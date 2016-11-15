@@ -5,7 +5,14 @@
 <h2>Manage Centers</h2>
 @if (ViewBag.Message != null)
 {
-    <span class="text-success">@ViewBag.Message</span>  
+    if (ViewBag.Message.Contains("error"))
+    {
+        <span class="text-danger">@ViewBag.Message</span>
+    }
+    else
+    {
+        <span class="text-success">@ViewBag.Message</span>
+    }
 }
 @using (Html.BeginForm("ManageCenters", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
