@@ -31,7 +31,7 @@ namespace MESACCA.ViewModels.Member
         [DataType(DataType.PhoneNumber)]
         public string OfficeNumber { get; set; }
         [Required]
-        [StringLength(30)]
+        [StringLength(120)]
         public string URL { get; set; }
         [Required]
         [StringLength(250)]

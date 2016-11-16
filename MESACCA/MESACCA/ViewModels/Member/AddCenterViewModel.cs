@@ -29,10 +29,10 @@ namespace MESACCA.ViewModels.Member
         [Required]
         [StringLength(12)]
         [DataType(DataType.PhoneNumber)]
-        [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Not a valid phone number")]
+        [RegularExpression(@"^\(?([0-9]{3})\)?[-]([0-9]{3})[-]([0-9]{4})$", ErrorMessage = "Not a valid phone number")]
         public string OfficeNumber { get; set; }
         [Required]
-        [StringLength(30)]
+        [StringLength(120)]
         public string URL { get; set; }
         [Required]
         [StringLength(250)]

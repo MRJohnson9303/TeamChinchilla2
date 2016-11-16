@@ -9,5 +9,7 @@ namespace MESACCA.Models
     public class NewsArticleExtension : NewsArticle
     {
         public string AuthorName { get; set; }
+
+        
     }
 }

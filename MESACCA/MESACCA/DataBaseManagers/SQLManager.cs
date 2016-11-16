@@ -749,7 +749,7 @@ namespace MESACCA.DataBaseManagers
             }
         }
 
-        public static Boolean sqlConnectionAddCenter(int newID, Models.Center newCenter)
+        public static Boolean sqlConnectionAddCenter(Models.Center newCenter)
         {
             Boolean success = false;
             int totalNumberOfTimesToTry = 3;
@@ -764,7 +764,7 @@ namespace MESACCA.DataBaseManagers
                         T.Thread.Sleep(1000 * retryIntervalSeconds);
                         retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
                     }
-                    success = accessDatabaseToAddCenter(newID, newCenter);
+                    success = accessDatabaseToAddCenter(newCenter);
                     //Break if an account added to the SQL database 
                     if (success == true)
                     {
@@ -780,9 +780,9 @@ namespace MESACCA.DataBaseManagers
             return success;
         }
         
-        //This method connects to the database, adds to the Centers table, collects Users from the table for comparison,
+        //This method connects to the database, adds to the Centers table, checks for rows affected,
         //and returns Boolean value regarding success
-        private static Boolean accessDatabaseToAddCenter(int newID, Models.Center newCenter)
+        private static Boolean accessDatabaseToAddCenter(Models.Center newCenter)
         {
             Boolean success = false;
             Models.Center foundCenter = new Models.Center();
@@ -793,12 +793,10 @@ namespace MESACCA.DataBaseManagers
                     //Opening SQL connection
                     sqlConnection.Open();
                     //Creating SQL query
-                    dbCommand.CommandText = @"INSERT INTO Centers (ID, Name, Address, Location, CenterType, DirectorName,
-														   OfficeNumber, URL, Description, ImageURL)
-									          Values (@ID, @Name, @Address, @Location, @CenterType,
-											  @DirectorName, @OfficeNumber, @URL, @Description, @ImageURL)
-									          Select * FROM Centers WHERE ID = @ID";
-                    dbCommand.Parameters.AddWithValue("@ID", newID);
+                    dbCommand.CommandText = @"INSERT INTO Centers (Name, Address, Location, CenterType, DirectorName,
+														           OfficeNumber, URL, Description, ImageURL)
+									          Values (@Name, @Address, @Location, @CenterType,
+											          @DirectorName, @OfficeNumber, @URL, @Description, @ImageURL)";
                     //I trim the ends of empty spaces
                     dbCommand.Parameters.AddWithValue("@Name", newCenter.Name.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Address", newCenter.Address.TrimEnd(' '));
@@ -810,33 +808,10 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.Parameters.AddWithValue("@Description", newCenter.Description.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@ImageURL", newCenter.ImageURL);
                     //Building data reader
-                    var dataReader = dbCommand.ExecuteReader();
-                    //Advancing to the next record which is the first and only record in this case
-                    dataReader.Read();
-                    //Storing information from found sql entry into a User object 
-                    //I trim all of the found User data because the SQL server seems to add spaces.
-                    foundCenter.ID = dataReader.GetInt32(0);
-                    foundCenter.Name = dataReader.GetString(1).TrimEnd(' ');
-                    foundCenter.Address = dataReader.GetString(2).TrimEnd(' ');
-                    foundCenter.Location = dataReader.GetString(3).TrimEnd(' ');
-                    foundCenter.CenterType = dataReader.GetString(4).TrimEnd(' ');
-                    foundCenter.DirectorName = dataReader.GetString(5).TrimEnd(' ');
-                    foundCenter.OfficeNumber = dataReader.GetString(6).TrimEnd(' ');
-                    foundCenter.URL = dataReader.GetString(7).TrimEnd(' ');
-                    foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
-                    //Determining if the table entry was successfully executed by checking if an entry is returned
-                    //and comparing all of the returned entry's information with the new User's information.
-                    if (dataReader.HasRows == true && newCenter.Name.Equals(foundCenter.Name) &&
-                        newCenter.Address.Equals(foundCenter.Address) &&
-                        newCenter.Location.Equals(foundCenter.Location) &&
-                        newCenter.CenterType.Equals(foundCenter.CenterType) &&
-                        newCenter.DirectorName.Equals(foundCenter.DirectorName) &&
-                        newCenter.OfficeNumber.Equals(foundCenter.OfficeNumber) &&
-                        newCenter.URL.Equals(foundCenter.URL) &&
-                        newCenter.Description.Equals(foundCenter.Description))
-                    {
+                    int dataReader = dbCommand.ExecuteNonQuery();
+
+                    if (dataReader == 1)
                         success = true;
-                    }
                     //Closing SQL connection
                     sqlConnection.Close();
                 }
@@ -860,7 +835,7 @@ namespace MESACCA.DataBaseManagers
                         T.Thread.Sleep(1000 * retryIntervalSeconds);
                         retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
                     }
-                    success = updateDatabaseForCenter(ID, updatedCenter);
+                    success = accessDatabaseToEditCenter(ID, updatedCenter);
                     //Break if an account from the SQL database was found 
                     if (success == true)
                     {
@@ -878,7 +853,7 @@ namespace MESACCA.DataBaseManagers
 
         //This method connects to the database, updates the specified SQL entry by the Center's ID, collects the 
         //SQL entry for comparison and return a Boolean value based on the comparisons performed.
-        private static Boolean updateDatabaseForCenter(int ID, Models.Center updatedCenter)
+        private static Boolean accessDatabaseToEditCenter(int ID, Models.Center updatedCenter)
         {
             Boolean success = false;
             Models.Center foundCenter = new Models.Center();
@@ -908,7 +883,7 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.Parameters.AddWithValue("@URL", updatedCenter.URL.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Description", updatedCenter.Description.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@ImageURL", updatedCenter.ImageURL);
-                    //Specifing update by ID number to ensure correct User's information is updated
+                    //Specifing update by ID number to ensure correct Center's information is updated
                     dbCommand.Parameters.AddWithValue("@ID", ID);
                     //Building data reader
                     var dataReader = dbCommand.ExecuteReader();
@@ -926,14 +901,14 @@ namespace MESACCA.DataBaseManagers
                     foundCenter.Description = dataReader.GetString(8).TrimEnd(' ');
                     //Determining if the update was successfully executed by checking if an entry is returned and comparing
                     //all of the returned entry's information with the updated information provided by the user.
-                    if (dataReader.HasRows == true && updatedCenter.Name.Equals(foundCenter.Name) &&
-                        updatedCenter.Address.Equals(foundCenter.Address) &&
-                        updatedCenter.Location.Equals(foundCenter.Location) &&
-                        updatedCenter.CenterType.Equals(foundCenter.CenterType) &&
-                        updatedCenter.DirectorName.Equals(foundCenter.DirectorName) &&
-                        updatedCenter.OfficeNumber.Equals(foundCenter.OfficeNumber) &&
-                        updatedCenter.URL.Equals(foundCenter.URL) &&
-                        updatedCenter.Description.Equals(foundCenter.Description))
+                    if (dataReader.HasRows == true && updatedCenter.Name.TrimEnd(' ').Equals(foundCenter.Name) &&
+                        updatedCenter.Address.TrimEnd(' ').Equals(foundCenter.Address) &&
+                        updatedCenter.Location.TrimEnd(' ').Equals(foundCenter.Location) &&
+                        updatedCenter.CenterType.TrimEnd(' ').Equals(foundCenter.CenterType) &&
+                        updatedCenter.DirectorName.TrimEnd(' ').Equals(foundCenter.DirectorName) &&
+                        updatedCenter.OfficeNumber.TrimEnd(' ').Equals(foundCenter.OfficeNumber) &&
+                        updatedCenter.URL.TrimEnd(' ').Equals(foundCenter.URL) &&
+                        updatedCenter.Description.TrimEnd(' ').Equals(foundCenter.Description))
                     {
                         success = true;
                     }
@@ -989,7 +964,7 @@ namespace MESACCA.DataBaseManagers
                     sqlConnection.Open();
                     //Creating SQL query
                     dbCommand.CommandText = @"DELETE FROM Users
-                                              WHERE Center IN (SELECT [Name] FROM Centers WHERE ID = @ID)
+                                              WHERE Center IN (SELECT [Name] FROM Centers WHERE ID = @ID) AND AccountType != 'Admin'
                                               DELETE FROM Centers WHERE ID = @ID
 									          SELECT * FROM Centers WHERE ID = @ID";
                     dbCommand.Parameters.AddWithValue("@ID", ID);
@@ -1038,6 +1013,9 @@ namespace MESACCA.DataBaseManagers
                             article.DateOfArticle = dataReader.GetDateTime(2);
                             article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
                             article.Attach1URL = dataReader.GetString(5).TrimEnd(' ');
+                            article.fileName = article.Attach1URL.Split('/').Last();
+                            String readthis = article.fileName;
+                            System.Diagnostics.Debug.WriteLine(article.Attach1URL);
                             returnValue.Add(article);
                         }
                         //Closing SQL connection
@@ -1084,6 +1062,10 @@ namespace MESACCA.DataBaseManagers
                             article.DateOfArticle = dataReader.GetDateTime(3);
                             article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
                             article.Attach1URL = dataReader.GetString(6).TrimEnd(' ');
+                            //if(article.Attach1URL )
+                            article.fileName = article.Attach1URL.Split('/').Last();
+                            String readthis = article.fileName;
+                            System.Diagnostics.Debug.WriteLine(article.Attach1URL);
                             returnValue.Add(article);
                         }
                         //Closing SQL connection
@@ -1323,7 +1305,7 @@ namespace MESACCA.DataBaseManagers
                     sqlConnection.Open();
                     //Creating SQL query
                     dbCommand.CommandText = @"UPDATE NewsArticles 
-                                            SET ArticleTitle = @ArticleTitle, ArticleBody = @ArticleBody, CreatedByUser = @CreatedByUser, DateofArticle = @DateofArticle
+                                            SET ArticleTitle = @ArticleTitle, ArticleBody = @ArticleBody, CreatedByUser = @CreatedByUser, DateofArticle = @DateofArticle, Attach1URL = @Attach1URL
                                             WHERE ArticleID = @id";
 
                     dbCommand.Parameters.AddWithValue("@ArticleTitle", na.ArticleTitle);
@@ -1331,6 +1313,7 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.Parameters.AddWithValue("@CreatedByUser", na.CreatedByUser);
                     dbCommand.Parameters.AddWithValue("@DateofArticle", na.DateOfArticle);
                     dbCommand.Parameters.AddWithValue("@id", na.ArticleID);
+                    dbCommand.Parameters.AddWithValue("@Attach1URL", na.Attach1URL);
                     //Building data reader
                     int dataReader = dbCommand.ExecuteNonQuery();
 
