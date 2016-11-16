@@ -90,21 +90,59 @@ namespace MESACCA.Controllers
             model.ArticleTitle = na.ArticleTitle;
             model.ArticleBody = na.ArticleBody;
             model.DateOfArticle = na.DateOfArticle;
+            model.Attach1URL = na.Attach1URL;
+            model.fileName = model.Attach1URL.Split('/').Last();
             return View(model);
         }
         [HttpPost]
         [ValidateUser]
-        public ActionResult EditNews(AddNewsViewModel anvm)
+        public ActionResult EditNews(AddNewsViewModel anvm, HttpPostedFileBase File)
         {
             if (ModelState.IsValid)
             {
+                //if there's a file to attach, replace the old file.
+                //That way, even if the name is the same, it might be an updated version
+
+                System.Diagnostics.Debug.WriteLine("Starting here.");
+                NewsArticle NV = SQLManager.sqlConnectionGetNews(anvm.ArticleID);
+                String FileUri = NV.Attach1URL;
+                System.Diagnostics.Debug.WriteLine("Old File from news " + FileUri);
+
+                //check to see if there's a file attached, then read the file
+                if (File != null)
+                {//get string
+                    System.Diagnostics.Debug.WriteLine("File uploaded " + File.FileName);
+                    string ext = Path.GetExtension(File.FileName);
+
+                    //Check for the type of upload see if it's empty, or not the correct type of images.
+                    if (String.IsNullOrEmpty(ext) == false &&
+                 (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".pdf", StringComparison.OrdinalIgnoreCase) == true))
+                    {
+                        //delete old blob
+                        //if the old news already has a blob file attached
+                        string blank = "";
+                        if (!(String.IsNullOrEmpty(FileUri)))
+                        {
+                            System.Diagnostics.Debug.WriteLine("Deleting files");
+                            BlobManager.deleteBlob(FileUri);
+                        }
+                        System.Diagnostics.Debug.WriteLine("storing into blob");
+                        //Storing the new file into the BLOB and getting the URI string from the BLOB to display image later.
+                        FileUri = BlobManager.uploadAndGetImageBLOBURI(File);
+                        //Storing the SortedList object returned which contains all Centers
+                        System.Diagnostics.Debug.WriteLine("New FileUri " + FileUri);
+                    }
+                }
+
+
                 var newsArticle = new NewsArticle()
                 {
                     ArticleID = anvm.ArticleID,
                     ArticleTitle = anvm.ArticleTitle,
                     ArticleBody = anvm.ArticleBody,
                     DateOfArticle = DateTime.Now,
-                    CreatedByUser = MyUserManager.GetUser().ID
+                    CreatedByUser = MyUserManager.GetUser().ID,
+                    Attach1URL = FileUri
                 };
 
                 Boolean success = false;

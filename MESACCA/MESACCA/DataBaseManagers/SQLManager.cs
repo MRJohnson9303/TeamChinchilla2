@@ -1305,7 +1305,7 @@ namespace MESACCA.DataBaseManagers
                     sqlConnection.Open();
                     //Creating SQL query
                     dbCommand.CommandText = @"UPDATE NewsArticles 
-                                            SET ArticleTitle = @ArticleTitle, ArticleBody = @ArticleBody, CreatedByUser = @CreatedByUser, DateofArticle = @DateofArticle
+                                            SET ArticleTitle = @ArticleTitle, ArticleBody = @ArticleBody, CreatedByUser = @CreatedByUser, DateofArticle = @DateofArticle, Attach1URL = @Attach1URL
                                             WHERE ArticleID = @id";
 
                     dbCommand.Parameters.AddWithValue("@ArticleTitle", na.ArticleTitle);
@@ -1313,6 +1313,7 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.Parameters.AddWithValue("@CreatedByUser", na.CreatedByUser);
                     dbCommand.Parameters.AddWithValue("@DateofArticle", na.DateOfArticle);
                     dbCommand.Parameters.AddWithValue("@id", na.ArticleID);
+                    dbCommand.Parameters.AddWithValue("@Attach1URL", na.Attach1URL);
                     //Building data reader
                     int dataReader = dbCommand.ExecuteNonQuery();
 
