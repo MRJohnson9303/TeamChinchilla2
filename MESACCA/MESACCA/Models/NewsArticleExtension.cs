@@ -10,6 +10,6 @@ namespace MESACCA.Models
     {
         public string AuthorName { get; set; }
 
-        public string fileName { get; set; }
+        
     }
 }

@@ -27,6 +27,8 @@ namespace MESACCA
 
         public string Attach1URL { get; set; }
 
+        public string fileName { get; set; }
+
 
     }
 }

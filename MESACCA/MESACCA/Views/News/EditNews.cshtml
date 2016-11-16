@@ -43,7 +43,7 @@
                 @Html.ValidationMessageFor(model => model.ArticleBody, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        <dl class="dl-horizontal">
         <dt>
             Attached file:
         </dt>
@@ -51,7 +51,13 @@
         <dd>
             @Model.fileName
         </dd>
-
+        </dl>
+       <!-- @Html.LabelFor(model => model.fileName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.fileName, new { htmlAttributes = new { @class = "form-control", maxlength = 100 } })
+            @Html.ValidationMessageFor(model => model.fileName, "", new { @class = "text-danger" })
+        </div>
+           -->
         <!--<div class="col-lg-2"></div>
         <div class="btn-toolbar">
 
