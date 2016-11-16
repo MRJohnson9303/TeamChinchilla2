@@ -200,7 +200,7 @@ p.lead {
   width: 70px;
   height: 1px;
   border-top: 1px solid #bbb;
-  /* border-bottom: 1px solid $skincolor; */
+  border-bottom: 1px solid $skincolor; 
   margin: auto; }
 
 .center-heading p {
@@ -913,8 +913,8 @@ TOP BARS
   font-weight: 300;
   font-style: normal; }
 
-.footer-col h3:first-letter {
-  border-bottom: 1px solid #000; }
+ /*.footer-col h3:first-letter {
+ border-bottom: 1px solid #000;}*/
 
 .footer-col p {
   color: #333;
@@ -1076,7 +1076,7 @@ Footer light styles
     margin-bottom: 18px;
     font-size: 20px; }
   .footer-light-1 .menu-1 li {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     padding: 3px 0; }
     .footer-light-1 .menu-1 li a {
       font-size: 14px;
@@ -2789,6 +2789,7 @@ ul.post-desc li + li {
 
   ul.timeline > li > .timeline-panel:before {
     top: 27px;
+
     right: -12px;
     border-top: 12px solid transparent;
     border-left: 12px solid #ccc;
