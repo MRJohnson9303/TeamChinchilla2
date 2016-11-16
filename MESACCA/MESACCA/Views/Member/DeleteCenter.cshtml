@@ -48,7 +48,7 @@
     @*Adding URL textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Description, new { @class = "col-md-2 control-label" })
-        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC", rows = "5"})
     </div>
     @Html.HiddenFor(model => model.ImageURL)
     @*Adding save button*@
