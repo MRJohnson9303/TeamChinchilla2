@@ -272,14 +272,14 @@ namespace MESACCA.DataBaseManagers
                     foundUser.Donate = dataReader.GetString(16).TrimEnd(' ');
                     //Determining if the update was successfully executed by checking if an entry is returned and comparing
                     //all of the returned entry's information with the updated information provided by the user.
-                    if (dataReader.HasRows == true && updatedUser.FirstName.Equals(foundUser.FirstName) &&
-                        updatedUser.LastName.Equals(foundUser.LastName) &&
-                        updatedUser.AccountType.Equals(foundUser.AccountType) &&
-                        updatedUser.Center.Equals(foundUser.Center) &&
-                        updatedUser.Email.Equals(foundUser.Email) &&
-                        updatedUser.PhoneNumber.Equals(foundUser.PhoneNumber) &&
-                        updatedUser.Username.Equals(foundUser.Username) &&
-                        updatedUser.Password.Equals(foundUser.Password) &&
+                    if (dataReader.HasRows == true && updatedUser.FirstName.TrimEnd(' ').Equals(foundUser.FirstName) &&
+                        updatedUser.LastName.TrimEnd(' ').Equals(foundUser.LastName) &&
+                        updatedUser.AccountType.TrimEnd(' ').Equals(foundUser.AccountType) &&
+                        updatedUser.Center.TrimEnd(' ').Equals(foundUser.Center) &&
+                        updatedUser.Email.TrimEnd(' ').Equals(foundUser.Email) &&
+                        updatedUser.PhoneNumber.TrimEnd(' ').Equals(foundUser.PhoneNumber) &&
+                        updatedUser.Username.TrimEnd(' ').Equals(foundUser.Username) &&
+                        updatedUser.Password.TrimEnd(' ').Equals(foundUser.Password) &&
                         updatedUser.Home.Equals(foundUser.Home) &&
                         updatedUser.About_Us.Equals(foundUser.About_Us) &&
                         updatedUser.Vision_Mission_Values.Equals(foundUser.Vision_Mission_Values) &&

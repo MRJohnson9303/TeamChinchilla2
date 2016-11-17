@@ -5,7 +5,14 @@
 <h2>Manage Personal Account</h2>
 @if (ViewBag.Message != null)
 {
-    <span>@ViewBag.Message</span>
+    if (ViewBag.Message.Contains("error"))
+    {
+        <span class="text-danger">@ViewBag.Message</span>
+    }
+    else
+    {
+        <span class="text-success">@ViewBag.Message</span>
+    }
 }
 @using (Html.BeginForm("ManagePersonalAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
@@ -13,6 +20,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">35 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.FirstName)
         </font>
@@ -21,23 +31,40 @@
     <div class="form-group">
         @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">35 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.LastName)
         </font>
     </div>
-    @*@Adding Account Type textfield*@
+    @*@Adding read only Account Type textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
-    @*Adding Center textfield*@
-    <div class="form-group">
-        @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
-        @Html.TextBoxFor(model => model.Center, new { @class = "form-control" })
-        <font color="red">
-            @Html.ValidationMessageFor(model => model.Center)
-        </font>
-    </div>
+    if(Model.AccountType.Equals("Admin"))
+    { 
+        @*Adding Center textfield*@
+        <div class="form-group">
+            @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
+            @Html.TextBoxFor(model => model.Center, new { @class = "form-control" })
+            <div class="col-md-offset-2">
+                <small class="text-muted">50 character limit.</small>
+            </div>
+            <font color="red">
+                @Html.ValidationMessageFor(model => model.Center)
+            </font>
+        </div>
+    }
+    else if (Model.AccountType.Equals("Director") || Model.AccountType.Equals("Staff"))
+    {
+        @*@Adding read only Account Type textfield*@
+        <div class="form-group">
+            @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
+            @Html.TextBoxFor(model => model.Center, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+        </div>
+    }
     @*Adding Email textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
@@ -46,7 +73,7 @@
             @Html.ValidationMessageFor(model => model.Email)
         </font>
         <div class="col-md-offset-2">
-            <small class="text-muted">Example: mesa@yahoo.com</small>
+            <small class="text-muted">Example: mesa@yahoo.com. 30 character limit.</small>
         </div>
     </div>
     @*Adding Phone Number textfield*@
@@ -64,6 +91,9 @@
     <div class="form-group">
         @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">20 character limit.</small>
+        </div>
         <font color="red">
             @Html.ValidationMessageFor(model => model.Username)
         </font>
@@ -76,7 +106,7 @@
             @Html.ValidationMessageFor(model => model.Password)
         </font>
         <div class="col-md-offset-2">
-            <small class="text-muted">Please use a combination of letters, numbers, symbols</small>
+            <small class="text-muted">Please use a combination of letters, numbers, symbols. 20 character limit.</small>
         </div>
     </div>
     @*Adding Confirmation Password textfield*@
@@ -95,6 +125,16 @@
             <button type="submit" name="button" value="delete" class="btn btn-primary">Delete</button>
         }
     </div>
+    @Html.HiddenFor(model => model.CurrentUsername)
+    @Html.HiddenFor(model => model.CurrentPassword)
+    @Html.HiddenFor(model => model.Home)
+    @Html.HiddenFor(model => model.About_Us)
+    @Html.HiddenFor(model => model.Vision_Mission_Values)
+    @Html.HiddenFor(model => model.MESA_Schools_Program)
+    @Html.HiddenFor(model => model.MESA_Community_College_Program)
+    @Html.HiddenFor(model => model.MESA_Engineering_Program)
+    @Html.HiddenFor(model => model.News)
+    @Html.HiddenFor(model => model.Donate)
 }
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

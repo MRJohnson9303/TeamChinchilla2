@@ -845,7 +845,7 @@ namespace MESACCA.Controllers
             }
             if (success == false)
             {
-                ViewBag.Message = "Database error. Please refresh the page. If the problem persists, contact the Administrator.";
+                ViewBag.Message = "Database error. Could not load center. Please refresh the page. If the problem persists, contact the Administrator.";
             }
             //Passing success value into the View. If the Center could not be found, the 'Save' button will be hidden to prevent the User from
             //possibly updating the Center anyway.
@@ -1349,13 +1349,31 @@ namespace MESACCA.Controllers
             ManagePersonalAccountViewModel model = new ManagePersonalAccountViewModel();
             //Getting SQL table entry based on User ID
             foundUser = SQLManager.sqlConnectionForUser(adminID);
-            model.FirstName = foundUser.FirstName;
-            model.LastName = foundUser.LastName;
-            model.AccountType = foundUser.AccountType;
-            model.Center = foundUser.Center;
-            model.Email = foundUser.Email;
-            model.PhoneNumber = foundUser.PhoneNumber;
-            model.Username = foundUser.Username;
+            if (foundUser.FirstName != null)
+            {
+                model.FirstName = foundUser.FirstName;
+                model.LastName = foundUser.LastName;
+                model.AccountType = foundUser.AccountType;
+                model.Center = foundUser.Center;
+                model.Email = foundUser.Email;
+                model.PhoneNumber = foundUser.PhoneNumber;
+                model.Username = foundUser.Username;
+                //The following two fields will be used for comparisons in the POST method.
+                model.CurrentUsername = foundUser.Username;
+                model.CurrentPassword = foundUser.Password;
+                model.Home = foundUser.Home;
+                model.About_Us = foundUser.About_Us;
+                model.Vision_Mission_Values = foundUser.Vision_Mission_Values;
+                model.MESA_Schools_Program = foundUser.MESA_Schools_Program;
+                model.MESA_Community_College_Program = foundUser.MESA_Community_College_Program;
+                model.MESA_Engineering_Program = foundUser.MESA_Engineering_Program;
+                model.News = foundUser.News;
+                model.Donate = foundUser.Donate;
+            }
+            else
+            {
+                ViewBag.Message = "Database error. Could not load center. Please refresh the page. If the problem persists, contact the Administrator.";
+            }
             return View(model);
         }
 
@@ -1365,11 +1383,12 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult ManagePersonalAccount(ManagePersonalAccountViewModel model, String button)
         {
+            Boolean errorUserList = false;
             Boolean success = false;
             //userNameFound and userList is for username comparison
             Boolean userNameFound = false;
+            User updatedUser = new User();
             List<User> userList = new List<User>();
-            User foundUser = new User();
             //Send the User to the deletion confirmation verification page.
             if (button.Contains("delete"))
             {
@@ -1377,10 +1396,7 @@ namespace MESACCA.Controllers
             }
             else if (button.Contains("submit"))
             {
-                //Getting SQL table entry based on User ID to obtain the user's rights since the user can't manage own rights
-                //to update and for the username comparison.
-                foundUser = SQLManager.sqlConnectionForUser(adminID);
-                User updatedUser = new User();
+                
                 //Getting ViewModel model information given in the textfields of the Manage Personal Account page that
                 //an Admin is allowed to change
                 updatedUser.FirstName = model.FirstName;
@@ -1395,46 +1411,55 @@ namespace MESACCA.Controllers
                 //into the database.
                 if (String.IsNullOrEmpty(model.Password) == true)
                 {
-                    updatedUser.Password = foundUser.Password;
+                    updatedUser.Password = model.CurrentPassword;
                 }
                 else
                 {
                     updatedUser.Password = model.Password;
                 }
                 //Using the foundUser object to pass the user's current rights to the database.
-                updatedUser.Home = foundUser.Home;
-                updatedUser.About_Us = foundUser.About_Us;
-                updatedUser.Vision_Mission_Values = foundUser.Vision_Mission_Values;
-                updatedUser.MESA_Schools_Program = foundUser.MESA_Schools_Program;
-                updatedUser.MESA_Community_College_Program = foundUser.MESA_Community_College_Program;
-                updatedUser.MESA_Engineering_Program = foundUser.MESA_Engineering_Program;
-                updatedUser.News = foundUser.News;
-                updatedUser.Donate = foundUser.Donate;
+                updatedUser.Home = model.Home;
+                updatedUser.About_Us = model.About_Us;
+                updatedUser.Vision_Mission_Values = model.Vision_Mission_Values;
+                updatedUser.MESA_Schools_Program = model.MESA_Schools_Program;
+                updatedUser.MESA_Community_College_Program = model.MESA_Community_College_Program;
+                updatedUser.MESA_Engineering_Program = model.MESA_Engineering_Program;
+                updatedUser.News = model.News;
+                updatedUser.Donate = model.Donate;
                 //Storing the List object returned which contains all Users for username comparison.
                 userList = SQLManager.sqlConnectionForUsersList();
-                //Before creating an account all usernames are compared to the provided username. If there is a match,
-                //then userNameNotFound becomes true.
-                userNameFound = UserNameCheck(userList, updatedUser);
-                //If a username in the database matches the provided username, then provide an error message.
-                //If a username in the database does not match the provided username, then push new account changes to the database.
-                //In the event the username is not changed, allow push of new account changes to the database.
-                if (userNameFound == false || (updatedUser.Username.Equals(foundUser.Username) == true))
+                errorUserList = ErrorUserListCheck(userList);
+                if (errorUserList == false)
                 {
-                    //Getting Boolean result of SQL entry information update
-                    success = SQLManager.sqlConnectionUpdateUser(adminID, updatedUser);
-                    //If the update was successful, create a confirmation message for the User.
-                    if (success == true)
+                    //Before creating an account all usernames are compared to the provided username. If there is a match,
+                    //then userNameNotFound becomes true.
+                    userNameFound = UserNameCheck(userList, updatedUser);
+                    //If a username in the database matches the provided username, then provide an error message.
+                    //If a username in the database does not match the provided username, then push new account changes to the database.
+                    //In the event the username is not changed, allow push of new account changes to the database.
+                    if (userNameFound == false || (updatedUser.Username.Equals(model.CurrentUsername) == true))
                     {
-                        ViewBag.Message = "Account was successfully updated";
+                        //Getting Boolean result of SQL entry information update
+                        success = SQLManager.sqlConnectionUpdateUser(adminID, updatedUser);
+                        //If the update was successful, create a confirmation message for the User.
+                        if (success == true)
+                        {
+                            ViewBag.Message = "Account was successfully updated.";
+                        }
+                        else
+                        {
+                            ViewBag.Message = "Database error. Could not update account. Please try again and if the problem persists, contact the Administrator.";
+                        }
                     }
                     else
                     {
-                        ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                        ViewBag.Message = "Name error. The Username provided is currently in use. Please provide another username.";
                     }
                 }
                 else
                 {
-                    ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+                    ViewBag.Message = "Database error. Could not load user list for username comparison. Please try again and if the problem persists, contact the Administrator.";
+
                 }
             }
             return View(model);
