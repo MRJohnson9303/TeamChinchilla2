@@ -97,7 +97,12 @@ namespace MESACCA.Controllers
         [HttpPost]
         [ValidateUser]
         public ActionResult EditNews(AddNewsViewModel anvm, HttpPostedFileBase File)
-        {
+        {//, string button
+            /*if (button.Contains("back"))
+            {
+                return RedirectToAction("SelectNews");
+            }*/
+
             if (ModelState.IsValid)
             {
                 //if there's a file to attach, replace the old file.

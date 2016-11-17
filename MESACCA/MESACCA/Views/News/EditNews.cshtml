@@ -76,8 +76,11 @@
         <div class="col-lg-2"></div>
         <div class="btn-toolbar">
             <div class="col-md-2">
-            <input type="file" ID="File" name="File" />
-            <input type="submit" value="Save" class="btn btn-default" />
+                <input type="file" ID="File" name="File" />
+                <input type="submit" value="Save" class="btn btn-default" />
+               <!-- | <button type="submit" name="button" value="back" class="btn btn-default">Back to List</button>-->
+                <a href="@Url.Action("SelectNews", "News")" class="btn btn-primary"> Back to Selecting News</a>
+
             </div>
 
             @*@if (Request.Params["referrer"] == "Admin")
