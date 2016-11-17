@@ -271,6 +271,7 @@
     <Compile Include="ViewModels\Member\AddAccountViewModel.cs" />
     <Compile Include="ViewModels\Member\AddBlobViewModel.cs" />
     <Compile Include="ViewModels\Member\AddCenterViewModel.cs" />
+    <Compile Include="ViewModels\Member\DeleteAccountViewModel.cs" />
     <Compile Include="ViewModels\Member\DeleteCenterViewModel.cs" />
     <Compile Include="ViewModels\Member\EditCenterViewModel.cs" />
     <Compile Include="ViewModels\Member\EditAccountViewModel.cs" />

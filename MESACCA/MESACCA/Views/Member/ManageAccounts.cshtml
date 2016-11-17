@@ -3,23 +3,33 @@
     ViewData["title"] = "Manage Accounts";
 }
 <h2>Manage Accounts</h2>
-<fieldset>
-    @using (Html.BeginForm("ManageAccounts", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@if (ViewBag.Message != null)
+{
+    if (ViewBag.Message.Contains("error"))
     {
-        @*Adding a create account button that will be 20 pixels about the search bar and other buttons*@
-        <button type="submit" name="button" value="Add Account" class="btn btn-primary">Add Account</button>
-        @*Adding textfield and buttons to create a search bar*@
-        <label>Name:</label>
-        @*Textbox that will be used to search user list*@
-        <input type="text" name="name">
-        @*Adding a search button that sends the contents of the textbox to the "name" parameter of "ManageAccounts"*@
-        <button type="submit" name ="button" class="btn btn-primary">Search</button>
-        @*Adding a filter button that sends the "First Name" value to the "sortOrder" parameter of "ManageAccounts"*@
-        <button type="submit" name ="button" value="First Name" class="btn btn-primary">Filter by First Name</button>
-        @*Adding a filter button that sends the "Last Name" value to the "sortOrder" parameter of "ManageAccounts"*@
-        <button type="submit" name ="button" value="Last Name" class="btn btn-primary">Filter by Last Name</button>
+        <span class="text-danger">@ViewBag.Message</span>
     }
-</fieldset>
+    else
+    {
+        <span class="text-success">@ViewBag.Message</span>
+    }
+}
+@using (Html.BeginForm("ManageAccounts", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @*Adding a create account button that will be 20 pixels about the search bar and other buttons*@
+    <button type="submit" name="button" value="Add Account" class="btn btn-primary">Add Account</button>
+    @*Adding textfield and buttons to create a search bar*@
+    <label>Name:</label>
+    @*Textbox that will be used to search user list*@
+    <input type="text" name="name">
+    @*Adding a search button that sends the contents of the textbox to the "name" parameter of "ManageAccounts"*@
+    <button type="submit" name ="button" class="btn btn-primary">Search</button>
+    @*Adding a filter button that sends the "First Name" value to the "sortOrder" parameter of "ManageAccounts"*@
+    <button type="submit" name ="button" value="First Name" class="btn btn-primary">Filter by First Name</button>
+    @*Adding a filter button that sends the "Last Name" value to the "sortOrder" parameter of "ManageAccounts"*@
+    <button type="submit" name ="button" value="Last Name" class="btn btn-primary">Filter by Last Name</button>
+}
+
 <table class="table">
     <thead>
         <tr>

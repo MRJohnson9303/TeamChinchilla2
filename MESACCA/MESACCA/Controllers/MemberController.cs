@@ -53,6 +53,11 @@ namespace MESACCA.Controllers
         {
             List<User> foundUserList = new List<User>();
             List<User> userList = new List<User>();
+            if (TempData["Message"] != null)
+            {
+                ViewBag.Message = TempData["Message"];
+                TempData.Remove("Message");
+            }
             //Storing the List object returned which contains all Users
             foundUserList = SQLManager.sqlConnectionForUsersList();
             //If the User is a Director, allow only Users who are Staff and in the Director's Center to be in the list
@@ -191,6 +196,8 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult AddDirectorAccount(string firstName, string lastName, string accountType)
         {
+            Boolean success = false;
+            Boolean errorCenterList = false;
             AddAccountViewModel model = new AddAccountViewModel();
             List<Models.Center> centerList = new List<Models.Center>();
             List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
@@ -207,13 +214,23 @@ namespace MESACCA.Controllers
             model.Donate = true;
             //This is to populate the Centers dropbox in the View.
             centerList = SQLManager.sqlConnectionForCentersList();
-            //Storing all center names into the SelectListItem List.
-            foreach (var item in centerList)
+            errorCenterList = ErrorCenterListCheck(centerList);
+            if (errorCenterList == false)
             {
-                centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                success = true;
+                //Storing all center names into the SelectListItem List.
+                foreach (var item in centerList)
+                {
+                    centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                }
+                //Passing the items inside a SelectList into the View using ViewBag.
+                ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
             }
-            //Passing the items inside a SelectList into the View using ViewBag.
-            ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+            else
+            {
+                ViewBag.Message = "Database error. Could not load center list for account creation. Please refresh the page. If the problem persists, contact the Administrator.";
+            }
+            ViewData["success"] = success;
             return View(model);
         }
 
@@ -221,8 +238,12 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult AddDirectorAccount(AddAccountViewModel model)
         {
+            Boolean errorUserList = false;
+            Boolean errorCenterList = false;
             Boolean success = false;
             User newUser = new User();
+            List<Models.Center> centerList = new List<Models.Center>();
+            List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
             //ID initialized for comparison
             int ID = 1;
             //userNameFound initialized for comparison
@@ -230,55 +251,88 @@ namespace MESACCA.Controllers
             List<User> userList = new List<User>();
             //Storing the List object returned which contains all Users
             userList = SQLManager.sqlConnectionForUsersList();
-            //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
-            //a User ID then break the loop and use the new ID value for the new User account ID.
-            //This means if a User is deleted, then a new User will get the old ID
-            foreach (var item in userList)
+            errorUserList = ErrorUserListCheck(userList);
+            if (errorUserList == false)
             {
-                if (ID != item.ID)
+                //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
+                //a User ID then break the loop and use the new ID value for the new User account ID.
+                //This means if a User is deleted, then a new User will get the old ID
+                foreach (var item in userList)
                 {
-                    break;
+                    if (ID != item.ID)
+                    {
+                        break;
+                    }
+                    ID += 1;
                 }
-                ID += 1;
-            }
-            newUser.FirstName = model.FirstName;
-            newUser.LastName = model.LastName;
-            newUser.AccountType = model.AccountType;
-            newUser.Center = model.Center;
-            newUser.Email = model.Email;
-            newUser.PhoneNumber = model.PhoneNumber;
-            newUser.Username = model.Username;
-            newUser.Password = model.Password;
-            newUser.Home = "True";
-            newUser.About_Us = "True";
-            newUser.Vision_Mission_Values = "True";
-            newUser.MESA_Schools_Program = "True";
-            newUser.MESA_Community_College_Program = "True";
-            newUser.MESA_Engineering_Program = "True";
-            newUser.News = "True";
-            newUser.Donate = "True";
-            ViewData["CreatorAccountType"] = userAccountType;
-            //Before creating an account all usernames are compared to the provided username. If there is a match,
-            //then userNameNotFound becomes true.
-            userNameFound = UserNameCheck(userList, newUser);
-            //If a username in the database matches the provided username, then provide an error message.
-            //If a username in the database does not match the provided username, then create an account.
-            if (userNameFound == false)
-            {
-                success = SQLManager.sqlConnectionAddUser(ID, newUser);
-                if (success == true)
+                newUser.FirstName = model.FirstName;
+                newUser.LastName = model.LastName;
+                newUser.AccountType = model.AccountType;
+                newUser.Center = model.Center;
+                newUser.Email = model.Email;
+                newUser.PhoneNumber = model.PhoneNumber;
+                newUser.Username = model.Username;
+                newUser.Password = model.Password;
+                newUser.Home = "True";
+                newUser.About_Us = "True";
+                newUser.Vision_Mission_Values = "True";
+                newUser.MESA_Schools_Program = "True";
+                newUser.MESA_Community_College_Program = "True";
+                newUser.MESA_Engineering_Program = "True";
+                newUser.News = "True";
+                newUser.Donate = "True";
+                //Before creating an account all usernames are compared to the provided username. If there is a match,
+                //then userNameNotFound becomes true.
+                userNameFound = UserNameCheck(userList, newUser);
+                //If a username in the database matches the provided username, then provide an error message.
+                //If a username in the database does not match the provided username, then create an account.
+                if (userNameFound == false)
                 {
-                    return RedirectToAction("ManageAccounts");
+                    success = SQLManager.sqlConnectionAddUser(ID, newUser);
+                    if (success == true)
+                    {
+                        TempData["Message"] = "Director added successfully.";
+                        return RedirectToAction("ManageAccounts");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Database error. Could not create director account. Please try again and if the problem persists, contact the Administrator.";
+                        return RedirectToAction("ManageAccounts");
+                    }
                 }
                 else
                 {
-                    ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                    //This is to populate the Centers dropbox in the View.
+                    centerList = SQLManager.sqlConnectionForCentersList();
+                    errorCenterList = ErrorCenterListCheck(centerList);
+                    if (errorCenterList == false)
+                    {
+                        success = true;
+                        //Storing all center names into the SelectListItem List.
+                        foreach (var item in centerList)
+                        {
+                            centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                        }
+                        //Passing the items inside a SelectList into the View using ViewBag.
+                        ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                        ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+                    }
+                    //If errorCenterList is true.
+                    else
+                    {
+                        TempData["Message"] = "Database error. The Username provided is currently in use and could not reload center list for account creation. Please try again and if the problem persists, contact the Administrator.";
+                        return RedirectToAction("ManageAccounts");
+                    } 
                 }
             }
+            //If errorUserList is true.
             else
             {
-                ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+                TempData["Message"] = "Database error. Could not load user list for username comparison. Please try again and if the problem persists, contact the Administrator.";
+                return RedirectToAction("ManageAccounts");
             }
+            //To make the submit button appear for the Admin to try again in the event of an error.
+            ViewData["success"] = true;
             return View(model);
         }
 
@@ -288,6 +342,8 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult AddStaffAccount(string firstName, string lastName, string accountType)
         {
+            Boolean success = false;
+            Boolean errorCenterList = false;
             AddAccountViewModel model = new AddAccountViewModel();
             List<Models.Center> centerList = new List<Models.Center>();
             List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
@@ -303,6 +359,8 @@ namespace MESACCA.Controllers
             model.News = true;
             model.Donate = true;
             //Passing User's account type into the View using ViewData for comparisons.
+            //If the creator is an Admin, then use the list of centers.
+            //If the creator is a Director, then allow only the Director's centers in the Center field.
             ViewData["CreatorAccountType"] = userAccountType;
             if (userAccountType.Equals("Director"))
             {
@@ -311,13 +369,23 @@ namespace MESACCA.Controllers
             }
             //This is to populate the Centers dropbox in the View.
             centerList = SQLManager.sqlConnectionForCentersList();
-            //Storing all center names into the SelectListItem List.
-            foreach (var item in centerList)
+            errorCenterList = ErrorCenterListCheck(centerList);
+            if (errorCenterList == false)
             {
-                centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                success = true;
+                //Storing all center names into the SelectListItem List.
+                foreach (var item in centerList)
+                {
+                    centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                }
+                //Passing the items inside a SelectList into the View using ViewBag.
+                ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
             }
-            //Passing the items inside a SelectList into the View using ViewBag.
-            ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+            else
+            {
+                ViewBag.Message = "Database error. Could not load center list for account creation. Please refresh the page. If the problem persists, contact the Administrator.";
+            }
+            ViewData["success"] = success;
             return View(model);
         }
 
@@ -327,64 +395,108 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult AddStaffAccount(AddAccountViewModel model)
         {
+            Boolean errorCenterList = false;
+            Boolean errorUserList = false;
             Boolean success = false;
+            //userNameNoFound initialized for comparison
+            Boolean userNameFound = false;
             User newUser = new User();
             //ID initialized for comparison
             int ID = 1;
-            //userNameNoFound initialized for comparison
-            Boolean userNameFound = false;
             List<User> userList = new List<User>();
+            List<Models.Center> centerList = new List<Models.Center>();
+            List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
             //Storing the List object returned which contains all Users
             userList = SQLManager.sqlConnectionForUsersList();
-            //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
-            //a User ID then break the loop and use the new ID value for the new User account ID.
-            //This means if a User is deleted, then a new User will get the old ID
-            foreach (var item in userList)
+            errorUserList = ErrorUserListCheck(userList);
+            if (errorUserList == false)
             {
-                if (ID != item.ID)
+                //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
+                //a User ID then break the loop and use the new ID value for the new User account ID.
+                //This means if a User is deleted, then a new User will get the old ID
+                foreach (var item in userList)
                 {
-                    break;
+                    if (ID != item.ID)
+                    {
+                        break;
+                    }
+                    ID += 1;
                 }
-                ID += 1;
-            }
-            newUser.FirstName = model.FirstName;
-            newUser.LastName = model.LastName;
-            newUser.AccountType = model.AccountType;
-            newUser.Center = model.Center;
-            newUser.Email = model.Email;
-            newUser.PhoneNumber = model.PhoneNumber;
-            newUser.Username = model.Username;
-            newUser.Password = model.Password;
-            newUser.Home = model.Home.ToString();
-            newUser.About_Us = model.About_Us.ToString();
-            newUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
-            newUser.MESA_Schools_Program = model.MESA_Schools_Program.ToString();
-            newUser.MESA_Community_College_Program = model.MESA_Community_College_Program.ToString();
-            newUser.MESA_Engineering_Program = model.MESA_Engineering_Program.ToString();
-            newUser.News = model.News.ToString();
-            newUser.Donate = model.Donate.ToString();
-            ViewData["CreatorAccountType"] = userAccountType;
-            //Before creating an account all usernames are compared to the provided username. If there is a match,
-            //then userNameNotFound becomes true.
-            userNameFound = UserNameCheck(userList, newUser);
-            //If a username in the database matches the provided username, then provide an error message.
-            //If a username in the database does not match the provided username, then create an account.
-            if (userNameFound == false)
-            {
-                success = SQLManager.sqlConnectionAddUser(ID, newUser);
-                if (success == true)
+                newUser.FirstName = model.FirstName;
+                newUser.LastName = model.LastName;
+                newUser.AccountType = model.AccountType;
+                newUser.Center = model.Center;
+                newUser.Email = model.Email;
+                newUser.PhoneNumber = model.PhoneNumber;
+                newUser.Username = model.Username;
+                newUser.Password = model.Password;
+                newUser.Home = model.Home.ToString();
+                newUser.About_Us = model.About_Us.ToString();
+                newUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
+                newUser.MESA_Schools_Program = model.MESA_Schools_Program.ToString();
+                newUser.MESA_Community_College_Program = model.MESA_Community_College_Program.ToString();
+                newUser.MESA_Engineering_Program = model.MESA_Engineering_Program.ToString();
+                newUser.News = model.News.ToString();
+                newUser.Donate = model.Donate.ToString();
+                ViewData["CreatorAccountType"] = userAccountType;
+                //Before creating an account all usernames are compared to the provided username. If there is a match,
+                //then userNameNotFound becomes true.
+                userNameFound = UserNameCheck(userList, newUser);
+                //If a username in the database matches the provided username, then provide an error message.
+                //If a username in the database does not match the provided username, then create an account.
+                if (userNameFound == false)
                 {
-                    return RedirectToAction("ManageAccounts");
+                    success = SQLManager.sqlConnectionAddUser(ID, newUser);
+                    if (success == true)
+                    {
+                        TempData["Message"] = "Staff added successfully.";
+                        return RedirectToAction("ManageAccounts");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Database error. Could not create staff account. Please try again and if the problem persists, contact the Administrator.";
+                        return RedirectToAction("ManageAccounts");
+                    }
                 }
                 else
                 {
-                    ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                    ViewData["CreatorAccountType"] = userAccountType;
+                    if (userAccountType.Equals("Director"))
+                    {
+                        //Giving model.Center the Director's global center value
+                        model.Center = center;
+                    }
+                    //This is to populate the Centers dropbox in the View.
+                    centerList = SQLManager.sqlConnectionForCentersList();
+                    errorCenterList = ErrorCenterListCheck(centerList);
+                    if (errorCenterList == false)
+                    {
+                        success = true;
+                        //Storing all center names into the SelectListItem List.
+                        foreach (var item in centerList)
+                        {
+                            centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                        }
+                        //Passing the items inside a SelectList into the View using ViewBag.
+                        ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                        ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+                    }
+                    //If errorCenterList is true.
+                    else
+                    {
+                        TempData["Message"] = "Database error. The Username provided is currently in use and could not reload center list for account creation. Please try again and if the problem persists, contact the Administrator.";
+                        return RedirectToAction("ManageAccounts");
+                    }
                 }
             }
+            //If errorUserList is true.
             else
             {
-                ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+                TempData["Message"] = "Database error. Could not load user list for username comparison. Please try again and if the problem persists, contact the Administrator.";
+                return RedirectToAction("ManageAccounts");
             }
+            //To make the submit button appear for the Admin or Director to try again in the event of an error.
+            ViewData["success"] = true;
             return View(model);
         }
 
@@ -397,47 +509,75 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult EditAccount(int ID)
         {
+            Boolean success = false;
+            Boolean errorCenterList = false;
             User foundUser = new User();
             EditAccountViewModel model = new EditAccountViewModel();
             List<Models.Center> centerList = new List<Models.Center>();
             List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
             //Getting User information based on User ID
             foundUser = SQLManager.sqlConnectionForUser(ID);
-            //Storing the information in ViewData to be used to fill in the Edit form
-            model.ID = foundUser.ID;
-            model.FirstName = foundUser.FirstName;
-            model.LastName = foundUser.LastName;
-            model.AccountType = foundUser.AccountType;
-            model.Center = foundUser.Center;
-            model.Email = foundUser.Email;
-            model.PhoneNumber = foundUser.PhoneNumber;
-            model.Username = foundUser.Username;
-            model.Home = Convert.ToBoolean(foundUser.Home);
-            model.About_Us = Convert.ToBoolean(foundUser.About_Us);
-            model.Vision_Mission_Values = Convert.ToBoolean(foundUser.Vision_Mission_Values);
-            model.MESA_Schools_Program = Convert.ToBoolean(foundUser.MESA_Schools_Program);
-            model.MESA_Community_College_Program = Convert.ToBoolean(foundUser.MESA_Community_College_Program);
-            model.MESA_Engineering_Program = Convert.ToBoolean(foundUser.MESA_Engineering_Program);
-            model.News = Convert.ToBoolean(foundUser.News);
-            model.Donate = Convert.ToBoolean(foundUser.Donate);
-            //Passing the User's account type into the View for comparison.
-            //This will cause a change in the form such as an Admin given a dropbox for Centers and a Director,
-            //will be given a readonly Center textbox.
-            ViewData["EditorAccountType"] = userAccountType;
-            //This is to populate the Centers dropbox in the View.
-            centerList = SQLManager.sqlConnectionForCentersList();
-            //Storing the edited User's center in the list first, so it appears first on the list in the View.
-            centerNamesListItems.Add(new SelectListItem { Text = foundUser.Center, Value = foundUser.Center });
-            //Storing all other center names into the SelectListItem List.
-            foreach (var item in centerList)
+            if (foundUser.FirstName != null)
             {
-                if (item.Name.Equals(model.Center) != true)
+                success = true;
+                //Storing the information in ViewData to be used to fill in the Edit form
+                model.ID = foundUser.ID;
+                model.FirstName = foundUser.FirstName;
+                model.LastName = foundUser.LastName;
+                model.AccountType = foundUser.AccountType;
+                model.Center = foundUser.Center;
+                model.Email = foundUser.Email;
+                model.PhoneNumber = foundUser.PhoneNumber;
+                model.Username = foundUser.Username;
+                //The following three fields for models will be used for comparisons in the POST method.
+                model.CurrentCenter = foundUser.Center;
+                model.CurrentUsername = foundUser.Username;
+                model.CurrentPassword = foundUser.Password;
+                model.Home = Convert.ToBoolean(foundUser.Home);
+                model.About_Us = Convert.ToBoolean(foundUser.About_Us);
+                model.Vision_Mission_Values = Convert.ToBoolean(foundUser.Vision_Mission_Values);
+                model.MESA_Schools_Program = Convert.ToBoolean(foundUser.MESA_Schools_Program);
+                model.MESA_Community_College_Program = Convert.ToBoolean(foundUser.MESA_Community_College_Program);
+                model.MESA_Engineering_Program = Convert.ToBoolean(foundUser.MESA_Engineering_Program);
+                model.News = Convert.ToBoolean(foundUser.News);
+                model.Donate = Convert.ToBoolean(foundUser.Donate);
+                //Passing the User's account type into the View for comparison.
+                //This will cause a change in the form such as an Admin given a dropbox for Centers and a Director,
+                //will be given a readonly Center textbox.
+                ViewData["EditorAccountType"] = userAccountType;
+                //This is to populate the Centers dropbox in the View.
+                centerList = SQLManager.sqlConnectionForCentersList();
+                errorCenterList = ErrorCenterListCheck(centerList);
+                if (errorCenterList == false)
                 {
-                    centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                    success = true;
+                    //Storing the edited User's center in the list first, so it appears first on the list in the View.
+                    centerNamesListItems.Add(new SelectListItem { Text = foundUser.Center, Value = foundUser.Center });
+                    //Storing all other center names into the SelectListItem List.
+                    foreach (var item in centerList)
+                    {
+                        if (item.Name.Equals(model.Center) != true)
+                        {
+                            centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                        }
+                    }
+                    //Passing the items inside a SelectList into the View using ViewBag.
+                    ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                }
+                //If errorCenterList is true.
+                else
+                {
+                    success = false;
+                    ViewBag.Message = "Database error. Could not load center list. Please refresh the page. If the problem persists, contact the Administrator.";
                 }
             }
-            //Passing the items inside a SelectList into the View using ViewBag.
-            ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+            //If errorUserList is true.
+            else
+            {
+                success = false;
+                ViewBag.Message = "Database error. Could not load user information. Please refresh the page. If the problem persists, contact the Administrator.";
+            }
+            ViewData["success"] = success;
             return View(model);
         }
 
@@ -447,12 +587,13 @@ namespace MESACCA.Controllers
         public ActionResult EditAccount(EditAccountViewModel model)
         {
             Boolean success = false;
+            Boolean errorUserList = false;
+            Boolean errorCenterList = false;
             //userNameFound and userList is for username comparison
             Boolean userNameFound = false;
             List<User> userList = new List<User>();
-            User foundUser = new User();
-            //Getting SQL table entry based on User ID to obtain the user's password and for username comparison.
-            foundUser = SQLManager.sqlConnectionForUser(model.ID);
+            List<Models.Center> centerList = new List<Models.Center>();
+            List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
             User updatedUser = new User();
             //Getting ViewModel model information given in the textfields of the Manage Personal Account page
             updatedUser.FirstName = model.FirstName;
@@ -462,12 +603,12 @@ namespace MESACCA.Controllers
             updatedUser.Email = model.Email;
             updatedUser.PhoneNumber = model.PhoneNumber;
             updatedUser.Username = model.Username;
-            //If the Admin decides not to update a User's password, then the current stored password is stored in 
+            //If the Admin or Director decides not to update a User's password, then the current stored password is stored in 
             //updatedUser to be pushed into the database. Otherwise the new given password is stored to be pushed
             //into the database.
             if (String.IsNullOrEmpty(model.Password) == true)
             {
-                updatedUser.Password = foundUser.Password;
+                updatedUser.Password = model.CurrentPassword;
             }
             else
             {
@@ -501,30 +642,72 @@ namespace MESACCA.Controllers
             }
             //Storing the List object returned which contains all Users for username comparison.
             userList = SQLManager.sqlConnectionForUsersList();
-            //Before creating an account all usernames are compared to the provided username. If there is a match,
-            //then userNameNotFound becomes true.
-            userNameFound = UserNameCheck(userList, updatedUser);
-            //If a username in the database matches the provided username, then provide an error message.
-            //If a username in the database does not match the provided username, then push new account changes to the database.
-            //In the event the username is not changed, allow push of new account changes to the database.
-            if (userNameFound == false || (updatedUser.Username.Equals(foundUser.Username) == true))
-            {
-                //Getting Boolean result of SQL entry information update
-                success = SQLManager.sqlConnectionUpdateUser(model.ID, updatedUser);
-                //If the update was successful, redirect the User to the Manage Accounts page
-                if (success == true)
+            errorUserList = ErrorUserListCheck(userList);
+            if(errorUserList == false)
+            { 
+                //Before creating an account all usernames are compared to the provided username. If there is a match,
+                //then userNameNotFound becomes true.
+                userNameFound = UserNameCheck(userList, updatedUser);
+                //If a username in the database matches the provided username, then provide an error message.
+                //If a username in the database does not match the provided username, then push new account changes to the database.
+                //In the event the username is not changed, allow push of new account changes to the database.
+                if (userNameFound == false || (updatedUser.Username.Equals(model.CurrentUsername) == true))
                 {
-                    return RedirectToAction("ManageAccounts");
+                    //Getting Boolean result of SQL entry information update
+                    success = SQLManager.sqlConnectionUpdateUser(model.ID, updatedUser);
+                    //If the update was successful, redirect the User to the Manage Accounts page
+                    if (success == true)
+                    {
+                        TempData["Message"] = "Successfully updated account.";
+                        return RedirectToAction("ManageAccounts");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Database error. Could not update account. Please try again and if the problem persists, contact the Administrator.";
+                        return RedirectToAction("ManageAccounts");
+                    }
                 }
                 else
                 {
-                    ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                    //Passing the User's account type into the View for comparison.
+                    //This will cause a change in the form such as an Admin given a dropbox for Centers and a Director,
+                    //will be given a readonly Center textbox.
+                    ViewData["EditorAccountType"] = userAccountType;
+                    //This is to populate the Centers dropbox in the View.
+                    centerList = SQLManager.sqlConnectionForCentersList();
+                    errorCenterList = ErrorCenterListCheck(centerList);
+                    if (errorCenterList == false)
+                    {
+                        success = true;
+                        //Storing the edited User's center in the list first, so it appears first on the list in the View.
+                        centerNamesListItems.Add(new SelectListItem { Text = model.CurrentCenter, Value = model.CurrentCenter });
+                        //Storing all other center names into the SelectListItem List.
+                        foreach (var item in centerList)
+                        {
+                            if (item.Name.Equals(model.CurrentCenter) != true)
+                            {
+                                centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                            }
+                        }
+                        //Passing the items inside a SelectList into the View using ViewBag.
+                        ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                        ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+                    }
+                    //If errorCenterList is true.
+                    else
+                    {
+                        ViewBag.Message = "Database error. Could not load center list. Please refresh the page. If the problem persists, contact the Administrator.";
+                    }
                 }
             }
+            //If errorUserList is true.
             else
             {
-                ViewBag.Message = "The Username provided is currently in use. Please provide another username.";
+                TempData["Message"] = "Database error. Could not load user list for username comparison. Please try again and if the problem persists, contact the Administrator.";
+                return RedirectToAction("ManageAccounts");
             }
+            //To make the submit button appear for the Admin to try again in the event of an error.
+            ViewData["success"] = true;
             return View(model);
         }
 
@@ -538,15 +721,31 @@ namespace MESACCA.Controllers
         public ActionResult DeleteAccount(int ID)
         {
             User foundUser = new User();
+            DeleteAccountViewModel model = new DeleteAccountViewModel();
             foundUser = SQLManager.sqlConnectionForUser(ID);
-            return View(foundUser);
+            if (foundUser.FirstName != null)
+            {
+                model.ID = foundUser.ID;
+                model.FirstName = foundUser.FirstName;
+                model.LastName = foundUser.LastName;
+                model.AccountType = foundUser.AccountType;
+                model.Center = foundUser.Center;
+                model.Email = foundUser.Email;
+                model.PhoneNumber = foundUser.PhoneNumber;
+                model.Username = foundUser.Username;
+            }
+            else
+            {
+                ViewBag.Message = "Database error. Could not load the account. Please refresh the page. If the problem persists, contact the Administrator.";
+            }
+            return View(model);
         }
 
         //This method deletes the user from the system if the delete button in the EditAccount View is clicked on and sends the User
         //to Manage Accounts and if the back button is clicked, then the User is sent back to ManageAccounts.
         [HttpPost]
         [ValidateUser]
-        public ActionResult DeleteAccount(User model, string button)
+        public ActionResult DeleteAccount(DeleteAccountViewModel model, string button)
         {
             Boolean success = false;
             if (button.Contains("delete"))
@@ -559,13 +758,14 @@ namespace MESACCA.Controllers
             }
             if (success == true)
             {
+                TempData["Message"] = "Successfully deleted center.";
                 return RedirectToAction("ManageAccounts");
             }
             else
             {
-                ViewBag.Message = "Database error. Please try again and if the problem persists, contact the Administrator.";
+                TempData["Message"] = "Database error. Could not delete center. Please try again and if the problem persists, contact the Administrator.";
+                return RedirectToAction("ManageAccounts");
             }
-            return View(model);
         }
 
         #endregion
@@ -1412,6 +1612,20 @@ namespace MESACCA.Controllers
                 }
             }
             return centerNameFound;
+        }
+        //This method does a first name comparison between all Center objects in a List and null.
+        //Returns a Boolean value based on comparisons.
+        private Boolean ErrorUserListCheck(List<User> userList)
+        {
+            Boolean errorUserList = false;
+            foreach (var item in userList)
+            {
+                if (item.FirstName == null)
+                {
+                    errorUserList = true;
+                }
+            }
+            return errorUserList;
         }
         //This method does a center name comparison between all Center objects in a List and null.
         //Returns a Boolean value based on comparisons.

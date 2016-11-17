@@ -5,7 +5,7 @@
 }
 @if (ViewBag.Message != null)
 {
-    <span>@ViewBag.Message</span>
+    <span class="text-danger">@ViewBag.Message</span>
 }
 @using (Html.BeginForm("AddStaffAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
@@ -182,7 +182,10 @@
     </div>
     @*Adding add account button*@
     <div class="form-group">
-        <button style="margin-left:30px" type="submit" class="btn btn-primary">Create Account</button>
+        @if (ViewData["success"].Equals(true))
+        {
+            <button style="margin-left:30px" type="submit" class="btn btn-primary">Create Account</button>
+        }
     </div>
 }
 @section Scripts {
