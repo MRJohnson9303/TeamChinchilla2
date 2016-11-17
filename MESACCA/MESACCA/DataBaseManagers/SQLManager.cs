@@ -456,13 +456,13 @@ namespace MESACCA.DataBaseManagers
                     foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
                     //Determining if the table entry was successfully executed by checking if an entry is returned and comparing
                     //all of the returned entry's information with the new User's information.
-                    if (dataReader.HasRows == true && newUser.FirstName.Equals(foundUser.FirstName) &&
-                        newUser.LastName.Equals(foundUser.LastName) &&
-                        newUser.Center.Equals(foundUser.Center) &&
-                        newUser.Email.Equals(foundUser.Email) &&
-                        newUser.PhoneNumber.Equals(foundUser.PhoneNumber) &&
-                        newUser.Username.Equals(foundUser.Username) &&
-                        newUser.Password.Equals(foundUser.Password))
+                    if (dataReader.HasRows == true && newUser.FirstName.TrimEnd(' ').Equals(foundUser.FirstName) &&
+                        newUser.LastName.TrimEnd(' ').Equals(foundUser.LastName) &&
+                        newUser.Center.TrimEnd(' ').Equals(foundUser.Center) &&
+                        newUser.Email.TrimEnd(' ').Equals(foundUser.Email) &&
+                        newUser.PhoneNumber.TrimEnd(' ').Equals(foundUser.PhoneNumber) &&
+                        newUser.Username.TrimEnd(' ').Equals(foundUser.Username) &&
+                        newUser.Password.TrimEnd(' ').Equals(foundUser.Password))
                     {
                         success = true;
                     }
