@@ -161,12 +161,12 @@ namespace MESACCA.DataBaseManagers
                     foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
                     foundUser.Home = dataReader.GetString(9).TrimEnd(' ');
                     foundUser.About_Us = dataReader.GetString(10).TrimEnd(' ');
-                    foundUser.Vision_Mission_Values = dataReader.GetString(11).TrimEnd(' ');
-                    foundUser.MESA_Schools_Program = dataReader.GetString(12).TrimEnd(' ');
-                    foundUser.MESA_Community_College_Program = dataReader.GetString(13).TrimEnd(' ');
-                    foundUser.MESA_Engineering_Program = dataReader.GetString(14).TrimEnd(' ');
-                    foundUser.News = dataReader.GetString(15).TrimEnd(' ');
-                    foundUser.Donate = dataReader.GetString(16).TrimEnd(' ');
+                    foundUser.MESA_Schools_Program = dataReader.GetString(11).TrimEnd(' ');
+                    foundUser.MESA_Community_College_Program = dataReader.GetString(12).TrimEnd(' ');
+                    foundUser.MESA_Engineering_Program = dataReader.GetString(13).TrimEnd(' ');
+                    foundUser.News = dataReader.GetString(14).TrimEnd(' ');
+                    foundUser.Donate = dataReader.GetString(15).TrimEnd(' ');
+                    foundUser.Collaborations = dataReader.GetString(16).TrimEnd(' ');
                     //Closing SQL connection
                     sqlConnection.Close();
                 }
@@ -222,11 +222,11 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.CommandText = @"UPDATE Users 
                                               SET FirstName = @FirstName, LastName = @LastName, AccountType = @AccountType, Center = @Center, Email = @Email,
                                                   PhoneNumber = @PhoneNumber, Username = @Username, Password = @Password,
-                                                  Home = @Home, About_Us = @About_Us, Vision_Mission_Values = @Vision_Mission_Values,
+                                                  Home = @Home, About_Us = @About_Us,
                                                   MESA_Schools_Program = @MESA_Schools_Program,
                                                   MESA_Community_College_Program = @MESA_Community_College_Program, 
                                                   MESA_Engineering_Program = @MESA_Engineering_Program, 
-                                                  News = @News, Donate = @Donate
+                                                  News = @News, Donate = @Donate, Collaborations = @Collaborations
                                               WHERE ID = @ID
                                               SELECT * FROM Users WHERE ID = @ID";
                     //Updating User information based on comparison with current and new User information
@@ -241,12 +241,12 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.Parameters.AddWithValue("@Password", updatedUser.Password.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Home", updatedUser.Home.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@About_Us", updatedUser.About_Us.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@Vision_Mission_Values", updatedUser.Vision_Mission_Values.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@MESA_Schools_Program", updatedUser.MESA_Schools_Program.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@MESA_Community_College_Program", updatedUser.MESA_Community_College_Program.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@MESA_Engineering_Program", updatedUser.MESA_Engineering_Program.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@News", updatedUser.News.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Donate", updatedUser.Donate.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@Collaborations", updatedUser.Collaborations.TrimEnd(' '));
                     //Specifing update by ID number to ensure correct User's information is updated
                     dbCommand.Parameters.AddWithValue("@ID", ID);
                     //Building data reader
@@ -264,12 +264,12 @@ namespace MESACCA.DataBaseManagers
                     foundUser.Password = dataReader.GetString(8).TrimEnd(' ');
                     foundUser.Home = dataReader.GetString(9).TrimEnd(' ');
                     foundUser.About_Us = dataReader.GetString(10).TrimEnd(' ');
-                    foundUser.Vision_Mission_Values = dataReader.GetString(11).TrimEnd(' ');
-                    foundUser.MESA_Schools_Program = dataReader.GetString(12).TrimEnd(' ');
-                    foundUser.MESA_Community_College_Program = dataReader.GetString(13).TrimEnd(' ');
-                    foundUser.MESA_Engineering_Program = dataReader.GetString(14).TrimEnd(' ');
-                    foundUser.News = dataReader.GetString(15).TrimEnd(' ');
-                    foundUser.Donate = dataReader.GetString(16).TrimEnd(' ');
+                    foundUser.MESA_Schools_Program = dataReader.GetString(11).TrimEnd(' ');
+                    foundUser.MESA_Community_College_Program = dataReader.GetString(12).TrimEnd(' ');
+                    foundUser.MESA_Engineering_Program = dataReader.GetString(13).TrimEnd(' ');
+                    foundUser.News = dataReader.GetString(14).TrimEnd(' ');
+                    foundUser.Donate = dataReader.GetString(15).TrimEnd(' ');
+                    foundUser.Collaborations = dataReader.GetString(16).TrimEnd(' ');
                     //Determining if the update was successfully executed by checking if an entry is returned and comparing
                     //all of the returned entry's information with the updated information provided by the user.
                     if (dataReader.HasRows == true && updatedUser.FirstName.TrimEnd(' ').Equals(foundUser.FirstName) &&
@@ -282,7 +282,7 @@ namespace MESACCA.DataBaseManagers
                         updatedUser.Password.TrimEnd(' ').Equals(foundUser.Password) &&
                         updatedUser.Home.Equals(foundUser.Home) &&
                         updatedUser.About_Us.Equals(foundUser.About_Us) &&
-                        updatedUser.Vision_Mission_Values.Equals(foundUser.Vision_Mission_Values) &&
+                        updatedUser.Collaborations.Equals(foundUser.Collaborations) &&
                         updatedUser.MESA_Schools_Program.Equals(foundUser.MESA_Schools_Program) &&
                         updatedUser.MESA_Community_College_Program.Equals(foundUser.MESA_Community_College_Program) &&
                         updatedUser.MESA_Engineering_Program.Equals(foundUser.MESA_Engineering_Program) &&
@@ -415,11 +415,11 @@ namespace MESACCA.DataBaseManagers
                     sqlConnection.Open();
                     //Creating SQL query
                     dbCommand.CommandText = @"INSERT INTO Users (ID, FirstName, LastName, AccountType, Center, Email, PhoneNumber, Username, Password,
-                                                                 Home, About_Us, Vision_Mission_Values, MESA_Schools_Program, MESA_Community_College_Program, 
-                                                                 MESA_Engineering_Program, News, Donate)
+                                                                 Home, About_Us, MESA_Schools_Program, MESA_Community_College_Program, 
+                                                                 MESA_Engineering_Program, News, Donate, Collaborations)
                                               Values (@ID, @FirstName, @LastName, @AccountType, @Center, @Email, @PhoneNumber, @Username, @Password,
-                                                      @Home, @About_Us, @Vision_Mission_Values, @MESA_Schools_Program, @MESA_Community_College_Program, 
-                                                      @MESA_Engineering_Program, @News, @Donate)
+                                                      @Home, @About_Us, @MESA_Schools_Program, @MESA_Community_College_Program, 
+                                                      @MESA_Engineering_Program, @News, @Donate, @Collaborations)
                                               Select * FROM Users WHERE ID = @ID";
                     dbCommand.Parameters.AddWithValue("@ID", newID);
                     //I trim the ends of empty spaces
@@ -433,12 +433,12 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.Parameters.AddWithValue("@Password", newUser.Password.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Home", newUser.Home.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@About_Us", newUser.About_Us.TrimEnd(' '));
-                    dbCommand.Parameters.AddWithValue("@Vision_Mission_Values", newUser.Vision_Mission_Values.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@MESA_Schools_Program", newUser.MESA_Schools_Program.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@MESA_Community_College_Program", newUser.MESA_Community_College_Program.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@MESA_Engineering_Program", newUser.MESA_Engineering_Program.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@News", newUser.News.TrimEnd(' '));
                     dbCommand.Parameters.AddWithValue("@Donate", newUser.Donate.TrimEnd(' '));
+                    dbCommand.Parameters.AddWithValue("@Collaborations", newUser.Collaborations.TrimEnd(' '));
                     //Building data reader
                     var dataReader = dbCommand.ExecuteReader();
                     //Advancing to the next record which is the first and only record in this case

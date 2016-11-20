@@ -206,7 +206,7 @@ namespace MESACCA.Controllers
             model.AccountType = accountType;
             model.Home = true;
             model.About_Us = true;
-            model.Vision_Mission_Values = true;
+            model.Collaborations = true;
             model.MESA_Schools_Program = true;
             model.MESA_Community_College_Program = true;
             model.MESA_Engineering_Program = true;
@@ -275,12 +275,12 @@ namespace MESACCA.Controllers
                 newUser.Password = model.Password;
                 newUser.Home = "True";
                 newUser.About_Us = "True";
-                newUser.Vision_Mission_Values = "True";
                 newUser.MESA_Schools_Program = "True";
                 newUser.MESA_Community_College_Program = "True";
                 newUser.MESA_Engineering_Program = "True";
                 newUser.News = "True";
                 newUser.Donate = "True";
+                newUser.Collaborations = "True";
                 //Before creating an account all usernames are compared to the provided username. If there is a match,
                 //then userNameNotFound becomes true.
                 userNameFound = UserNameCheck(userList, newUser);
@@ -352,7 +352,7 @@ namespace MESACCA.Controllers
             model.AccountType = accountType;
             model.Home = true;
             model.About_Us = true;
-            model.Vision_Mission_Values = true;
+            model.Collaborations = true;
             model.MESA_Schools_Program = true;
             model.MESA_Community_College_Program = true;
             model.MESA_Engineering_Program = true;
@@ -432,12 +432,12 @@ namespace MESACCA.Controllers
                 newUser.Password = model.Password;
                 newUser.Home = model.Home.ToString();
                 newUser.About_Us = model.About_Us.ToString();
-                newUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
                 newUser.MESA_Schools_Program = model.MESA_Schools_Program.ToString();
                 newUser.MESA_Community_College_Program = model.MESA_Community_College_Program.ToString();
                 newUser.MESA_Engineering_Program = model.MESA_Engineering_Program.ToString();
                 newUser.News = model.News.ToString();
                 newUser.Donate = model.Donate.ToString();
+                newUser.Collaborations = model.Collaborations.ToString();
                 ViewData["CreatorAccountType"] = userAccountType;
                 //Before creating an account all usernames are compared to the provided username. If there is a match,
                 //then userNameNotFound becomes true.
@@ -535,7 +535,7 @@ namespace MESACCA.Controllers
                 model.CurrentPassword = foundUser.Password;
                 model.Home = Convert.ToBoolean(foundUser.Home);
                 model.About_Us = Convert.ToBoolean(foundUser.About_Us);
-                model.Vision_Mission_Values = Convert.ToBoolean(foundUser.Vision_Mission_Values);
+                model.Collaborations = Convert.ToBoolean(foundUser.Collaborations);
                 model.MESA_Schools_Program = Convert.ToBoolean(foundUser.MESA_Schools_Program);
                 model.MESA_Community_College_Program = Convert.ToBoolean(foundUser.MESA_Community_College_Program);
                 model.MESA_Engineering_Program = Convert.ToBoolean(foundUser.MESA_Engineering_Program);
@@ -620,7 +620,7 @@ namespace MESACCA.Controllers
             {
                 updatedUser.Home = "True";
                 updatedUser.About_Us = "True";
-                updatedUser.Vision_Mission_Values = "True";
+                updatedUser.Collaborations = "True";
                 updatedUser.MESA_Schools_Program = "True";
                 updatedUser.MESA_Community_College_Program = "True";
                 updatedUser.MESA_Engineering_Program = "True";
@@ -633,7 +633,7 @@ namespace MESACCA.Controllers
             {
                 updatedUser.Home = model.Home.ToString();
                 updatedUser.About_Us = model.About_Us.ToString();
-                updatedUser.Vision_Mission_Values = model.Vision_Mission_Values.ToString();
+                updatedUser.Collaborations = model.Collaborations.ToString();
                 updatedUser.MESA_Schools_Program = model.MESA_Schools_Program.ToString();
                 updatedUser.MESA_Community_College_Program = model.MESA_Community_College_Program.ToString();
                 updatedUser.MESA_Engineering_Program = model.MESA_Engineering_Program.ToString();
@@ -1295,7 +1295,7 @@ namespace MESACCA.Controllers
 
         //This method returns the ManageSite View with buttons appearing based on user rights to the
         //web pages on the site named on the buttons.
-        //The Admin has rights to all portions of the website.
+        //The Admin and Directors have rights to all portions of the website.
         [HttpGet]
         [ValidateUser]
         public ActionResult ManageSite()
@@ -1317,7 +1317,7 @@ namespace MESACCA.Controllers
                     return RedirectToAction("ManagePersonalAccount");
                 case "About Us":
                     return RedirectToAction("ManagePersonalAccount");
-                case "Vision Mission Values":
+                case "Collaborations":
                     return RedirectToAction("ManagePersonalAccount");
                 case "MESA Schools Program":
                     return RedirectToAction("ManagePersonalAccount");
@@ -1363,7 +1363,7 @@ namespace MESACCA.Controllers
                 model.CurrentPassword = foundUser.Password;
                 model.Home = foundUser.Home;
                 model.About_Us = foundUser.About_Us;
-                model.Vision_Mission_Values = foundUser.Vision_Mission_Values;
+                model.Collaborations = foundUser.Collaborations;
                 model.MESA_Schools_Program = foundUser.MESA_Schools_Program;
                 model.MESA_Community_College_Program = foundUser.MESA_Community_College_Program;
                 model.MESA_Engineering_Program = foundUser.MESA_Engineering_Program;
@@ -1420,7 +1420,7 @@ namespace MESACCA.Controllers
                 //Using the foundUser object to pass the user's current rights to the database.
                 updatedUser.Home = model.Home;
                 updatedUser.About_Us = model.About_Us;
-                updatedUser.Vision_Mission_Values = model.Vision_Mission_Values;
+                updatedUser.Collaborations = model.Collaborations;
                 updatedUser.MESA_Schools_Program = model.MESA_Schools_Program;
                 updatedUser.MESA_Community_College_Program = model.MESA_Community_College_Program;
                 updatedUser.MESA_Engineering_Program = model.MESA_Engineering_Program;

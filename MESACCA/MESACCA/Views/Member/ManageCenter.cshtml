@@ -108,7 +108,7 @@
     @*Adding Description textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Description, new { @class = "col-md-2 control-label" })
-        @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "5" })
         <div class="col-md-offset-2">
             <small class="text-muted">Any information you want to share about the center such as statistical information. 250 character limit.</small>
         </div>

@@ -41,7 +41,7 @@ namespace MESACCA.ViewModels.Member
         /* These are the user rights that will allow a user to alter a certain page of the website*/
         public Boolean Home { get; set; }
         public Boolean About_Us { get; set; }
-        public Boolean Vision_Mission_Values { get; set; }
+        public Boolean Collaborations { get; set; }
         public Boolean MESA_Schools_Program { get; set; }
         public Boolean MESA_Community_College_Program { get; set; }
         public Boolean MESA_Engineering_Program { get; set; }

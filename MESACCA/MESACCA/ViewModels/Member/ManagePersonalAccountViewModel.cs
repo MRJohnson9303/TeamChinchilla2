@@ -39,7 +39,7 @@ namespace MESACCA.ViewModels.Member
         /* These are the user rights that will allow a user to alter a certain page of the website*/
         public String Home { get; set; }
         public String About_Us { get; set; }
-        public String Vision_Mission_Values { get; set; }
+        public String Collaborations { get; set; }
         public String MESA_Schools_Program { get; set; }
         public String MESA_Community_College_Program { get; set; }
         public String MESA_Engineering_Program { get; set; }

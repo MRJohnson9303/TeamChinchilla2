@@ -32,7 +32,7 @@ namespace MESACCA.ViewModels.Member
         [RegularExpression(@"^\(?([0-9]{3})\)?[-]([0-9]{3})[-]([0-9]{4})$", ErrorMessage = "Not a valid phone number")]
         public string OfficeNumber { get; set; }
         [Required]
-        [StringLength(120)]
+        [StringLength(250)]
         public string URL { get; set; }
         [Required]
         [StringLength(250)]

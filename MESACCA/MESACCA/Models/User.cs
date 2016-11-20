@@ -20,7 +20,7 @@ namespace MESACCA.Models
         /* These are the user rights that will allow a user to alter a certain page of the website*/
         public string Home { get; set; }
         public string About_Us { get; set; }
-        public string Vision_Mission_Values { get; set; }
+        public string Collaborations { get; set; }
         public string MESA_Schools_Program { get; set; }
         public string MESA_Community_College_Program { get; set; }
         public string MESA_Engineering_Program { get; set; }
