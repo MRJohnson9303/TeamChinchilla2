@@ -27,8 +27,6 @@ namespace MESACCA
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
 
-            bundles.Add(new ScriptBundle("~/bundles/ckeditor").Include(
-                        "~/ckeditor/ckeditor.js"));
         }
     }
 }

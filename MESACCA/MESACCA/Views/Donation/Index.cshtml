@@ -6,11 +6,10 @@
 
 <script>
     $(document).ready(function () {
-        CKEDITOR.replace('ArticleBody',
-            {
-                "extraPlugins": 'imagebrowser',
-                "imageBrowser_listUrl": "/ckeditor-imagebrowser/demo/images/images_list.json"
-            });
+        CKEDITOR.replace('ArticleBody', {
+            skin: 'moonocolor,/ckeditor/skins/moonocolor/',
+            customConfig: '/ckeditor/config.js'
+        });
     });
 </script>
 
