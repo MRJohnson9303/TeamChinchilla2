@@ -20,6 +20,10 @@ namespace MESACCA.Controllers
 
             return View();
         }
+        public ActionResult Collaborations()
+        {
+            return View();
+        }
         public ActionResult MCCAMembers()
         {
             List<Models.Center> centerList = SQLManager.sqlConnectionForCentersList();
@@ -68,12 +72,5 @@ namespace MESACCA.Controllers
         {
             return View();
         }
-
-        public ActionResult Collaboration()
-        {
-            return View();
-        }
-
-
     }
 }

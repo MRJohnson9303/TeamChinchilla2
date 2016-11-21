@@ -19,7 +19,6 @@ using MESACCA.Models;
 using MESACCA.Controllers;
 using MESACCA.DataBaseManagers;
 using MESACCA.Utilities;
-using Microsoft.AspNet.Identity;
 
 namespace MESACCA.Controllers
 {
