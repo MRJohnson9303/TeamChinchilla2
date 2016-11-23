@@ -470,7 +470,6 @@
     <Content Include="Views\Member\ManageCenters.cshtml" />
     <Content Include="Views\Member\ManagePersonalAccount.cshtml" />
     <Content Include="Views\Member\ManageSite.cshtml" />
-    <Content Include="Views\Member\PictureTest.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\MCCAMembers.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
@@ -506,7 +505,6 @@
     <Content Include="Views\Member\DeleteCenter.cshtml" />
     <Content Include="Views\Member\EditCenter.cshtml" />
     <Content Include="Views\News\ConfirmDeleteNews.cshtml" />
-    <Content Include="Views\Member\ViewBlob.cshtml" />
     <Content Include="Views\News\EditNews.cshtml" />
     <Content Include="Views\Member\ManageCenter.cshtml" />
     <Content Include="Views\Home\Collaborations.cshtml" />
