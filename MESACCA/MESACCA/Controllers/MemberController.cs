@@ -1172,6 +1172,17 @@ namespace MESACCA.Controllers
                             //If any are found, prevent progress and give a message.
                             if (model.Picture.FileName.Contains(" ") == false && model.Picture.FileName.Contains("/") == false)
                             {
+                                Models.Center foundCenter = new Models.Center();
+                                foundCenter = SQLManager.sqlConnectionForCenter(model.ID);
+                                if (foundCenter.Name != null)
+                                {
+                                    String FileUri = foundCenter.ImageURL;
+                                    if (!(String.IsNullOrEmpty(FileUri)))
+                                    {
+                                        System.Diagnostics.Debug.WriteLine("Deleting files");
+                                        BlobManager.deleteBlob(FileUri);
+                                    }
+                                }
                                 updatedCenter.Picture = model.Picture;
                                 updatedCenter.ImageURL = BlobManager.uploadAndGetCenterImageBLOBURI(updatedCenter);
                                 //Getting Boolean result of SQL entry information update
