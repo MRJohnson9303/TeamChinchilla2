@@ -5,6 +5,10 @@
 }
 @using (Html.BeginForm("AddAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
+    @*Adding a return button for the User*@
+    <div class="form-actions">
+        <a href="@Url.Action("ManageAccounts", "Member")" style="margin-bottom:10px" , class="btn btn-primary">Back to Manage Accounts</a>
+    </div>
     @*Adding First Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })

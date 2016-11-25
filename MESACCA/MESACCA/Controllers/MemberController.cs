@@ -291,7 +291,7 @@ namespace MESACCA.Controllers
                     success = SQLManager.sqlConnectionAddUser(ID, newUser);
                     if (success == true)
                     {
-                        TempData["Message"] = "Director added successfully.";
+                        TempData["Message"] = "Successfully created director account.";
                         return RedirectToAction("ManageAccounts");
                     }
                     else
@@ -449,7 +449,7 @@ namespace MESACCA.Controllers
                     success = SQLManager.sqlConnectionAddUser(ID, newUser);
                     if (success == true)
                     {
-                        TempData["Message"] = "Staff added successfully.";
+                        TempData["Message"] = "Successfully created staff account.";
                         return RedirectToAction("ManageAccounts");
                     }
                     else
@@ -758,7 +758,7 @@ namespace MESACCA.Controllers
             }
             if (success == true)
             {
-                TempData["Message"] = "Successfully deleted center.";
+                TempData["Message"] = "Successfully deleted account.";
                 return RedirectToAction("ManageAccounts");
             }
             else
@@ -1025,7 +1025,7 @@ namespace MESACCA.Controllers
                                 success = SQLManager.sqlConnectionAddCenter(newCenter);
                                 if (success == true)
                                 {
-                                    TempData["Message"] = "Center added successfully.";
+                                    TempData["Message"] = "Successfully created center.";
                                     return RedirectToAction("ManageCenters");
                                 }
                                 else
@@ -1150,7 +1150,7 @@ namespace MESACCA.Controllers
                         //Redirect the Admin to the Manage Centers page and print a message regarding success
                         if (success == true)
                         {
-                            TempData["Message"] = "Center updated successfully.";
+                            TempData["Message"] = "Successfully updated center.";
                             return RedirectToAction("ManageCenters");
                         }
                         else
@@ -1172,7 +1172,7 @@ namespace MESACCA.Controllers
                             //If any are found, prevent progress and give a message.
                             if (model.Picture.FileName.Contains(" ") == false && model.Picture.FileName.Contains("/") == false)
                             {
-                                Models.Center foundCenter = new Models.Center();
+                               /* Models.Center foundCenter = new Models.Center();
                                 foundCenter = SQLManager.sqlConnectionForCenter(model.ID);
                                 if (foundCenter.Name != null)
                                 {
@@ -1182,7 +1182,7 @@ namespace MESACCA.Controllers
                                         System.Diagnostics.Debug.WriteLine("Deleting files");
                                         BlobManager.deleteBlob(FileUri);
                                     }
-                                }
+                                }*/
                                 updatedCenter.Picture = model.Picture;
                                 updatedCenter.ImageURL = BlobManager.uploadAndGetCenterImageBLOBURI(updatedCenter);
                                 //Getting Boolean result of SQL entry information update
@@ -1455,7 +1455,7 @@ namespace MESACCA.Controllers
                         //If the update was successful, create a confirmation message for the User.
                         if (success == true)
                         {
-                            ViewBag.Message = "Account was successfully updated.";
+                            ViewBag.Message = "Successfully updated account.";
                         }
                         else
                         {
@@ -1505,9 +1505,6 @@ namespace MESACCA.Controllers
 
         #endregion
 
-        
-
-
         //This method does a username comparison between a User object and all Users in a List.
         //Returns a Boolean value based on comparisons.
         private Boolean UserNameCheck(List<User> userList, User newUser)
@@ -1540,6 +1537,7 @@ namespace MESACCA.Controllers
             }
             return centerNameFound;
         }
+
         //This method does a center name comparison between a Center object and all Centers in a List.
         //Returns a Boolean value based on comparisons.
         private Boolean AddCenterNameCheck(List<Models.Center> centerList, Models.Center newCenter)
@@ -1554,6 +1552,7 @@ namespace MESACCA.Controllers
             }
             return centerNameFound;
         }
+
         //This method does a first name comparison between all Center objects in a List and null.
         //Returns a Boolean value based on comparisons.
         private Boolean ErrorUserListCheck(List<User> userList)
@@ -1568,6 +1567,7 @@ namespace MESACCA.Controllers
             }
             return errorUserList;
         }
+
         //This method does a center name comparison between all Center objects in a List and null.
         //Returns a Boolean value based on comparisons.
         private Boolean ErrorCenterListCheck(List<Models.Center> centerList)

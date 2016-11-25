@@ -10,6 +10,10 @@
 }
 @using (Html.BeginForm("DeleteAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
+    @*Adding a return button for the User*@
+    <div class="form-actions">
+        <a href="@Url.Action("ManageAccounts", "Member")" style="margin-bottom:10px" , class="btn btn-primary">Back to Manage Accounts</a>
+    </div>
     @*Adding Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
@@ -45,8 +49,7 @@
         @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Username, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
-        <div class="form-actions no-color">
-            <button type="submit" name="button" value="delete" class="btn btn-default">Delete</button> |
-            <button type="submit" name="button" value="back" class="btn btn-default">Back to List</button>
+    <div class="form-actions">
+        <button type="submit" name="button" value="delete" class="btn btn-primary">Delete</button>
     </div>
 }

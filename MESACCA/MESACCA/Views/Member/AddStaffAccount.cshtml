@@ -9,6 +9,10 @@
 }
 @using (Html.BeginForm("AddStaffAccount", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
+    @*Adding a return button for the User*@
+    <div class="form-actions">
+        <a href="@Url.Action("AddAccount", "Member")" style="margin-bottom:10px" , class="btn btn-primary">Back to Add Account</a>
+    </div>
     @*Adding First Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
@@ -181,10 +185,10 @@
         </font>
     </div>
     @*Adding add account button*@
-    <div class="form-group">
+    <div class="form-actions">
         @if (ViewData["success"].Equals(true))
         {
-            <button style="margin-left:30px" type="submit" class="btn btn-primary">Create Account</button>
+            <button type="submit" class="btn btn-primary">Create Account</button>
         }
     </div>
 }

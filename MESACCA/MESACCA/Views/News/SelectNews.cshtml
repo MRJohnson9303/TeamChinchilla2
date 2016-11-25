@@ -1,25 +1,24 @@
 ﻿@model MESACCA.ViewModels.News.SelectNewsViewModel
 
 @{
-    ViewBag.Title = "Add, Edit, or Delete a News Posting";
+    ViewBag.Title = "Manage News";
 }
 <br /><br />
 <h2>Add, Edit, or Delete a News Posting</h2>
-
 @if (ViewBag.Message != null)
 {
-            if (ViewBag.Message.Contains("error"))
-            {
-                <span class="text-danger">@ViewBag.Message</span>
-            }
-            else{
-            <span class="text-success">@ViewBag.Message</span>
-            }
+    if (ViewBag.Message.Contains("error"))
+    {
+        <span class="text-danger">@ViewBag.Message</span>
+    }
+    else
+    {
+        <span class="text-success">@ViewBag.Message</span>
+    }
 }
 <br />
 <a href="@Url.Action("AddNews", "News")" class="btn btn-primary">Add a News Post</a>
 <a href="@Url.Action("ManageSite", "Member")" class="btn btn-primary">Back to Manage Site</a>
-
 <table class="table">
     <thead>
         <tr>
@@ -42,27 +41,25 @@
     <tbody>
         @foreach (MESACCA.Models.NewsArticleExtension Article in Model.Articles)
         {
-            
-                <tr>
-                    <td>
-                        @Html.DisplayFor(m => Article.ArticleTitle)
-                    </td>
-                    <td>
-                        @Html.Raw(Article.ArticleBody)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => Article.DateOfArticle)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => Article.AuthorName)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "EditNews", new { id = Article.ArticleID }) |
-                        @Html.ActionLink("Delete", "ConfirmDeleteNews", new { id = Article.ArticleID, title = Article.ArticleTitle })
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => Article.ArticleTitle)
+                </td>
+                <td>
+                    @Html.Raw(Article.ArticleBody)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => Article.DateOfArticle)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => Article.AuthorName)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditNews", new { id = Article.ArticleID }) |
+                    @Html.ActionLink("Delete", "ConfirmDeleteNews", new { id = Article.ArticleID, title = Article.ArticleTitle })
 
-                    </td>
-                </tr>
-
+                </td>
+            </tr>
         }
     </tbody>
 </table>

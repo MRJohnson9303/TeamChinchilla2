@@ -3,7 +3,6 @@
 @{
     ViewBag.Title = "Add News";
 }
-
 <script>
     $(document).ready(function () {
         CKEDITOR.replace('ArticleBody', {
@@ -12,21 +11,20 @@
         });
     });
 </script>
-
 <h2>Add News</h2>
-
 @if (ViewBag.Message != null)
 {
     <span>@ViewBag.Message</span>
 }
-
 @using (Html.BeginForm("AddNews", "News", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-
+    @*Adding a return button for the User*@
+    <div class="form-actions">
+        <a href="@Url.Action("SelectNews", "News")" style="margin-bottom:10px" , class="btn btn-primary"> Back to Manage News</a>
+    </div>
     <div class="form-horizontal">
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
         <div class="form-group">
             @Html.LabelFor(model => model.ArticleTitle, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -34,7 +32,6 @@
                 @Html.ValidationMessageFor(model => model.ArticleTitle, "", new { @class = "text-danger" })
             </div>
         </div>
-
         <div class="form-group">
             @Html.LabelFor(model => model.ArticleBody, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-8">
@@ -42,23 +39,16 @@
                 @Html.ValidationMessageFor(model => model.ArticleBody, "", new { @class = "text-danger" })
             </div>
         </div>
-
         <div class="col-lg-2"></div>
         <div class="btn-toolbar">
-
             <input type="file" ID="File" name="File" />
-            <input type="submit" value="Create" class="btn btn-default" />
-
         </div>
-
-
-
+        @*Adding a return button for the Admin*@
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create News Post</button>
+        </div>
     </div>
-
 }
-
-
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

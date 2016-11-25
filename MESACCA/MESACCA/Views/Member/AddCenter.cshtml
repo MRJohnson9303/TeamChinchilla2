@@ -9,6 +9,10 @@
 }
 @using (Html.BeginForm("AddCenter", "Member", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
 {
+    @*Adding a return button for the Admin*@
+    <div class="form-actions">
+        <a href="@Url.Action("ManageCenters", "Member")" style="margin-bottom:10px", class="btn btn-primary">Back to Manage Centers</a>
+    </div>
     @*Adding Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Name, new { @class = "col-md-2 control-label" })
@@ -117,13 +121,9 @@
             </font>
         </div>
     @*Adding a submit button that adds new center information to the database and add the new center to the Center page*@
-    <div class="form-group">
-        <button style="margin-left:30px" type="submit" class="btn btn-primary">Create Center</button>
-        <a href="@Url.Action("ManageCenters", "Member")" class="btn btn-primary"> Back to Selecting Center</a>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Create Center</button>
     </div>
-
-    
-
 }
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
