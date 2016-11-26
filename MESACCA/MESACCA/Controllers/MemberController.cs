@@ -234,6 +234,8 @@ namespace MESACCA.Controllers
             return View(model);
         }
 
+        //This method adds a Director account with provided information to the SQL database and redirects user to ManageAccounts
+        //with a success or fail message if all checks pass such as the username check.
         [HttpPost]
         [ValidateUser]
         public ActionResult AddDirectorAccount(AddAccountViewModel model)
@@ -390,7 +392,7 @@ namespace MESACCA.Controllers
         }
 
         //This method adds a Staff account with provided information to the SQL database and redirects user to ManageAccounts
-        //if successful.
+        //with a success or fail message if all checks pass such as the username check.
         [HttpPost]
         [ValidateUser]
         public ActionResult AddStaffAccount(AddAccountViewModel model)
@@ -504,7 +506,7 @@ namespace MESACCA.Controllers
 
         #region EditAccounts
 
-        //This method returns the EditAccount View with the EditViewModel passed in to display account information
+        //This method returns the EditAccount View with the EditAccount View Model passed in to display account information.
         [HttpGet]
         [ValidateUser]
         public ActionResult EditAccount(int ID)
@@ -581,7 +583,8 @@ namespace MESACCA.Controllers
             return View(model);
         }
 
-        //This method allows the Admin to edit accounts displayed in Manage Accounts and saves changes in the SQL database.
+        //This method allows the Admin or a Director to saves changes in the SQL database and redirects them to
+        //ManageAccounts with a success or fail message if all checks pass such as the username check.
         [HttpPost]
         [ValidateUser]
         public ActionResult EditAccount(EditAccountViewModel model)
@@ -715,7 +718,7 @@ namespace MESACCA.Controllers
 
         #region DeleteAccounts
 
-        //This method sends an entry's information from ManageAccounts into the View when the Delete link is clicked on
+        //This method returns the DeleteAccount View with the DeleteAccount View Model passed in to display account information.
         [HttpGet]
         [ValidateUser]
         public ActionResult DeleteAccount(int ID)
@@ -741,7 +744,7 @@ namespace MESACCA.Controllers
             return View(model);
         }
 
-        //This method deletes the user from the system if the delete button in the EditAccount View is clicked on and sends the User
+        //This method deletes the user from the system if the delete button in the DeleteAccount View is clicked on and sends the User
         //to Manage Accounts and if the back button is clicked, then the User is sent back to ManageAccounts.
         [HttpPost]
         [ValidateUser]
@@ -974,7 +977,7 @@ namespace MESACCA.Controllers
         }
 
         //This method adds a Center with provided information to the SQL database and redirects the Admin to ManageCenters
-        //if successful.
+        //with a success or fail message if all checks pass such as the center name check.
         [HttpPost]
         [ValidateUser]
         public ActionResult AddCenter(AddCenterViewModel model)
@@ -1071,7 +1074,7 @@ namespace MESACCA.Controllers
 
         #region EditCenters
 
-        //This method returns the EditCenter View with the EditCenterViewModel passed in to display center information
+        //This method returns the EditCenter View with the EditCenterViewModel passed in to display center information.
         [HttpGet]
         [ValidateUser]
         public ActionResult EditCenter(int ID)
@@ -1107,8 +1110,8 @@ namespace MESACCA.Controllers
             return View(model);
         }
 
-        //This method allows the Admin to edit centers displayed in Manage Centers and saves changes in the SQL database. If 
-        //succesful, then the Admin is redirected to Manage Centers.
+        //This method allows the Admin to saves changes in the SQL database and redirects the Admin to Manage Accounts
+        //with a success or fail message if all checks pass such as the center name check.
         [HttpPost]
         [ValidateUser]
         public ActionResult EditCenter(EditCenterViewModel model)
@@ -1230,7 +1233,7 @@ namespace MESACCA.Controllers
         #endregion
 
         #region DeleteCenters
-        //This method sends an entry's information from Manage Centers into the View when the Delete link is clicked on
+        //This method returns the DeleteCenter View with the DeleteCenterViewModel passed in to display center information.
         [HttpGet]
         [ValidateUser]
         public ActionResult DeleteCenter(int ID)
@@ -1270,8 +1273,9 @@ namespace MESACCA.Controllers
             return View(model);
         }
 
-        //This method deletes the Center from the database if the delete button in the Edit View is clicked on and sends the User
-        //to Manage Accounts and if the back button is clicked, then the Admin is sent back to ManageCenters.
+        //This method deletes the Center from the database if the delete button in the DeleteCenter View is clicked on and 
+        //sends the Admin to Manage Accounts with a success or fail message and if the back button is clicked, 
+        //then the Admin is sent back to ManageCenters.
         [HttpPost]
         [ValidateUser]
         public ActionResult DeleteCenter(DeleteCenterViewModel model, string button)
@@ -1306,7 +1310,8 @@ namespace MESACCA.Controllers
 
         //This method returns the ManageSite View with buttons appearing based on user rights to the
         //web pages on the site named on the buttons.
-        //The Admin and Directors have rights to all portions of the website.
+        //The Admin and Directors have rights to all portions of the website with Staff having access based on rights
+        //given to them.
         [HttpGet]
         [ValidateUser]
         public ActionResult ManageSite()
@@ -1337,7 +1342,7 @@ namespace MESACCA.Controllers
                 case "MESA Engineering Program":
                     return RedirectToAction("ManagePersonalAccount");
                 case "News":
-                    return RedirectToAction("SelectNews", "News", new { referrer = "Admin" });
+                    return RedirectToAction("ManageNews", "News");
                 case "Donate":
                     return RedirectToAction("Index", "Donation");
                 default:

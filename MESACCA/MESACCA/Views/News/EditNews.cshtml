@@ -15,17 +15,16 @@
 <h2>Edit News</h2>
 @if (ViewBag.Message != null)
 {
-    <span>@ViewBag.Message</span>
+    <span class="text-danger">@ViewBag.Message</span>
 }
 @using (Html.BeginForm("EditNews", "News", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     @*Adding a return button for the User*@
     <div class="form-actions">
-        <a href="@Url.Action("SelectNews", "News")" style="margin-bottom:10px" , class="btn btn-primary">Back to Manage News</a>
+        <a href="@Url.Action("ManageNews", "News")" style="margin-bottom:10px" , class="btn btn-primary">Back to Manage News</a>
     </div>
     <div class="form-horizontal">
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.ArticleID)
         <div class="form-group">
             @Html.LabelFor(model => model.ArticleTitle, htmlAttributes: new { @class = "control-label col-md-2" })

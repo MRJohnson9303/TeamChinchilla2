@@ -501,7 +501,7 @@
     <Content Include="Views\Member\AddDirectorAccount.cshtml" />
     <Content Include="Views\Member\AddStaffAccount.cshtml" />
     <Content Include="Views\Member\DeletePersonalAccount.cshtml" />
-    <Content Include="Views\News\SelectNews.cshtml" />
+    <Content Include="Views\News\ManageNews.cshtml" />
     <Content Include="Views\Member\DeleteCenter.cshtml" />
     <Content Include="Views\Member\EditCenter.cshtml" />
     <Content Include="Views\News\ConfirmDeleteNews.cshtml" />
