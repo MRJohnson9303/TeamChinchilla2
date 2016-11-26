@@ -56,7 +56,7 @@
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "EditNews", new { id = Article.ArticleID }) |
-                    @Html.ActionLink("Delete", "ConfirmDeleteNews", new { id = Article.ArticleID, title = Article.ArticleTitle })
+                    @Html.ActionLink("Delete", "ConfirmDeleteNews", new { id = Article.ArticleID, title = Article.ArticleTitle, body = Article.ArticleBody, attachedFile = Article.Attach1URL})
 
                 </td>
             </tr>

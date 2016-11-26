@@ -40,22 +40,15 @@ namespace MESACCA.DataBaseManagers
         }
 
         public static void deleteBlob(string fileURI)
-        {
-            
-
+        {     
             // Retrieve reference to a previously created container.
             CloudBlobContainer blobContainer = blobService.GetCloudBlobContainer();
             //get the last part of the URI
             string toDelete = fileURI.Split('/').Last();
-
             // Retrieve reference to a blob named "myblob.txt".
             CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(toDelete);
-
             // Delete the blob.
             blockBlob.Delete();
-
-          
         }
-
     }
 }

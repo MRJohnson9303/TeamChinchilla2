@@ -13,6 +13,9 @@ namespace MESACCA.ViewModels.News
         public int ArticleID { get; set; }
 
         public string ArticleTitle { get; set; }
+        public string ArticleBody { get; set; }
+        public string Attach1URL { get; set; }
+        public string FileName { get; set; }
 
     }
 }

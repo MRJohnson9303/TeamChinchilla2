@@ -1,5 +1,4 @@
 ﻿@model MESACCA.ViewModels.News.AddNewsViewModel
-
 @{
     ViewBag.Title = "Add News";
 }
@@ -19,6 +18,9 @@
 @using (Html.BeginForm("AddNews", "News", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
+    <font color="red">
+        @Html.ValidationSummary()
+    </font>
     @*Adding a return button for the User*@
     <div class="form-actions">
         <a href="@Url.Action("ManageNews", "News")" style="margin-bottom:10px" , class="btn btn-primary"> Back to Manage News</a>

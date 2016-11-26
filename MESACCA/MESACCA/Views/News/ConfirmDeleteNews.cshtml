@@ -19,12 +19,25 @@
         Title: 
     </dt>
     <dd>
-        @Model.ArticleTitle
+        @Html.TextBoxFor(model => model.ArticleTitle, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </dd>
+    <dt>
+        Summary:
+    </dt>
+    <dd>
+        @Html.TextAreaFor(model => model.ArticleBody, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC", rows = "2" })
+    </dd>
+    <dt>
+        Attached File:
+    </dt>
+    <dd>
+        @Html.TextBoxFor(model => model.FileName, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC", rows = "2" })
     </dd>
 </dl>
 @using (Html.BeginForm("ConfirmDeleteNews", "News", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.HiddenFor(x => x.ArticleID)
+    @Html.HiddenFor(x => x.Attach1URL)
     <div class="form-actions">
         <button type="submit" name="button" value="delete" class="btn btn-primary">Delete</button>
     </div>
