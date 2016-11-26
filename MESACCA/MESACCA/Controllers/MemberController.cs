@@ -876,6 +876,7 @@ namespace MESACCA.Controllers
             updatedCenter.OfficeNumber = model.OfficeNumber;
             updatedCenter.URL = model.URL;
             updatedCenter.Description = model.Description;
+            updatedCenter.ImageURL = model.ImageURL;
             //Storing the List object returned which contains all Centers
             centerList = SQLManager.sqlConnectionForCentersList();
             //If there is a problem with the SQL database, then null values will be given to values in the Center object.
@@ -892,7 +893,6 @@ namespace MESACCA.Controllers
                     //If no image is provided, then keep the current ImageURL and update the database.
                     if (model.Picture == null)
                     {
-                        updatedCenter.ImageURL = model.ImageURL;
                         //Getting Boolean result of SQL entry information update
                         success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
                         //If the update was successful, display a 'success' message for the Director.
@@ -921,7 +921,10 @@ namespace MESACCA.Controllers
                             if (model.Picture.FileName.Contains(" ") == false && model.Picture.FileName.Contains("/") == false)
                             {
                                 updatedCenter.Picture = model.Picture;
-                                updatedCenter.ImageURL = BlobManager.uploadAndGetCenterImageBLOBURI(updatedCenter);
+                                //Deleting the old image from the BLOB.
+                                BlobManager.deleteBlob(updatedCenter.ImageURL);
+                                //Storing the new image into the BLOB and getting the URL.
+                                updatedCenter.ImageURL = BlobManager.uploadAndGetImageBLOBURI(updatedCenter.Picture);
                                 //Updating the model's ImageURL so the new proper center image appears.
                                 model.ImageURL = updatedCenter.ImageURL;
                                 //Getting Boolean result of SQL entry information update
@@ -1001,7 +1004,7 @@ namespace MESACCA.Controllers
                     {
                         newCenter.Picture = model.Picture;
                         //Storing the image into the BLOB and getting the URI string from the BLOB to display image later.
-                        newCenter.ImageURL = BlobManager.uploadAndGetCenterImageBLOBURI(newCenter);
+                        newCenter.ImageURL = BlobManager.uploadAndGetImageBLOBURI(model.Picture);
                         //Storing the List object returned which contains all Centers for name comparison.
                         centerList = SQLManager.sqlConnectionForCentersList();
                         //If there is a problem with the SQL database, then null values will be given to values in the Center object.
@@ -1175,19 +1178,11 @@ namespace MESACCA.Controllers
                             //If any are found, prevent progress and give a message.
                             if (model.Picture.FileName.Contains(" ") == false && model.Picture.FileName.Contains("/") == false)
                             {
-                               /* Models.Center foundCenter = new Models.Center();
-                                foundCenter = SQLManager.sqlConnectionForCenter(model.ID);
-                                if (foundCenter.Name != null)
-                                {
-                                    String FileUri = foundCenter.ImageURL;
-                                    if (!(String.IsNullOrEmpty(FileUri)))
-                                    {
-                                        System.Diagnostics.Debug.WriteLine("Deleting files");
-                                        BlobManager.deleteBlob(FileUri);
-                                    }
-                                }*/
+                                //Deleting old image from the BLOB.
+                                BlobManager.deleteBlob(model.ImageURL);
                                 updatedCenter.Picture = model.Picture;
-                                updatedCenter.ImageURL = BlobManager.uploadAndGetCenterImageBLOBURI(updatedCenter);
+                                //Storing the new image from the BLOB.
+                                updatedCenter.ImageURL = BlobManager.uploadAndGetImageBLOBURI(updatedCenter.Picture);
                                 //Getting Boolean result of SQL entry information update
                                 success = SQLManager.sqlConnectionUpdateCenter(model.ID, updatedCenter);
                                 //If the update was successful, redirect the Admin to the Manage Centers page
@@ -1256,12 +1251,13 @@ namespace MESACCA.Controllers
                 model.OfficeNumber = foundCenter.OfficeNumber;
                 model.URL = foundCenter.URL;
                 model.Description = foundCenter.Description;
+                model.ImageURL = foundCenter.ImageURL;
                 //Trimming the Center's ImageURL of the URL to get the file name and passing the result into the ViewModel.
                 //The file name is used to access the Center's logo in the BLOB and delete it from the BLOB.
-                String trimName;
+                /*String trimName;
                 String fileName = foundCenter.ImageURL;
                 trimName = fileName.Substring(fileName.LastIndexOf("/") + 1);
-                model.ImageURL = trimName;
+                model.ImageURL = trimName;*/
             }
             if (success == false)
             {
@@ -1281,7 +1277,6 @@ namespace MESACCA.Controllers
         public ActionResult DeleteCenter(DeleteCenterViewModel model, string button)
         {
             Boolean success = false;
-            Models.Center deletedCenter = new Models.Center();
             if (button.Contains("delete"))
             { 
                 success = SQLManager.sqlConnectionDeleteCenter(model.ID);
@@ -1293,8 +1288,7 @@ namespace MESACCA.Controllers
             if (success == true)
             {
                 TempData["Message"] = "Successfully deleted center.";
-                deletedCenter.ImageURL = model.ImageURL;
-                BlobManager.deleteCenterImageFromBLOB(deletedCenter);
+                BlobManager.deleteBlob(model.ImageURL);
                 return RedirectToAction("ManageCenters");
             }
             else

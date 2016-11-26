@@ -121,7 +121,6 @@
         @Html.LabelFor(model => model.Picture, new { @class = "col-md-2 control-label" })
         <input name="Picture" type="file" class="form-control" />
     </div>
-    @Html.HiddenFor(model => model.ImageURL)
     <div class="col-md-2 control-label">
         <label>Current Center Logo</label>
     </div>
@@ -129,6 +128,7 @@
     <div style="margin-bottom:20px" class="col-md-offset-2">
         <img src=@Model.ImageURL.ToString() height="192" width="186" />
     </div>
+    @Html.HiddenFor(model => model.ImageURL)
     @*Adding a submit button that adds new center information to the database*@
     <div class="form-group">
         @if (ViewData["success"].Equals(true))
