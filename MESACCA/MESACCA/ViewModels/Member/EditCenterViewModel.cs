@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,12 +22,15 @@ namespace MESACCA.ViewModels.Member
         [StringLength(30)]
         public string Location { get; set; }
         [Required]
+        [DisplayName("Center Type")]
         [StringLength(4)]
         public string CenterType { get; set; }
         [Required]
+        [DisplayName("Director's Name")]
         [StringLength(71)]
         public string DirectorName { get; set; }
         [Required]
+        [DisplayName("Office Number")]
         [StringLength(12)]
         [DataType(DataType.PhoneNumber)]
         public string OfficeNumber { get; set; }

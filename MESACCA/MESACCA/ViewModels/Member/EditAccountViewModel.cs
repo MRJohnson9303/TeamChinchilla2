@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,12 +11,15 @@ namespace MESACCA.ViewModels.Member
     {
         public int ID { get; set; }
         [Required]
+        [DisplayName("First Name")]
         [StringLength(35)]
         public string FirstName { get; set; }
         [Required]
+        [DisplayName("Last Name")]
         [StringLength(35)]
         public string LastName { get; set; }
         [Required]
+        [DisplayName("Account Type")]
         public string AccountType { get; set; }
         [Required]
         [StringLength(50)]
@@ -25,6 +29,7 @@ namespace MESACCA.ViewModels.Member
         [StringLength(30)]
         public string Email { get; set; }
         [Required]
+        [DisplayName("Phone Number")]
         [StringLength(12)]
         [DataType(DataType.PhoneNumber)]
         [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Not a valid phone number")]
@@ -37,11 +42,13 @@ namespace MESACCA.ViewModels.Member
         [DataType(DataType.Password)]
         public string Password { get; set; }
         [DataType(DataType.Password)]
+        [DisplayName("Confirm Password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
         public string CurrentPassword { get; set; }
         //These are user rights that will allow a particular user to alter the named web page of the MCCA website
         public Boolean Home { get; set; }
+        [DisplayName("About Us")]
         public Boolean About_Us { get; set; }
         public Boolean Collaborations { get; set; }
         public Boolean MESA_Schools_Program { get; set; }
