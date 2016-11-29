@@ -12,6 +12,7 @@ namespace MESACCA.Controllers
     public class DonationController : Controller
     {
         // GET: Donation
+        [HttpGet]
         [ValidateUser]
         public ActionResult Index()
         {
@@ -20,11 +21,21 @@ namespace MESACCA.Controllers
 
         [HttpPost]
         [ValidateUser]
-        public ActionResult UpdateDonation(DonationViewModel model)
+        public ActionResult Index(DonationViewModel model)
         {
-            SQLManager.sqlConnectionUpdateDonation(model);
-
-            return RedirectToAction("Index");
+            Boolean success = false;
+            success = SQLManager.sqlConnectionUpdateDonation(model);
+            //If the update was successful, create a confirmation message for the User.
+            if (success == true)
+            {
+                ViewBag.Message = "Successfully updated donation page.";
+            }
+            //Else give an error message.
+            else
+            {
+                ViewBag.Message = "Database error. Could not update the donation page. Please try again and if the problem persists, contact the Administrator.";
+            }
+            return View(model);
         }
     }
 }

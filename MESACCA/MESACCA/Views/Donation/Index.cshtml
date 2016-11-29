@@ -2,8 +2,6 @@
 @{
     ViewBag.Title = "Index";
 }
-
-
 <script>
     $(document).ready(function () {
         CKEDITOR.replace('ArticleBody', {
@@ -12,22 +10,28 @@
         });
     });
 </script>
-
 <div class="col-sm-8 col-sm-offset-4">
     <h2>Edit Donation Page</h2>
-
     @if (ViewBag.Message != null)
     {
-        <span>@ViewBag.Message</span>
+        if (ViewBag.Message.Contains("error"))
+        {
+            <span class="text-danger">@ViewBag.Message</span>
+        }
+        else
+        {
+            <span class="text-success">@ViewBag.Message</span>
+        }
     }
-
-    @using (Html.BeginForm("UpdateDonation", "Donation", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    @using (Html.BeginForm("Index", "Donation", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
-
+        @*Adding a return button for the User*@
+        <div class="form-actions">
+            <a href="@Url.Action("ManageSite", "Member")" style="margin-bottom:10px", class="btn btn-primary">Back to Manage Site</a>
+        </div>
         <div class="form-horizontal">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
             <div class="form-group">
                 @Html.LabelFor(model => model.ArticleBody, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-8">
@@ -35,18 +39,10 @@
                     @Html.ValidationMessageFor(model => model.ArticleBody, "", new { @class = "text-danger" })
                 </div>
             </div>
-
             <div class="btn-toolbar">
-
-                <input type="submit" value="Update" class="btn btn-default" /> | 
-                <a href="@Url.Action("ManageSite", "Member")" class="btn btn-primary">Back to Manage Site</a>
-
+                <button type="submit" class="btn btn-primary">Save</button>
             </div>
-
-
-
         </div>
-
     }
 </div>
 
