@@ -15,11 +15,16 @@ namespace MESACCA.DataBaseManagers
     {
 
         #region ConnectionStrings
+
         ///This method returns an ADO.NET connection string. 
-        public static string GetSqlConnectionString()
+        private static string GetSqlConnectionString()
         {
             return Common.GetSqlConnectionString();
         }
+
+        #endregion
+
+        #region User
 
         //This method attempts to connect to the SQL database and returns a User object
         public static Users sqlConnection(String username, String password)
@@ -28,7 +33,7 @@ namespace MESACCA.DataBaseManagers
             String _password = password;
             Users foundUser = null;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -54,10 +59,6 @@ namespace MESACCA.DataBaseManagers
             }
             return foundUser;
         }
-
-        #endregion
-
-        #region User
 
         //This method connects to the database, reads the database and finding an entry with the same information
         //as the provided username and password and returns a User object with some information 
@@ -104,7 +105,7 @@ namespace MESACCA.DataBaseManagers
         {
             User foundUser = new User();
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -179,7 +180,7 @@ namespace MESACCA.DataBaseManagers
         {
             Boolean success = false;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -304,7 +305,7 @@ namespace MESACCA.DataBaseManagers
             //SortedList<String, User> userList = new SortedList<String, User>();
             List<User> userList = new List<User>();
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -374,7 +375,7 @@ namespace MESACCA.DataBaseManagers
         {
             Boolean success = false;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -478,7 +479,7 @@ namespace MESACCA.DataBaseManagers
         {
             Boolean success = false;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -683,7 +684,7 @@ namespace MESACCA.DataBaseManagers
         {
             List<Models.Center> centerList = new List<Models.Center>();
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -749,11 +750,12 @@ namespace MESACCA.DataBaseManagers
             }
         }
 
+        //This method invokes "accessDatabaseToAddCenter" to attempt to connect to the SQL database and a Boolean value regarding center creation confirmation
         public static Boolean sqlConnectionAddCenter(Models.Center newCenter)
         {
             Boolean success = false;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -819,12 +821,12 @@ namespace MESACCA.DataBaseManagers
             }
         }
 
-        //This method invokes "updateCenterDatabase" to attempt to connect to the SQL database and returns a Boolean value regarding update confirmation
+        //This method invokes "accessDatabaseToEditCenter" to attempt to connect to the SQL database and returns a Boolean value regarding update confirmation
         public static Boolean sqlConnectionUpdateCenter(int ID, Models.Center updatedCenter)
         {
             Boolean success = false;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -924,7 +926,7 @@ namespace MESACCA.DataBaseManagers
         {
             Boolean success = false;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -986,228 +988,12 @@ namespace MESACCA.DataBaseManagers
         #endregion
 
         #region News
-
-        public static List<NewsArticle> getNewsPosts()
-        {
-            List<NewsArticle> returnValue = new List<NewsArticle>();
-            try
-            {
-                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
-                {
-                    using (var dbCommand = sqlConnection.CreateCommand())
-                    {
-
-                        //Opening SQL connection
-                        sqlConnection.Open();
-                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                        dbCommand.CommandText = @"SELECT n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL  FROM (SELECT top 100 * FROM NewsArticles order by DateOfArticle desc) as n INNER JOIN Users as u on u.ID = n.CreatedByUser";
-                        var dataReader = dbCommand.ExecuteReader();
-                        var iterator = dataReader.GetEnumerator();
-                        while (iterator.MoveNext())
-                        {
-                            NewsArticleExtension article = new NewsArticleExtension();
-                            //Getting the SQL entry information 
-                            //I trim all of the found User data because the SQL server seems to add spaces.
-                            article.ArticleTitle = dataReader.GetString(0).TrimEnd(' ');
-                            article.ArticleBody = dataReader.GetString(1).TrimEnd(' ');
-                            article.DateOfArticle = dataReader.GetDateTime(2);
-                            article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
-                            article.Attach1URL = dataReader.GetString(5).TrimEnd(' ');
-                            article.fileName = article.Attach1URL.Split('/').Last();
-                            String readthis = article.fileName;
-                            System.Diagnostics.Debug.WriteLine(article.Attach1URL);
-                            returnValue.Add(article);
-                        }
-                        //Closing SQL connection
-                        sqlConnection.Close();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            return returnValue;
-
-        }
-
-        public static List<NewsArticleExtension> getNewsPostsForAdmin()
-        {
-            List<NewsArticleExtension> returnValue = new List<NewsArticleExtension>();
-            try
-            {
-                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
-                {
-                    using (var dbCommand = sqlConnection.CreateCommand())
-                    {
-
-                        //Opening SQL connection
-                        sqlConnection.Open();
-                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                        dbCommand.CommandText = @"SELECT n.ArticleID, n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL FROM NewsArticles as n INNER JOIN Users as u on u.ID = n.CreatedByUser order by DateOfArticle desc";
-                        var dataReader = dbCommand.ExecuteReader();
-                        var iterator = dataReader.GetEnumerator();
-                        while (iterator.MoveNext())
-                        {
-                            NewsArticleExtension article = new NewsArticleExtension();
-                            //Getting the SQL entry information 
-                            //I trim all of the found User data because the SQL server seems to add spaces.
-                            article.ArticleID = dataReader.GetInt32(0);
-                            article.ArticleTitle = dataReader.GetString(1);
-                            //if article body text is less than 50 chars long return that, else return the first 50
-                            string articleBodyFormatted = dataReader.GetString(2);
-                            articleBodyFormatted = Regex.Replace(articleBodyFormatted, "<.*?>", string.Empty);
-                            article.ArticleBody = articleBodyFormatted.Length < 50 ? articleBodyFormatted : articleBodyFormatted.Substring(0, 50) + "...";
-                            article.DateOfArticle = dataReader.GetDateTime(3);
-                            article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
-                            article.Attach1URL = dataReader.GetString(6).TrimEnd(' ');
-                            //if(article.Attach1URL )
-                            article.fileName = article.Attach1URL.Split('/').Last();
-                            String readthis = article.fileName;
-                            System.Diagnostics.Debug.WriteLine(article.Attach1URL);
-                            returnValue.Add(article);
-                        }
-                        //Closing SQL connection
-                        sqlConnection.Close();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            return returnValue;
-
-        }
-
-        public static Boolean sqlConnectionDeleteNews(int ID)
-        {
-            Boolean success = false;
-            int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
-
-            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
-            {
-                try
-                {
-                    if (tries > 1)
-                    {
-                        T.Thread.Sleep(1000 * retryIntervalSeconds);
-                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
-                    }
-                    success = accessDatabaseToDeleteNews(ID);
-                    //Break if new post from the SQL database was found to be gone
-                    if (success == true)
-                    {
-                        break;
-                    }
-                }
-                //Break if there is an exception
-                catch (Exception Exc)
-                {
-                    break;
-                }
-            }
-            return success;
-        }
-
-        private static Boolean accessDatabaseToDeleteNews(int ID)
-        {
-            Boolean success = false;
-            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
-            {
-                using (var dbCommand = sqlConnection.CreateCommand())
-                {
-                    //Opening SQL connection
-                    sqlConnection.Open();
-                    //Creating SQL query
-                    dbCommand.CommandText = @" DELETE FROM NewsArticles WHERE ArticleID = @ID
-                                               SELECT * FROM NewsArticles WHERE ArticleID = @ID";
-                    dbCommand.Parameters.AddWithValue("@ID", ID);
-                    //Building data reader
-                    var dataReader = dbCommand.ExecuteReader();
-                    dataReader.Read();
-                    //If the User can't be found, then the User was successfully deleted 
-                    if (dataReader.HasRows == false)
-                    {
-                        success = true;
-                    }
-                    //Closing SQL connection
-                    sqlConnection.Close();
-                }
-                return success;
-            }
-        }
-
-        public static Boolean sqlConnectionAddNews(NewsArticle na)
-        {
-            Boolean success = false;
-            int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
-
-            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
-            {
-                try
-                {
-                    if (tries > 1)
-                    {
-                        T.Thread.Sleep(1000 * retryIntervalSeconds);
-                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
-                    }
-                    success = accessDatabaseToAddNews(na);
-                    //Break if new post from the SQL database was found to be gone
-                    if (success == true)
-                    {
-                        break;
-                    }
-                }
-                //Break if there is an exception
-                catch (Exception Exc)
-                {
-                    break;
-                }
-            }
-            return success;
-        }
-
-        private static Boolean accessDatabaseToAddNews(NewsArticle na)
-        {
-            Boolean success = false;
-            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
-            {
-                using (var dbCommand = sqlConnection.CreateCommand())
-                {
-                    //Opening SQL connection
-                    sqlConnection.Open();
-                    //Creating SQL query
-                    dbCommand.CommandText = @"INSERT INTO NewsArticles (ArticleTitle, ArticleBody, CreatedByUser, DateofArticle, Attach1URL)
-                                              Values (@ArticleTitle, @ArticleBody, @CreatedByUser, @DateofArticle, @Attach1URLL)";
-
-                    dbCommand.Parameters.AddWithValue("@ArticleTitle", na.ArticleTitle);
-                    dbCommand.Parameters.AddWithValue("@ArticleBody", na.ArticleBody);
-                    dbCommand.Parameters.AddWithValue("@CreatedByUser", na.CreatedByUser);
-                    dbCommand.Parameters.AddWithValue("@DateofArticle", na.DateOfArticle);
-                    dbCommand.Parameters.AddWithValue("@Attach1URLL", na.Attach1URL);
-
-                    //Building data reader
-                    int dataReader = dbCommand.ExecuteNonQuery();
-
-                    if (dataReader == 1)
-                        success = true;
-                }
-                //Closing SQL connection
-                sqlConnection.Close();
-            }
-            return success;
-        }
-
+        //This method invokes "accessDatabaseToGetNews" to attempt to connect to the SQL database and returns a NewsArticle object
         public static NewsArticle sqlConnectionGetNews(int id)
         {
             NewsArticle na = new NewsArticle();
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -1234,6 +1020,8 @@ namespace MESACCA.DataBaseManagers
             return na;
         }
 
+        //This method connects to the database, reads the database and finding an entry with the same information
+        //as the provided ID and returns a NewsArticle object with all information of the News Article
         private static NewsArticle accessDatabaseToGetNews(int id)
         {
             NewsArticle na = new NewsArticle();
@@ -1263,11 +1051,231 @@ namespace MESACCA.DataBaseManagers
             }
         }
 
+        //This method invokes "accessDatabaseForNews" to attempt to connect to the SQL database and returns a List object containing all news articles.
+        //This method is used for display of news articles in the "News" page.
+        public static List<Models.NewsArticleExtension> sqlConnectionForNewsList()
+        {
+            List<Models.NewsArticleExtension> newsList = new List<Models.NewsArticleExtension>();
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 5;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    newsList = accessDatabaseForNews();
+                    //Break if the List object is not empty
+                    if (newsList.Count > 0)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return newsList;
+        }
+
+        //This method connects to the database, collects all the entries in the News Article table into a list
+        //and returns a List object.
+        private static List<Models.NewsArticleExtension> accessDatabaseForNews()
+        {
+            List<Models.NewsArticleExtension> returnValue = new List<Models.NewsArticleExtension>();
+            try
+            {
+                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
+                {
+                    using (var dbCommand = sqlConnection.CreateCommand())
+                    {
+                        //Opening SQL connection
+                        sqlConnection.Open();
+                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
+                        dbCommand.CommandText = @"SELECT n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL  FROM (SELECT top 100 * FROM NewsArticles order by DateOfArticle desc) as n INNER JOIN Users as u on u.ID = n.CreatedByUser";
+                        var dataReader = dbCommand.ExecuteReader();
+                        var iterator = dataReader.GetEnumerator();
+                        while (iterator.MoveNext())
+                        {
+                            Models.NewsArticleExtension article = new Models.NewsArticleExtension();
+                            //Getting the SQL entry information 
+                            //I trim all of the found User data because the SQL server seems to add spaces.
+                            article.ArticleTitle = dataReader.GetString(0).TrimEnd(' ');
+                            article.ArticleBody = dataReader.GetString(1).TrimEnd(' ');
+                            article.DateOfArticle = dataReader.GetDateTime(2);
+                            article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
+                            article.Attach1URL = dataReader.GetString(5).TrimEnd(' ');
+                            article.fileName = article.Attach1URL.Split('/').Last();
+                            returnValue.Add(article);
+                        }
+                        //Closing SQL connection
+                        sqlConnection.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return returnValue;
+        }
+
+        //This method invokes "accessDatabaseForNewsForUser" to attempt to connect to the SQL database and returns a List object containing all news articles.
+        //This method is used for the "Manage News" interface.
+        public static List<Models.NewsArticleExtension> sqlConnectionForNewsListForUser()
+        {
+            List<Models.NewsArticleExtension> newsList = new List<Models.NewsArticleExtension>();
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 5;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    newsList = accessDatabaseForNewsForUser();
+                    //Break if the List object is not empty
+                    if (newsList.Count > 0)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return newsList;
+        }
+        //This method connects to the database, collects all the entries in the News Article table into a list
+        //and returns a List object with slight alterations to the collected entries.
+        private static List<Models.NewsArticleExtension> accessDatabaseForNewsForUser()
+        {
+            List<Models.NewsArticleExtension> returnValue = new List<Models.NewsArticleExtension>();
+            try
+            {
+                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
+                {
+                    using (var dbCommand = sqlConnection.CreateCommand())
+                    {
+
+                        //Opening SQL connection
+                        sqlConnection.Open();
+                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
+                        dbCommand.CommandText = @"SELECT n.ArticleID, n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL FROM NewsArticles as n INNER JOIN Users as u on u.ID = n.CreatedByUser order by DateOfArticle desc";
+                        var dataReader = dbCommand.ExecuteReader();
+                        var iterator = dataReader.GetEnumerator();
+                        while (iterator.MoveNext())
+                        {
+                            Models.NewsArticleExtension article = new Models.NewsArticleExtension();
+                            //Getting the SQL entry information 
+                            //I trim all of the found User data because the SQL server seems to add spaces.
+                            article.ArticleID = dataReader.GetInt32(0);
+                            article.ArticleTitle = dataReader.GetString(1);
+                            //if article body text is less than 50 chars long return that, else return the first 50
+                            string articleBodyFormatted = dataReader.GetString(2);
+                            articleBodyFormatted = Regex.Replace(articleBodyFormatted, "<.*?>", string.Empty);
+                            article.ArticleBody = articleBodyFormatted.Length < 50 ? articleBodyFormatted : articleBodyFormatted.Substring(0, 50) + "...";
+                            article.DateOfArticle = dataReader.GetDateTime(3);
+                            article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
+                            article.Attach1URL = dataReader.GetString(6).TrimEnd(' ');
+                            article.fileName = article.Attach1URL.Split('/').Last();
+                            returnValue.Add(article);
+                        }
+                        //Closing SQL connection
+                        sqlConnection.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return returnValue;
+        }
+
+        //This method invokes "accessDatabaseToAddNews" to attempt to connect to the SQL database and a Boolean value regarding News Article creation confirmation
+        public static Boolean sqlConnectionAddNews(NewsArticle na)
+        {
+            Boolean success = false;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 5;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    success = accessDatabaseToAddNews(na);
+                    //Break if new post from the SQL database was found to be gone
+                    if (success == true)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return success;
+        }
+
+        //This method connects to the database, adds to the News Articles table, checks for rows affected,
+        //and returns Boolean value regarding success
+        private static Boolean accessDatabaseToAddNews(NewsArticle na)
+        {
+            Boolean success = false;
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @"INSERT INTO NewsArticles (ArticleTitle, ArticleBody, CreatedByUser, DateofArticle, Attach1URL)
+                                              Values (@ArticleTitle, @ArticleBody, @CreatedByUser, @DateofArticle, @Attach1URLL)";
+                    dbCommand.Parameters.AddWithValue("@ArticleTitle", na.ArticleTitle);
+                    dbCommand.Parameters.AddWithValue("@ArticleBody", na.ArticleBody);
+                    dbCommand.Parameters.AddWithValue("@CreatedByUser", na.CreatedByUser);
+                    dbCommand.Parameters.AddWithValue("@DateofArticle", na.DateOfArticle);
+                    dbCommand.Parameters.AddWithValue("@Attach1URLL", na.Attach1URL);
+
+                    //Building data reader
+                    int dataReader = dbCommand.ExecuteNonQuery();
+
+                    if (dataReader == 1)
+                        success = true;
+                }
+                //Closing SQL connection
+                sqlConnection.Close();
+            }
+            return success;
+        }
+
+
+        //This method invokes "accessDabaseToEditNews" to attempt to connect to the SQL database and returns a Boolean value regarding update confirmation
         public static Boolean sqlConnectionEditNews(NewsArticle na)
         {
             Boolean success = false;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -1294,6 +1302,8 @@ namespace MESACCA.DataBaseManagers
             return success;
         }
 
+        //This method connects to the database, updates the specified SQL entry by the News Articles's ID, collects the 
+        //SQL confirmation for rows affected and return a Boolean value based on the confirmation.
         private static Boolean accessDatabaseToEditNews(NewsArticle na)
         {
             Boolean success = false;
@@ -1307,7 +1317,6 @@ namespace MESACCA.DataBaseManagers
                     dbCommand.CommandText = @"UPDATE NewsArticles 
                                             SET ArticleTitle = @ArticleTitle, ArticleBody = @ArticleBody, CreatedByUser = @CreatedByUser, DateofArticle = @DateofArticle, Attach1URL = @Attach1URL
                                             WHERE ArticleID = @id";
-
                     dbCommand.Parameters.AddWithValue("@ArticleTitle", na.ArticleTitle);
                     dbCommand.Parameters.AddWithValue("@ArticleBody", na.ArticleBody);
                     dbCommand.Parameters.AddWithValue("@CreatedByUser", na.CreatedByUser);
@@ -1325,15 +1334,80 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
+
+        //This method connects to the database, delete the entry with the given ID, connects with the database again
+        //to check if the entry is gone and returns the Boolean result of the check.
+        public static Boolean sqlConnectionDeleteNews(int ID)
+        {
+            Boolean success = false;
+            int totalNumberOfTimesToTry = 3;
+            int retryIntervalSeconds = 5;
+
+            for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
+            {
+                try
+                {
+                    if (tries > 1)
+                    {
+                        T.Thread.Sleep(1000 * retryIntervalSeconds);
+                        retryIntervalSeconds = Convert.ToInt32(retryIntervalSeconds * 1.5);
+                    }
+                    success = accessDatabaseToDeleteNews(ID);
+                    //Break if new post from the SQL database was found to be gone
+                    if (success == true)
+                    {
+                        break;
+                    }
+                }
+                //Break if there is an exception
+                catch (Exception Exc)
+                {
+                    break;
+                }
+            }
+            return success;
+        }
+
+        //This method connects to the database, delete the entry with the given ID, connects with the database again
+        //to check if the entry is gone and returns the Boolean result of the check.
+        private static Boolean accessDatabaseToDeleteNews(int ID)
+        {
+            Boolean success = false;
+            using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
+            {
+                using (var dbCommand = sqlConnection.CreateCommand())
+                {
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query
+                    dbCommand.CommandText = @" DELETE FROM NewsArticles WHERE ArticleID = @ID
+                                               SELECT * FROM NewsArticles WHERE ArticleID = @ID";
+                    dbCommand.Parameters.AddWithValue("@ID", ID);
+                    //Building data reader
+                    var dataReader = dbCommand.ExecuteReader();
+                    dataReader.Read();
+                    //If the News Article can't be found, then it was successfully deleted 
+                    if (dataReader.HasRows == false)
+                    {
+                        success = true;
+                    }
+                    //Closing SQL connection
+                    sqlConnection.Close();
+                }
+                return success;
+            }
+        }
+
         #endregion
 
         #region Donation
 
+        //This method invokes "accessDatabaseGetDonation" to attempt to connect to the SQL database and returns a DonationViewModel object
         public static DonationViewModel sqlConnectionGetDonation()
         {
             DonationViewModel na = null;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -1360,6 +1434,8 @@ namespace MESACCA.DataBaseManagers
             return na;
         }
 
+        //This method connects to the database, reads the database and finding the top entry
+        //returns a DonationViewModel object with all the information stored. 
         private static DonationViewModel accessDatabaseGetDonation()
         {
             DonationViewModel na = null;
@@ -1385,12 +1461,13 @@ namespace MESACCA.DataBaseManagers
                 return na;
             }
         }
-        
+
+        //This method invokes "accessDatabaseUpdateDonation" to attempt to connect to the SQL database and returns a Boolean value regarding update confirmation
         public static Boolean sqlConnectionUpdateDonation(DonationViewModel na)
         {
             Boolean success = false;
             int totalNumberOfTimesToTry = 3;
-            int retryIntervalSeconds = 1;
+            int retryIntervalSeconds = 5;
 
             for (int tries = 1; tries <= totalNumberOfTimesToTry; tries++)
             {
@@ -1417,6 +1494,8 @@ namespace MESACCA.DataBaseManagers
             return success;
         }
 
+        //This method connects to the database, updates the specified SQL entry, collects the 
+        //SQL confirmation for rows affected and return a Boolean value based on the confirmation.
         private static Boolean accessDatabaseUpdateDonation(DonationViewModel na)
         {
             Boolean success = false;
@@ -1428,9 +1507,7 @@ namespace MESACCA.DataBaseManagers
                     sqlConnection.Open();
                     //Creating SQL query
                     dbCommand.CommandText = @"UPDATE Donation set Body = @ArticleBody";
-
                     dbCommand.Parameters.AddWithValue("@ArticleBody", SecurityUtility.ParseSQL(na.ArticleBody));
-
                     //Building data reader
                     int dataReader = dbCommand.ExecuteNonQuery();
 
@@ -1442,7 +1519,6 @@ namespace MESACCA.DataBaseManagers
             }
             return success;
         }
-
 
         #endregion
     }

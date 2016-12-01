@@ -48,7 +48,6 @@ namespace MESACCA.ViewModels.Member
         public string CurrentPassword { get; set; }
         //These are user rights that will allow a particular user to alter the named web page of the MCCA website
         public Boolean Home { get; set; }
-        [DisplayName("About Us")]
         public Boolean About_Us { get; set; }
         public Boolean Collaborations { get; set; }
         public Boolean MESA_Schools_Program { get; set; }

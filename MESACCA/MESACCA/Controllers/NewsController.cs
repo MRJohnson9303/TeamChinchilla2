@@ -24,7 +24,7 @@ namespace MESACCA.Controllers
         public ActionResult ManageNews()
         {
             SelectNewsViewModel snvm = new SelectNewsViewModel();
-            snvm.Articles = SQLManager.getNewsPostsForAdmin();
+            snvm.Articles = SQLManager.sqlConnectionForNewsListForUser();
             if (TempData["Message"] != null)
             {
                 ViewBag.Message = TempData["Message"];
@@ -251,15 +251,22 @@ namespace MESACCA.Controllers
                     //If a file is not provided, then update the article with the provided information and keep the current attached file.
                     else
                     {
-                        var newsArticle = new NewsArticle()
+                        NewsArticle newsArticle = new NewsArticle();
+                        newsArticle.ArticleID = anvm.ArticleID;
+                        newsArticle.ArticleTitle = anvm.ArticleTitle;
+                        newsArticle.ArticleBody = anvm.ArticleBody;
+                        newsArticle.DateOfArticle = DateTime.Now;
+                        newsArticle.CreatedByUser = MyUserManager.GetUser().ID;
+                        //If the attached file is not null, then simply assign the value to the model.
+                        if (String.IsNullOrEmpty(FileUri) == false)
                         {
-                            ArticleID = anvm.ArticleID,
-                            ArticleTitle = anvm.ArticleTitle,
-                            ArticleBody = anvm.ArticleBody,
-                            DateOfArticle = DateTime.Now,
-                            CreatedByUser = MyUserManager.GetUser().ID,
-                            Attach1URL = FileUri
-                        };
+                            newsArticle.Attach1URL = FileUri;
+                        }
+                        //If the attached file is null, then give it a space otherwise there will be SQL issues.
+                        else
+                        {
+                            newsArticle.Attach1URL = " ";
+                        }
                         success = SQLManager.sqlConnectionEditNews(newsArticle);
                         if (success == true)
                         {

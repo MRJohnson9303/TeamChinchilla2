@@ -246,8 +246,9 @@ namespace MESACCA.Controllers
             User newUser = new User();
             List<Models.Center> centerList = new List<Models.Center>();
             List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
-            //ID initialized for comparison
-            int ID = 1;
+            Random randomID = new Random();
+            //ID is for User ID
+            int ID;
             //userNameFound initialized for comparison
             Boolean userNameFound = false;
             List<User> userList = new List<User>();
@@ -256,16 +257,19 @@ namespace MESACCA.Controllers
             errorUserList = ErrorUserListCheck(userList);
             if (errorUserList == false)
             {
-                //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
-                //a User ID then break the loop and use the new ID value for the new User account ID.
-                //This means if a User is deleted, then a new User will get the old ID
-                foreach (var item in userList)
+                ID = randomID.Next(1000000000, 2147483647);
+                //Look through the User list three times for matches of the random ID number.
+                //The odds that the ID number is not unique between 1 billion and roughly 2.1 billion is small.
+                //If a match is found during these loops, then create a new random ID number.
+                for (int tries = 1; tries <= 3; tries++)
                 {
-                    if (ID != item.ID)
+                    foreach (var item in userList)
                     {
-                        break;
+                        if (ID == item.ID)
+                        {
+                            ID = randomID.Next(1000000000, 2147483647);
+                        }
                     }
-                    ID += 1;
                 }
                 newUser.FirstName = model.FirstName;
                 newUser.LastName = model.LastName;
@@ -275,6 +279,7 @@ namespace MESACCA.Controllers
                 newUser.PhoneNumber = model.PhoneNumber;
                 newUser.Username = model.Username;
                 newUser.Password = model.Password;
+                //The checkboxes in the View are for appearance. The SQL database doesn't have a Boolean value type, so we use string.
                 newUser.Home = "True";
                 newUser.About_Us = "True";
                 newUser.MESA_Schools_Program = "True";
@@ -286,7 +291,6 @@ namespace MESACCA.Controllers
                 //Before creating an account all usernames are compared to the provided username. If there is a match,
                 //then userNameNotFound becomes true.
                 userNameFound = UserNameCheck(userList, newUser);
-                //If a username in the database matches the provided username, then provide an error message.
                 //If a username in the database does not match the provided username, then create an account.
                 if (userNameFound == false)
                 {
@@ -302,6 +306,7 @@ namespace MESACCA.Controllers
                         return RedirectToAction("ManageAccounts");
                     }
                 }
+                //If a username in the database matches the provided username, then provide an error message.
                 else
                 {
                     //This is to populate the Centers dropbox in the View.
@@ -403,8 +408,9 @@ namespace MESACCA.Controllers
             //userNameNoFound initialized for comparison
             Boolean userNameFound = false;
             User newUser = new User();
-            //ID initialized for comparison
-            int ID = 1;
+            Random randomID = new Random();
+            //ID is for User ID
+            int ID ;
             List<User> userList = new List<User>();
             List<Models.Center> centerList = new List<Models.Center>();
             List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
@@ -413,16 +419,19 @@ namespace MESACCA.Controllers
             errorUserList = ErrorUserListCheck(userList);
             if (errorUserList == false)
             {
-                //ID is compared with the ID value of all Users and is incremented by 1 in each loop. If ID doesn't match
-                //a User ID then break the loop and use the new ID value for the new User account ID.
-                //This means if a User is deleted, then a new User will get the old ID
-                foreach (var item in userList)
+                ID = randomID.Next(1000000000, 2147483647);
+                //Look through the User list three times for matches of the random ID number.
+                //The odds that the ID number is not unique between 1 billion and roughly 2.1 billion is small.
+                //If a match is found during these loops, then create a new random ID number.
+                for (int tries = 1; tries <= 3; tries++)
                 {
-                    if (ID != item.ID)
+                    foreach (var item in userList)
                     {
-                        break;
+                        if (ID == item.ID)
+                        {
+                            ID = randomID.Next(1000000000, 2147483647);
+                        }
                     }
-                    ID += 1;
                 }
                 newUser.FirstName = model.FirstName;
                 newUser.LastName = model.LastName;

@@ -60,7 +60,7 @@ namespace MESACCA.Controllers
 
         public ActionResult News()
         {
-            return View(SQLManager.getNewsPosts());
+            return View(SQLManager.sqlConnectionForNewsList());
         }
 
         public ActionResult Donate()
