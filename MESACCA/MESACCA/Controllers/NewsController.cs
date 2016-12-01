@@ -180,15 +180,15 @@ namespace MESACCA.Controllers
         public ActionResult EditNews(AddNewsViewModel anvm, HttpPostedFileBase File)
         {
             Boolean success = false;
+            //If there's a file to attach, replace the old file.
+            //That way, even if the name is the same, it might be an updated version
+            String FileUri = anvm.CurrentAttachedFile;
             if (ModelState.IsValid)
             {
                 //If there is text for the article body, then allow progress. If the article body is empty,
                 //prevent progress. The View Model validation message will appear.
                 if (String.IsNullOrEmpty(anvm.ArticleBody) == false)
                 {
-                    //If there's a file to attach, replace the old file.
-                    //That way, even if the name is the same, it might be an updated version
-                    String FileUri = anvm.CurrentAttachedFile;
                     //check to see if there's a file attached, then read the file
                     if (File != null)
                     {
@@ -232,6 +232,7 @@ namespace MESACCA.Controllers
                                     return RedirectToAction("ManageNews");
                                 }
                             }
+                            //If the file has spaces or /'s in the name
                             else
                             {
                                 //Renewing the current attached file display. The current attached file name will disappear
@@ -245,6 +246,7 @@ namespace MESACCA.Controllers
                                 ViewBag.Message = "Please provide a '.jpg', '.png' or '.pdf' type file with no spaces or '/'s in the name.";
                             }
                         }
+                        //If the provided has the incorrect file type
                         else
                         {
                             //Renewing the current attached file display. The current attached file name will disappear
