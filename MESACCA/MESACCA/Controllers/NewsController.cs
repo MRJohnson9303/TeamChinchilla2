@@ -236,7 +236,12 @@ namespace MESACCA.Controllers
                             {
                                 //Renewing the current attached file display. The current attached file name will disappear
                                 //from the View if this is not done.
-                                anvm.FileName = anvm.CurrentAttachedFile.Split('/').Last();
+                                //Check first if the current attached file passed in the view is null or empty.
+                                //If not, then simply assign the FileName the substring of the current attached file.
+                                if (String.IsNullOrEmpty(FileUri) == false)
+                                {
+                                    anvm.FileName = anvm.CurrentAttachedFile.Split('/').Last();
+                                }
                                 ViewBag.Message = "Please provide a '.jpg', '.png' or '.pdf' type file with no spaces or '/'s in the name.";
                             }
                         }
@@ -244,7 +249,12 @@ namespace MESACCA.Controllers
                         {
                             //Renewing the current attached file display. The current attached file name will disappear
                             //from the View if this is not done.
-                            anvm.FileName = anvm.CurrentAttachedFile.Split('/').Last();
+                            //Check first if the current attached file passed in the view is null or empty.
+                            //If not, then simply assign the FileName the substring of the current attached file.
+                            if (String.IsNullOrEmpty(FileUri) == false)
+                            { 
+                                anvm.FileName = anvm.CurrentAttachedFile.Split('/').Last();
+                            }
                             ViewBag.Message = "Please provide a '.jpg', '.png' or '.pdf' type file.";
                         }
                     }
