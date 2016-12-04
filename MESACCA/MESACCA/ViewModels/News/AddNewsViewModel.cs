@@ -29,6 +29,8 @@ namespace MESACCA.ViewModels.News
         public string Attach1URL { get; set; }
         public string FileName { get; set; }
         public string CurrentAttachedFile { get; set; }
+
+        public Boolean RemoveFile { get; set; }
     }
 }
 

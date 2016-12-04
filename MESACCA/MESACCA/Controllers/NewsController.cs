@@ -162,6 +162,7 @@ namespace MESACCA.Controllers
                 model.FileName = model.Attach1URL.Split('/').Last();
                 //For possibly deleting the current attached file from the BLOB without an extra SQL call in the POST method.
                 model.CurrentAttachedFile = model.Attach1URL;
+                model.RemoveFile = false;
             }
             else
             {
@@ -178,19 +179,33 @@ namespace MESACCA.Controllers
         [HttpPost]
         [ValidateUser]
         public ActionResult EditNews(AddNewsViewModel anvm, HttpPostedFileBase File)
-        {
+        { 
             Boolean success = false;
             //If there's a file to attach, replace the old file.
             //That way, even if the name is the same, it might be an updated version
             String FileUri = anvm.CurrentAttachedFile;
+            
             if (ModelState.IsValid)
             {
                 //If there is text for the article body, then allow progress. If the article body is empty,
                 //prevent progress. The View Model validation message will appear.
+                
                 if (String.IsNullOrEmpty(anvm.ArticleBody) == false)
                 {
-                    //check to see if there's a file attached, then read the file
-                    if (File != null)
+                    //if the "Remove File..." checkbox is checked
+                    if(anvm.RemoveFile == true)
+                    {
+                        //if there's a file to remove
+                        if (String.IsNullOrWhiteSpace(FileUri) == false)
+                        {       
+                            BlobManager.deleteBlob(FileUri);
+                            FileUri = " ";
+                        }
+                        //else ignore
+
+                    }
+                    //check to see if there's a file attached and the Remove File is not chekced, then read the file
+                    if (File != null && anvm.RemoveFile == false)
                     {
                         //Getting file extension
                         string ext = Path.GetExtension(File.FileName);
@@ -205,8 +220,9 @@ namespace MESACCA.Controllers
                             if (File.FileName.Contains(" ") == false && File.FileName.Contains("/") == false)
                             {
                                 //If the old news article already has a blob file attached, delete the file from the BLOB.
-                                if (String.IsNullOrEmpty(FileUri) == false)
+                                if (String.IsNullOrWhiteSpace(FileUri) == false)
                                 {
+                                    
                                     BlobManager.deleteBlob(FileUri);
                                 }
                                 //Storing the new file into the BLOB and getting the URI string from the BLOB.
@@ -239,7 +255,7 @@ namespace MESACCA.Controllers
                                 //from the View if this is not done.
                                 //Check first if the current attached file passed in the view is null or empty.
                                 //If not, then simply assign the FileName the substring of the current attached file.
-                                if (String.IsNullOrEmpty(FileUri) == false)
+                                if (String.IsNullOrWhiteSpace(FileUri) == false)
                                 {
                                     anvm.FileName = anvm.CurrentAttachedFile.Split('/').Last();
                                 }
@@ -253,14 +269,14 @@ namespace MESACCA.Controllers
                             //from the View if this is not done.
                             //Check first if the current attached file passed in the view is null or empty.
                             //If not, then simply assign the FileName the substring of the current attached file.
-                            if (String.IsNullOrEmpty(FileUri) == false)
+                            if (String.IsNullOrWhiteSpace(FileUri) == false)
                             { 
                                 anvm.FileName = anvm.CurrentAttachedFile.Split('/').Last();
                             }
                             ViewBag.Message = "Please provide a '.jpg', '.png' or '.pdf' type file.";
                         }
                     }
-                    //If a file is not provided, then update the article with the provided information and keep the current attached file.
+                    //If a file is not provided or Remove File is checked, then update the article with the provided information and keep the current attached file.
                     else
                     {
                         NewsArticle newsArticle = new NewsArticle();
@@ -270,7 +286,7 @@ namespace MESACCA.Controllers
                         newsArticle.DateOfArticle = DateTime.Now;
                         newsArticle.CreatedByUser = MyUserManager.GetUser().ID;
                         //If the attached file is not null, then simply assign the value to the model.
-                        if (String.IsNullOrEmpty(FileUri) == false)
+                        if (String.IsNullOrWhiteSpace(FileUri) == false)
                         {
                             newsArticle.Attach1URL = FileUri;
                         }
@@ -341,7 +357,7 @@ namespace MESACCA.Controllers
             if (success == true)
             {
                 //If the news article has a file attachment, then delete the file from the BLOB storage.
-                if (String.IsNullOrEmpty(fileToDelete) == false)
+                if (String.IsNullOrWhiteSpace(fileToDelete) == false)
                 {
                     BlobManager.deleteBlob(fileToDelete);
                 }

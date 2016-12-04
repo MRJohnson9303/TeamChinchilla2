@@ -821,10 +821,6 @@ namespace MESACCA.Controllers
             {
                 return RedirectToAction("AddCenter");
             }
-            else if (button.Equals("Picture Test"))
-            {
-                return RedirectToAction("PictureTest");
-            }
             return View(centerList);
         }
 
