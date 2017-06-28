@@ -14,42 +14,46 @@
     <div class="form-actions">
         <a href="@Url.Action("ManageAccounts", "Member")" style="margin-bottom:10px" , class="btn btn-primary">Back to Manage Accounts</a>
     </div>
-    @*Adding Name textfield*@
+    @*Adding readonly First Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.FirstName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
-    @*Adding Address textfield*@
+    @*Adding readonly Last Name textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.LastName, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
-    @*Adding Location textfield*@
+    @*Adding readonly Account Type textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
-    @*Adding Center Type textfield*@
+    @*Adding readonly Center textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Center, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
-    @*Adding Director Name textfield*@
+    @*Adding readonly Email textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Email, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
-    @*Adding Office Number textfield*@
+    @*Adding readonly Phone Number textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
-    @*Adding URL textfield*@
+    @*Adding readonly Username textfield*@
     <div class="form-group">
         @Html.LabelFor(model => model.Username, new { @class = "col-md-2 control-label" })
         @Html.TextBoxFor(model => model.Username, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
     </div>
+    @*Adding delete button if loading is a success*@
     <div class="form-actions">
-        <button type="submit" name="button" value="delete" class="btn btn-primary">Delete</button>
+        @if (ViewData["success"].Equals(true))
+        {
+            <button type="submit" name="button" value="delete" class="btn btn-primary">Delete</button>
+        }
     </div>
 }

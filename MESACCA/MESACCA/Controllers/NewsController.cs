@@ -16,6 +16,9 @@ namespace MESACCA.Controllers
 {
     public class NewsController : Controller
     {
+        //Nick created an Entity Framework for the News Articles, but the group decided to abandon it for the next group to possibly use
+        //as we could not decide whether or not it is as reliable as the SQLManager in pushing and pulling information to the SQL
+        //database.
         private MCCA_DatabaseEntities mccaDB = new MCCA_DatabaseEntities();
 
         #region Manage News

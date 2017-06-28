@@ -528,6 +528,7 @@ namespace MESACCA.Controllers
             List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
             //Getting User information based on User ID
             foundUser = SQLManager.sqlConnectionForUser(ID);
+            //If there is no SQL error such as the account can be found, the load the information and perform additional checks.
             if (foundUser.FirstName != null)
             {
                 success = true;
@@ -544,6 +545,7 @@ namespace MESACCA.Controllers
                 model.CurrentCenter = foundUser.Center;
                 model.CurrentUsername = foundUser.Username;
                 model.CurrentPassword = foundUser.Password;
+                //Storing the user rights to specific page management.
                 model.Home = Convert.ToBoolean(foundUser.Home);
                 model.About_Us = Convert.ToBoolean(foundUser.About_Us);
                 model.Collaborations = Convert.ToBoolean(foundUser.Collaborations);
@@ -558,7 +560,9 @@ namespace MESACCA.Controllers
                 ViewData["EditorAccountType"] = userAccountType;
                 //This is to populate the Centers dropbox in the View.
                 centerList = SQLManager.sqlConnectionForCentersList();
+                //Checking for any errors.
                 errorCenterList = ErrorCenterListCheck(centerList);
+                //If no problems are found with the center list, load them for display in the corresponding View.
                 if (errorCenterList == false)
                 {
                     success = true;
@@ -575,19 +579,36 @@ namespace MESACCA.Controllers
                     //Passing the items inside a SelectList into the View using ViewBag.
                     ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
                 }
-                //If errorCenterList is true.
+                //If errorCenterList is true, print error message.
                 else
                 {
                     success = false;
                     ViewBag.Message = "Database error. Could not load center list. Please refresh the page. If the problem persists, contact the Administrator.";
                 }
             }
-            //If errorUserList is true.
+            //If there is an SQL error such as the account was just deleted, load default information needed to prevent errors from
+            //the View.
             else
             {
+                ViewData["EditorAccountType"] = "Admin";
+                //Passing the items inside a SelectList into the View using ViewBag.
+                //In this case none.
+                ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                model.AccountType = "Director";
+                model.Home = false;
+                model.About_Us = false;
+                model.Collaborations = false;
+                model.MESA_Schools_Program = false;
+                model.MESA_Community_College_Program = false;
+                model.MESA_Engineering_Program = false;
+                model.News = false;
+                model.Donate = false;
+                //Giving false to hide the save button in the View.
                 success = false;
                 ViewBag.Message = "Database error. Could not load user information. Please refresh the page. If the problem persists, contact the Administrator.";
             }
+            //Passing success value into the View. If the account could not be found, the 'Save' button will be hidden to prevent the User from
+            //possibly updating the account anyway.
             ViewData["success"] = success;
             return View(model);
         }
@@ -658,11 +679,10 @@ namespace MESACCA.Controllers
             if(errorUserList == false)
             { 
                 //Before creating an account all usernames are compared to the provided username. If there is a match,
-                //then userNameNotFound becomes true.
+                //then userNameFound becomes true.
                 userNameFound = UserNameCheck(userList, updatedUser);
-                //If a username in the database matches the provided username, then provide an error message.
                 //If a username in the database does not match the provided username, then push new account changes to the database.
-                //In the event the username is not changed, allow push of new account changes to the database.
+                //Or in the event the username is not changed, allow push of new account changes to the database.
                 if (userNameFound == false || (updatedUser.Username.Equals(model.CurrentUsername) == true))
                 {
                     //Getting Boolean result of SQL entry information update
@@ -679,6 +699,7 @@ namespace MESACCA.Controllers
                         return RedirectToAction("ManageAccounts");
                     }
                 }
+                //If a username in the database matches the provided username, then provide an error message.
                 else
                 {
                     //Passing the User's account type into the View for comparison.

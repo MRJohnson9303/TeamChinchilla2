@@ -36,39 +36,39 @@
         </font>
     </div>
     @*@Adding a inline Account Type dropbox*@
-    if (ViewData["EditorAccountType"].Equals("Admin"))
-    {
-        <div class="form-group">
-            <div class="form-inline">
-                @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
-                <div class="form-control">
-                    @Html.DropDownList("AccountType", new List<SelectListItem>
+if (ViewData["EditorAccountType"].Equals("Admin"))
+{
+    <div class="form-group">
+        <div class="form-inline">
+            @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
+            <div class="form-control">
+                @Html.DropDownList("AccountType", new List<SelectListItem>
                     {
                         new SelectListItem {Text ="Director", Value="Director" },
                         new SelectListItem {Text ="Staff", Value="Staff" }
                     })
-                </div>
             </div>
-            <div class="col-md-offset-2">
-                <small class="text-muted">Example: Director, Staff</small>
-            </div>
-            <font color="red">
-                @Html.ValidationMessageFor(model => model.AccountType)
-            </font>
         </div>
-    }
-    else if (ViewData["EditorAccountType"].Equals("Director"))
-    { 
-        @*@Adding readonly Center textfield*@
-        <div class="form-group">
-            @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
-            @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+        <div class="col-md-offset-2">
+            <small class="text-muted">Example: Director, Staff</small>
         </div>
-    }
+        <font color="red">
+            @Html.ValidationMessageFor(model => model.AccountType)
+        </font>
+    </div>
+}
+else if (ViewData["EditorAccountType"].Equals("Director"))
+{
+    @*@Adding readonly Account Type textfield*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2 control-label" })
+        @Html.TextBoxFor(model => model.AccountType, new { @class = "form-control", @readonly = "readonly", style = "background-color:#CCCCCC" })
+    </div>
+}
 
-    if (ViewData["EditorAccountType"].Equals("Admin"))
-    {
-        @*Adding a inline Center dropbox*@
+if (ViewData["EditorAccountType"].Equals("Admin"))
+{
+    @*Adding a inline Center dropbox*@
         <div class="form-group">
             <div class="form-inline">
                 @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
@@ -179,6 +179,7 @@
                         </tr>
                     </tbody>
                 }
+                @*Adding table of User Rights*@
                 @if (Model.AccountType.Equals("Staff"))
                 {
                     <tbody>
@@ -243,10 +244,11 @@
             @Html.ValidationMessageFor(model => model.ConfirmPassword)
         </font>
     </div>
+    @*Adding Hidden information that will be passed through to the model. Not passed through otherwise.*@
     @Html.HiddenFor(model => model.CurrentCenter);
     @Html.HiddenFor(model => model.CurrentUsername);
     @Html.HiddenFor(model => model.CurrentPassword);
-    @*Adding add account button*@
+    @*Adding save button if loading is a success*@
     <div class="form-group">
         @if (ViewData["success"].Equals(true))
         {
