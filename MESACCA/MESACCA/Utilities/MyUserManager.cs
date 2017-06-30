@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using MESACCA;
-
+using MESACCA.Models;
 namespace MESACCA.Utilities
 {
     public static class MyUserManager
     {
-        private static Dictionary<Guid, Users> UserDictionary = new Dictionary<Guid, Users>();
+        private static Dictionary<Guid, User> UserDictionary = new Dictionary<Guid, User>();
         private static Object thisLock = new Object();
 
-        public static bool LoginUser(Users u)
+        public static bool LoginUser(User u)
         {
             Guid Key;
             Guid.TryParse(System.Web.HttpContext.Current.User.Identity.Name, out Key);
@@ -43,7 +43,7 @@ namespace MESACCA.Utilities
         }
 
 
-        public static Users GetUser()
+        public static User GetUser()
         {
             if (!(System.Web.HttpContext.Current.User.Identity.IsAuthenticated)) return null;
 
@@ -52,7 +52,7 @@ namespace MESACCA.Utilities
 
             lock (thisLock)
             {
-                Users user;
+                User user;
                 UserDictionary.TryGetValue(Key, out user);
                 return user;
             }

@@ -83,7 +83,7 @@ namespace MESACCA.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            Users foundUser = new Users();
+            User foundUser = new User();
             if (!ModelState.IsValid)
             {
                 return View(model);

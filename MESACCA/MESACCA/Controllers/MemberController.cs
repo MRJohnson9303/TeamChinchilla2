@@ -2,18 +2,11 @@
 using System.IO;
 using System.Collections.Generic;
 using MESACCA.Models;
-using S = System.Data.SqlClient;
-using T = System.Threading;
 using MESACCA.ViewModels.Member;
-using System.Configuration;
-using System.Web;
 using System.Web.Mvc;
 using MESACCA.FilterAttributes;
 using MESACCA.DataBaseManagers;
 using MESACCA.Utilities;
-using Microsoft.Azure; // Namespace for CloudConfigurationManager
-using Microsoft.WindowsAzure.Storage; // Namespace for CloudStorageAccount
-using Microsoft.WindowsAzure.Storage.Blob; // Namespace for Blob storage types
 
 
 namespace MESACCA.Controllers
@@ -21,20 +14,19 @@ namespace MESACCA.Controllers
     public class MemberController : Controller
     {
         //Used for personal account management
-        private static int adminID;
-        private static Users User;
+        private static int userID;
+        private static User User;
         //Used to sort account list for directors as well as for account creation
         private static String userAccountType;
         private static String center;
         BlobService blobService = new BlobService();
         //This method is a simple hello to the user when he or she signs in as well as saving the ID for personal account
-        //management
+        //management as well as other information.
         [ValidateUser]
         public ActionResult Index() //int ID, String firstName, String lastName
         {
             User = MyUserManager.GetUser();
-
-            adminID = User.ID;
+            userID = User.ID;
             userAccountType = User.AccountType;
             center = User.Center;
             ViewData["ID"] = User.ID;
@@ -51,36 +43,46 @@ namespace MESACCA.Controllers
         [HttpGet]
         public ActionResult ManageAccounts()
         {
-            List<User> foundUserList = new List<User>();
-            List<User> userList = new List<User>();
-            if (TempData["Message"] != null)
+            //Checking the User's account type. If the User is an Admin or Director, then the User can continue.
+            //If the User is Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin" || userAccountType == "Director")
             {
-                ViewBag.Message = TempData["Message"];
-                TempData.Remove("Message");
-            }
-            //Storing the List object returned which contains all Users
-            foundUserList = SQLManager.sqlConnectionForUsersList();
-            //If the User is a Director, allow only Users who are Staff and in the Director's Center to be in the list
-            if (userAccountType.Equals("Director"))
-            {
-                foreach (User member in foundUserList)
+                List<User> foundUserList = new List<User>();
+                List<User> userList = new List<User>();
+                //This is for success and failure messages for account management such as creating accounts.
+                if (TempData["Message"] != null)
                 {
-                    if (member.AccountType.Equals("Staff") && member.Center.Equals(center))
-                    {
-                        userList.Add(member);
-                    }
+                    ViewBag.Message = TempData["Message"];
+                    TempData.Remove("Message");
                 }
-                foundUserList = userList;
+                //Storing the List object returned which contains all Users.
+                foundUserList = SQLManager.sqlConnectionForUsersList();
+                //If the User is a Director, allow only Users who are Staff and in the Director's Center to be in the list
+                if (userAccountType.Equals("Director"))
+                {
+                    foreach (User member in foundUserList)
+                    {
+                        if (member.AccountType.Equals("Staff") && member.Center.Equals(center))
+                        {
+                            userList.Add(member);
+                        }
+                    }
+                    foundUserList = userList;
+                }
+                else
+                {
+                    //Sorting the User list by account type and passing it into the View.
+                    foundUserList.Sort(delegate (User x, User y)
+                    {
+                        return x.AccountType.CompareTo(y.AccountType);
+                    });
+                }
+                return View(foundUserList);
             }
             else
             {
-                //Sorting the User list by account type and passing it into the View.
-                foundUserList.Sort(delegate (User x, User y)
-                {
-                    return x.AccountType.CompareTo(y.AccountType);
-                });
+                return RedirectToAction("Index", "Home");
             }
-            return View(foundUserList);
         }
 
         [ValidateUser]
@@ -90,9 +92,9 @@ namespace MESACCA.Controllers
             List<User> foundUserList = new List<User>();
             List<User> userList = new List<User>();
             List<User> searchList = new List<User>();
-            //Storing the List object returned which contains all Users
+            //Storing the List object returned which contains all Users.
             foundUserList = SQLManager.sqlConnectionForUsersList();
-            //If the User is a Director, allow only Users who are Staff and in the Director's Center to be in the list
+            //If the User is a Director, allow only Users who are Staff and in the Director's Center to be in the list.
             if (userAccountType.Equals("Director"))
             {
                 foreach (User member in foundUserList)
@@ -104,12 +106,13 @@ namespace MESACCA.Controllers
                 }
                 foundUserList = userList;
             }
+            //If the User click on the Add Account button, then redirect to the proper View.
             if (button.Equals("Add Account"))
             {
                 return RedirectToAction(nameof(MemberController.AddAccount));
             }
             //If the search text bar passes a value, then a list is created and passed into the view containing
-            //users whose names contain the given search input
+            //users whose names contain the given search input.
             if (String.IsNullOrEmpty(name) == false)
             {
                 foreach (User member in foundUserList)
@@ -123,7 +126,7 @@ namespace MESACCA.Controllers
                 foundUserList = searchList;
             }
             //If there is no value passed in the search text bar, sorting the list of Users is based on given sort 
-            //button clicks with the list being ordered by account type by default 
+            //button clicks with the list being ordered by account type by default. 
             if (String.IsNullOrEmpty(name) == true)
             {
                 switch (button)
@@ -166,11 +169,18 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult AddAccount()
         {
-            if (userAccountType.Equals("Director"))
+            //Checking the User's account type. If the User is an Admin or Director, then the User can continue.
+            //If the User is Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin" || userAccountType == "Director")
             {
-                return RedirectToAction("AddStaffAccount", new { firstName = "", lastName = "", accountType = "Staff" });
+                //If the User is a Director, then direct the User straight to the AddStaffAccount View.
+                if (userAccountType.Equals("Director"))
+                {
+                    return RedirectToAction("AddStaffAccount", new { firstName = "", lastName = "", accountType = "Staff" });
+                }
+                return View();
             }
-            return View();
+            return RedirectToAction("Index", "Home");
         }
 
         //This method sends the Admin to the AddDirectorAccount or AddStaffAccount View based on the account type selected
@@ -196,42 +206,53 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult AddDirectorAccount(string firstName, string lastName, string accountType)
         {
-            Boolean success = false;
-            Boolean errorCenterList = false;
-            AddAccountViewModel model = new AddAccountViewModel();
-            List<Models.Center> centerList = new List<Models.Center>();
-            List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
-            model.FirstName = firstName;
-            model.LastName = lastName;
-            model.AccountType = accountType;
-            model.Home = true;
-            model.About_Us = true;
-            model.Collaborations = true;
-            model.MESA_Schools_Program = true;
-            model.MESA_Community_College_Program = true;
-            model.MESA_Engineering_Program = true;
-            model.News = true;
-            model.Donate = true;
-            //This is to populate the Centers dropbox in the View.
-            centerList = SQLManager.sqlConnectionForCentersList();
-            errorCenterList = ErrorCenterListCheck(centerList);
-            if (errorCenterList == false)
+            //Checking the User's account type. If the User is an Admin, then the User can continue.
+            //If the User is Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin")
             {
-                success = true;
-                //Storing all center names into the SelectListItem List.
-                foreach (var item in centerList)
+                Boolean success = false;
+                Boolean errorCenterList = false;
+                AddAccountViewModel model = new AddAccountViewModel();
+                List<Models.Center> centerList = new List<Models.Center>();
+                List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
+                model.FirstName = firstName;
+                model.LastName = lastName;
+                model.AccountType = accountType;
+                //Since the User is a Director, he/she is given rights to alter all portions of the website.
+                model.Home = true;
+                model.About_Us = true;
+                model.Collaborations = true;
+                model.MESA_Schools_Program = true;
+                model.MESA_Community_College_Program = true;
+                model.MESA_Engineering_Program = true;
+                model.News = true;
+                model.Donate = true;
+                //This is to populate the Centers dropbox in the View.
+                centerList = SQLManager.sqlConnectionForCentersList();
+                //Checking for errors in list.
+                errorCenterList = ErrorCenterListCheck(centerList);
+                //If there is no issues loading the Centers list, then allow the User to continue.
+                if (errorCenterList == false)
                 {
-                    centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                    //Allow the submit button to be seen.
+                    success = true;
+                    //Storing all center names into the SelectListItem List.
+                    foreach (var item in centerList)
+                    {
+                        centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                    }
+                    //Passing the items inside a SelectList into the View using ViewBag.
+                    ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
                 }
-                //Passing the items inside a SelectList into the View using ViewBag.
-                ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                else
+                {
+                    ViewBag.Message = "Database error. Could not load center list for account creation. Please refresh the page. If the problem persists, contact the Administrator.";
+                }
+                //Display or hide the submit button based on the value of "success".
+                ViewData["success"] = success;
+                return View(model);
             }
-            else
-            {
-                ViewBag.Message = "Database error. Could not load center list for account creation. Please refresh the page. If the problem persists, contact the Administrator.";
-            }
-            ViewData["success"] = success;
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         //This method adds a Director account with provided information to the SQL database and redirects user to ManageAccounts
@@ -255,8 +276,10 @@ namespace MESACCA.Controllers
             //Storing the List object returned which contains all Users
             userList = SQLManager.sqlConnectionForUsersList();
             errorUserList = ErrorUserListCheck(userList);
+            //If there are no issues loading the Centers list, then allow the User to continue.
             if (errorUserList == false)
             {
+                //Randomly creating ID number between 1 billion to around 2.14 billion.
                 ID = randomID.Next(1000000000, 2147483647);
                 //Look through the User list three times for matches of the random ID number.
                 //The odds that the ID number is not unique between 1 billion and roughly 2.1 billion is small.
@@ -271,6 +294,7 @@ namespace MESACCA.Controllers
                         }
                     }
                 }
+                //Loading given information into User object.
                 newUser.FirstName = model.FirstName;
                 newUser.LastName = model.LastName;
                 newUser.AccountType = model.AccountType;
@@ -294,6 +318,7 @@ namespace MESACCA.Controllers
                 //If a username in the database does not match the provided username, then create an account.
                 if (userNameFound == false)
                 {
+                    //Attempting to add new user to the SQL database.
                     success = SQLManager.sqlConnectionAddUser(ID, newUser);
                     if (success == true)
                     {
@@ -332,13 +357,13 @@ namespace MESACCA.Controllers
                     } 
                 }
             }
-            //If errorUserList is true.
+            //If errorUserList is true, redirect to the User to the ManageAccounts View and give error message.
             else
             {
                 TempData["Message"] = "Database error. Could not load user list for username comparison. Please try again and if the problem persists, contact the Administrator.";
                 return RedirectToAction("ManageAccounts");
             }
-            //To make the submit button appear for the Admin to try again in the event of an error.
+            //To make the submit button appear for the User to try again in the event of non-SQL database error.
             ViewData["success"] = true;
             return View(model);
         }
@@ -349,51 +374,59 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult AddStaffAccount(string firstName, string lastName, string accountType)
         {
-            Boolean success = false;
-            Boolean errorCenterList = false;
-            AddAccountViewModel model = new AddAccountViewModel();
-            List<Models.Center> centerList = new List<Models.Center>();
-            List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
-            model.FirstName = firstName;
-            model.LastName = lastName;
-            model.AccountType = accountType;
-            model.Home = true;
-            model.About_Us = true;
-            model.Collaborations = true;
-            model.MESA_Schools_Program = true;
-            model.MESA_Community_College_Program = true;
-            model.MESA_Engineering_Program = true;
-            model.News = true;
-            model.Donate = true;
-            //Passing User's account type into the View using ViewData for comparisons.
-            //If the creator is an Admin, then use the list of centers.
-            //If the creator is a Director, then allow only the Director's centers in the Center field.
-            ViewData["CreatorAccountType"] = userAccountType;
-            if (userAccountType.Equals("Director"))
+            //Checking the User's account type. If the User is an Admin or Director, then the User can continue.
+            //If the User is Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin" || userAccountType == "Director")
             {
-                //Giving model.Center the Director's global center value
-                model.Center = center;
-            }
-            //This is to populate the Centers dropbox in the View.
-            centerList = SQLManager.sqlConnectionForCentersList();
-            errorCenterList = ErrorCenterListCheck(centerList);
-            if (errorCenterList == false)
-            {
-                success = true;
-                //Storing all center names into the SelectListItem List.
-                foreach (var item in centerList)
+                Boolean success = false;
+                Boolean errorCenterList = false;
+                AddAccountViewModel model = new AddAccountViewModel();
+                List<Models.Center> centerList = new List<Models.Center>();
+                List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
+                model.FirstName = firstName;
+                model.LastName = lastName;
+                model.AccountType = accountType;
+                model.Home = true;
+                model.About_Us = true;
+                model.Collaborations = true;
+                model.MESA_Schools_Program = true;
+                model.MESA_Community_College_Program = true;
+                model.MESA_Engineering_Program = true;
+                model.News = true;
+                model.Donate = true;
+                //Passing User's account type into the View using ViewData for comparisons.
+                //If the creator is an Admin, then use the list of centers.
+                //If the creator is a Director, then allow only the Director's center in the Center field.
+                ViewData["CreatorAccountType"] = userAccountType;
+                if (userAccountType.Equals("Director"))
                 {
-                    centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                    //Giving model.Center the Director's global center value
+                    model.Center = center;
                 }
-                //Passing the items inside a SelectList into the View using ViewBag.
-                ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                //This is to populate the Centers dropbox in the View.
+                centerList = SQLManager.sqlConnectionForCentersList();
+                errorCenterList = ErrorCenterListCheck(centerList);
+                //If no error is found in the Centers list, then allow the User to continue.
+                if (errorCenterList == false)
+                {
+                    success = true;
+                    //Storing all center names into the SelectListItem List.
+                    foreach (var item in centerList)
+                    {
+                        centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                    }
+                    //Passing the items inside a SelectList into the View using ViewBag.
+                    ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                }
+                else
+                {
+                    ViewBag.Message = "Database error. Could not load center list for account creation. Please refresh the page. If the problem persists, contact the Administrator.";
+                }
+                //Display or hide the submit button based on the value of "success".
+                ViewData["success"] = success;
+                return View(model);
             }
-            else
-            {
-                ViewBag.Message = "Database error. Could not load center list for account creation. Please refresh the page. If the problem persists, contact the Administrator.";
-            }
-            ViewData["success"] = success;
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         //This method adds a Staff account with provided information to the SQL database and redirects user to ManageAccounts
@@ -520,97 +553,103 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult EditAccount(int ID)
         {
-            Boolean success = false;
-            Boolean errorCenterList = false;
-            User foundUser = new User();
-            EditAccountViewModel model = new EditAccountViewModel();
-            List<Models.Center> centerList = new List<Models.Center>();
-            List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
-            //Getting User information based on User ID
-            foundUser = SQLManager.sqlConnectionForUser(ID);
-            //If there is no SQL error such as the account can be found, the load the information and perform additional checks.
-            if (foundUser.FirstName != null)
+            //Checking the User's account type. If the User is an Admin or Director, then the User can continue.
+            //If the User is Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin" || userAccountType == "Director")
             {
-                success = true;
-                //Storing the information in ViewData to be used to fill in the Edit form
-                model.ID = foundUser.ID;
-                model.FirstName = foundUser.FirstName;
-                model.LastName = foundUser.LastName;
-                model.AccountType = foundUser.AccountType;
-                model.Center = foundUser.Center;
-                model.Email = foundUser.Email;
-                model.PhoneNumber = foundUser.PhoneNumber;
-                model.Username = foundUser.Username;
-                //The following three fields for models will be used for comparisons in the POST method.
-                model.CurrentCenter = foundUser.Center;
-                model.CurrentUsername = foundUser.Username;
-                model.CurrentPassword = foundUser.Password;
-                //Storing the user rights to specific page management.
-                model.Home = Convert.ToBoolean(foundUser.Home);
-                model.About_Us = Convert.ToBoolean(foundUser.About_Us);
-                model.Collaborations = Convert.ToBoolean(foundUser.Collaborations);
-                model.MESA_Schools_Program = Convert.ToBoolean(foundUser.MESA_Schools_Program);
-                model.MESA_Community_College_Program = Convert.ToBoolean(foundUser.MESA_Community_College_Program);
-                model.MESA_Engineering_Program = Convert.ToBoolean(foundUser.MESA_Engineering_Program);
-                model.News = Convert.ToBoolean(foundUser.News);
-                model.Donate = Convert.ToBoolean(foundUser.Donate);
-                //Passing the User's account type into the View for comparison.
-                //This will cause a change in the form such as an Admin given a dropbox for Centers and a Director,
-                //will be given a readonly Center textbox.
-                ViewData["EditorAccountType"] = userAccountType;
-                //This is to populate the Centers dropbox in the View.
-                centerList = SQLManager.sqlConnectionForCentersList();
-                //Checking for any errors.
-                errorCenterList = ErrorCenterListCheck(centerList);
-                //If no problems are found with the center list, load them for display in the corresponding View.
-                if (errorCenterList == false)
+                Boolean success = false;
+                Boolean errorCenterList = false;
+                User foundUser = new User();
+                EditAccountViewModel model = new EditAccountViewModel();
+                List<Models.Center> centerList = new List<Models.Center>();
+                List<SelectListItem> centerNamesListItems = new List<SelectListItem>();
+                //Getting User information based on User ID
+                foundUser = SQLManager.sqlConnectionForUser(ID);
+                //If there is no SQL error such as the account can be found, then load the information and perform additional checks.
+                if (foundUser.FirstName != null)
                 {
                     success = true;
-                    //Storing the edited User's center in the list first, so it appears first on the list in the View.
-                    centerNamesListItems.Add(new SelectListItem { Text = foundUser.Center, Value = foundUser.Center });
-                    //Storing all other center names into the SelectListItem List.
-                    foreach (var item in centerList)
+                    //Storing the information in ViewData to be used to fill in the Edit form
+                    model.ID = foundUser.ID;
+                    model.FirstName = foundUser.FirstName;
+                    model.LastName = foundUser.LastName;
+                    model.AccountType = foundUser.AccountType;
+                    model.Center = foundUser.Center;
+                    model.Email = foundUser.Email;
+                    model.PhoneNumber = foundUser.PhoneNumber;
+                    model.Username = foundUser.Username;
+                    //The following three fields for models will be used for comparisons in the POST method.
+                    model.CurrentCenter = foundUser.Center;
+                    model.CurrentUsername = foundUser.Username;
+                    model.CurrentPassword = foundUser.Password;
+                    //Storing the user rights to specific page management.
+                    model.Home = Convert.ToBoolean(foundUser.Home);
+                    model.About_Us = Convert.ToBoolean(foundUser.About_Us);
+                    model.Collaborations = Convert.ToBoolean(foundUser.Collaborations);
+                    model.MESA_Schools_Program = Convert.ToBoolean(foundUser.MESA_Schools_Program);
+                    model.MESA_Community_College_Program = Convert.ToBoolean(foundUser.MESA_Community_College_Program);
+                    model.MESA_Engineering_Program = Convert.ToBoolean(foundUser.MESA_Engineering_Program);
+                    model.News = Convert.ToBoolean(foundUser.News);
+                    model.Donate = Convert.ToBoolean(foundUser.Donate);
+                    //Passing the User's account type into the View for comparison.
+                    //This will cause a change in the form such as an Admin given a dropbox for Centers and a Director,
+                    //will be given a readonly Center textbox.
+                    ViewData["EditorAccountType"] = userAccountType;
+                    //This is to populate the Centers dropbox in the View.
+                    centerList = SQLManager.sqlConnectionForCentersList();
+                    //Checking for any errors.
+                    errorCenterList = ErrorCenterListCheck(centerList);
+                    //If no problems are found with the center list, load them for display in the corresponding View.
+                    if (errorCenterList == false)
                     {
-                        if (item.Name.Equals(model.Center) != true)
+                        success = true;
+                        //Storing the edited User's center in the list first, so it appears first on the list in the View.
+                        centerNamesListItems.Add(new SelectListItem { Text = foundUser.Center, Value = foundUser.Center });
+                        //Storing all other center names into the SelectListItem List.
+                        foreach (var item in centerList)
                         {
-                            centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                            if (item.Name.Equals(model.Center) != true)
+                            {
+                                centerNamesListItems.Add(new SelectListItem { Text = item.Name, Value = item.Name });
+                            }
                         }
+                        //Passing the items inside a SelectList into the View using ViewBag.
+                        ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
                     }
-                    //Passing the items inside a SelectList into the View using ViewBag.
-                    ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                    //If errorCenterList is true, print error message.
+                    else
+                    {
+                        success = false;
+                        ViewBag.Message = "Database error. Could not load center list. Please refresh the page. If the problem persists, contact the Administrator.";
+                    }
                 }
-                //If errorCenterList is true, print error message.
+                //If there is an SQL error such as the account was just deleted, load default information needed to prevent errors from
+                //the View.
                 else
                 {
+                    ViewData["EditorAccountType"] = "Admin";
+                    //Passing the items inside a SelectList into the View using ViewBag.
+                    //In this case none.
+                    ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
+                    model.AccountType = "Director";
+                    model.Home = false;
+                    model.About_Us = false;
+                    model.Collaborations = false;
+                    model.MESA_Schools_Program = false;
+                    model.MESA_Community_College_Program = false;
+                    model.MESA_Engineering_Program = false;
+                    model.News = false;
+                    model.Donate = false;
+                    //Giving false to hide the save button in the View.
                     success = false;
-                    ViewBag.Message = "Database error. Could not load center list. Please refresh the page. If the problem persists, contact the Administrator.";
+                    ViewBag.Message = "Database error. Could not load user information. Please refresh the page. If the problem persists, contact the Administrator.";
                 }
+                //Passing success value into the View. If the account could not be found, the 'Save' button will be hidden to prevent the User from
+                //possibly updating the account anyway.
+                ViewData["success"] = success;
+                return View(model);
             }
-            //If there is an SQL error such as the account was just deleted, load default information needed to prevent errors from
-            //the View.
-            else
-            {
-                ViewData["EditorAccountType"] = "Admin";
-                //Passing the items inside a SelectList into the View using ViewBag.
-                //In this case none.
-                ViewBag.centerNamesList = new SelectList(centerNamesListItems, "Text", "Value");
-                model.AccountType = "Director";
-                model.Home = false;
-                model.About_Us = false;
-                model.Collaborations = false;
-                model.MESA_Schools_Program = false;
-                model.MESA_Community_College_Program = false;
-                model.MESA_Engineering_Program = false;
-                model.News = false;
-                model.Donate = false;
-                //Giving false to hide the save button in the View.
-                success = false;
-                ViewBag.Message = "Database error. Could not load user information. Please refresh the page. If the problem persists, contact the Administrator.";
-            }
-            //Passing success value into the View. If the account could not be found, the 'Save' button will be hidden to prevent the User from
-            //possibly updating the account anyway.
-            ViewData["success"] = success;
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         //This method allows the Admin or a Director to saves changes in the SQL database and redirects them to
@@ -739,7 +778,7 @@ namespace MESACCA.Controllers
                 TempData["Message"] = "Database error. Could not load user list for username comparison. Please try again and if the problem persists, contact the Administrator.";
                 return RedirectToAction("ManageAccounts");
             }
-            //To make the submit button appear for the Admin to try again in the event of an error.
+            //To make the submit button appear for the User to try again in the event of an error.
             ViewData["success"] = true;
             return View(model);
         }
@@ -753,25 +792,39 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult DeleteAccount(int ID)
         {
-            User foundUser = new User();
-            DeleteAccountViewModel model = new DeleteAccountViewModel();
-            foundUser = SQLManager.sqlConnectionForUser(ID);
-            if (foundUser.FirstName != null)
+            //Checking the User's account type. If the User is an Admin or Director, then the User can continue.
+            //If the User is Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin" || userAccountType == "Director")
             {
-                model.ID = foundUser.ID;
-                model.FirstName = foundUser.FirstName;
-                model.LastName = foundUser.LastName;
-                model.AccountType = foundUser.AccountType;
-                model.Center = foundUser.Center;
-                model.Email = foundUser.Email;
-                model.PhoneNumber = foundUser.PhoneNumber;
-                model.Username = foundUser.Username;
+                Boolean success = false;
+                User foundUser = new User();
+                DeleteAccountViewModel model = new DeleteAccountViewModel();
+                //Getting User information based on ID.
+                foundUser = SQLManager.sqlConnectionForUser(ID);
+                //If an error did not occur, then load the information.
+                if (foundUser.FirstName != null)
+                {
+                    success = true;
+                    model.ID = foundUser.ID;
+                    model.FirstName = foundUser.FirstName;
+                    model.LastName = foundUser.LastName;
+                    model.AccountType = foundUser.AccountType;
+                    model.Center = foundUser.Center;
+                    model.Email = foundUser.Email;
+                    model.PhoneNumber = foundUser.PhoneNumber;
+                    model.Username = foundUser.Username;
+                }
+                //If an SQL error did occur, print message.
+                else
+                {
+                    ViewBag.Message = "Database error. Could not load the account. Please refresh the page. If the problem persists, contact the Administrator.";
+                }
+                //Displaying or hiding the submit button based on value of "success".
+                ViewData["success"] = success;
+                //Passing the loaded model into the View.
+                return View(model);
             }
-            else
-            {
-                ViewBag.Message = "Database error. Could not load the account. Please refresh the page. If the problem persists, contact the Administrator.";
-            }
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         //This method deletes the user from the system if the delete button in the DeleteAccount View is clicked on and sends the User
@@ -781,6 +834,7 @@ namespace MESACCA.Controllers
         public ActionResult DeleteAccount(DeleteAccountViewModel model, string button)
         {
             Boolean success = false;
+            //Attempt to delete User account if the Delete button was clicked on.
             if (button.Contains("delete"))
             {
                 success = SQLManager.sqlConnectionDeleteUser(model.ID);
@@ -789,11 +843,15 @@ namespace MESACCA.Controllers
             {
                 return RedirectToAction("ManageAccounts");
             }
+            //If User account was successfully deleted, save a success message to be displayed in Manage Accounts
+            //and redirect to Manage Accounts.
             if (success == true)
             {
                 TempData["Message"] = "Successfully deleted account.";
                 return RedirectToAction("ManageAccounts");
             }
+            //If the User account was not successfully deleted, save a failure message to be displayed in Manage Accounts
+            //and redirect to Manage Accounts.
             else
             {
                 TempData["Message"] = "Database error. Could not delete center. Please try again and if the problem persists, contact the Administrator.";
@@ -810,19 +868,25 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult ManageCenters()
         {
-            List<Models.Center> centerList = new List<Models.Center>();
-            if (TempData["Message"] != null)
+            //Checking the User's account type. If the User is an Admin, then the User can continue.
+            //If the User is Director or Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin")
             {
-                ViewBag.Message = TempData["Message"];
-                TempData.Remove("Message");
+                List<Models.Center> centerList = new List<Models.Center>();
+                if (TempData["Message"] != null)
+                {
+                    ViewBag.Message = TempData["Message"];
+                    TempData.Remove("Message");
+                }
+                //Storing the List object returned which contains all Centers
+                centerList = SQLManager.sqlConnectionForCentersList();
+                centerList.Sort(delegate (Models.Center x, Models.Center y)
+                {
+                    return x.Name.CompareTo(y.Name);
+                });
+                return View(centerList);
             }
-            //Storing the List object returned which contains all Centers
-            centerList = SQLManager.sqlConnectionForCentersList();
-            centerList.Sort(delegate (Models.Center x, Models.Center y)
-            {
-                return x.Name.CompareTo(y.Name);
-            });
-            return View(centerList);
+            return RedirectToAction("Index", "Home");
         }
 
         //This method redirects the User to AddCenter, EditCenter or DeleteCenter based on input.
@@ -851,35 +915,41 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult ManageCenter()
         {
-            Boolean success = false;
-            EditCenterViewModel model = new EditCenterViewModel();
-            Models.Center foundCenter = new Models.Center();
-            //Getting User information based on the Director's center
-            foundCenter = SQLManager.sqlConnectionForCenter(center);
-            //Checking if the returned center object has null values which occurs if there is a problem with a SQL database.
-            //If center object has a null value like Name, then display an error message and hide the save button in the View.
-            if (foundCenter.Name != null)
+            //Checking the User's account type. If the User is a Director, then the User can continue.
+            //If the User is Staff or Admin, then the User is redirected to the home page.
+            if (userAccountType == "Director")
             {
-                success = true;
-                model.ID = foundCenter.ID;
-                model.Name = foundCenter.Name;
-                model.Address = foundCenter.Address;
-                model.Location = foundCenter.Location;
-                model.CenterType = foundCenter.CenterType;
-                model.DirectorName = foundCenter.DirectorName;
-                model.OfficeNumber = foundCenter.OfficeNumber;
-                model.URL = foundCenter.URL;
-                model.Description = foundCenter.Description;
-                model.ImageURL = foundCenter.ImageURL;
+                Boolean success = false;
+                EditCenterViewModel model = new EditCenterViewModel();
+                Models.Center foundCenter = new Models.Center();
+                //Getting User information based on the Director's center
+                foundCenter = SQLManager.sqlConnectionForCenter(center);
+                //Checking if the returned center object has null values which occurs if there is a problem with a SQL database.
+                //If center object has a null value like Name, then display an error message and hide the save button in the View.
+                if (foundCenter.Name != null)
+                {
+                    success = true;
+                    model.ID = foundCenter.ID;
+                    model.Name = foundCenter.Name;
+                    model.Address = foundCenter.Address;
+                    model.Location = foundCenter.Location;
+                    model.CenterType = foundCenter.CenterType;
+                    model.DirectorName = foundCenter.DirectorName;
+                    model.OfficeNumber = foundCenter.OfficeNumber;
+                    model.URL = foundCenter.URL;
+                    model.Description = foundCenter.Description;
+                    model.ImageURL = foundCenter.ImageURL;
+                }
+                if (success == false)
+                {
+                    ViewBag.Message = "Database error. Could not load center. Please refresh the page. If the problem persists, contact the Administrator.";
+                }
+                //Passing success value into the View. If the Center could not be found, the 'Save' button will be hidden to prevent the User from
+                //possibly updating the Center anyway.
+                ViewData["success"] = success;
+                return View(model);
             }
-            if (success == false)
-            {
-                ViewBag.Message = "Database error. Could not load center. Please refresh the page. If the problem persists, contact the Administrator.";
-            }
-            //Passing success value into the View. If the Center could not be found, the 'Save' button will be hidden to prevent the User from
-            //possibly updating the Center anyway.
-            ViewData["success"] = success;
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         //This saves changes in the Center fields for a Director center in the SQL database.
@@ -942,7 +1012,7 @@ namespace MESACCA.Controllers
                         if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) == true || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) == true ||
                             ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase) == true)
                         {
-                            //Check if the Admin provides an image with spaces or '/'s in it. This is to prevent problems with the BLOB and image deletion.
+                            //Check if the Director provides an image with spaces or '/'s in it. This is to prevent problems with the BLOB and image deletion.
                             //If any are found, prevent progress and give a message.
                             if (model.Picture.FileName.Contains(" ") == false && model.Picture.FileName.Contains("/") == false)
                             {
@@ -989,7 +1059,7 @@ namespace MESACCA.Controllers
             {
                 ViewBag.Message = "Database error. Could not load center list for name comparison. Please try again and if the problem persists, contact the Administrator.";
             }
-            //To make the submit button appear for the Admin to try again in the event of an error.
+            //To make the submit button appear for the Director to try again in the event of an error.
             ViewData["success"] = true;
             return View(model);
         }
@@ -1002,7 +1072,13 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult AddCenter()
         {
-            return View();
+            //Checking the User's account type. If the User is an Admin, then the User can continue.
+            //If the User is Director or Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin")
+            {
+                return View();
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         //This method adds a Center with provided information to the SQL database and redirects the Admin to ManageCenters
@@ -1108,35 +1184,40 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult EditCenter(int ID)
         {
-            Boolean success = false;
-            Models.Center foundCenter = new Models.Center();
-            EditCenterViewModel model = new EditCenterViewModel();
-            //Getting User information based on User ID
-            foundCenter = SQLManager.sqlConnectionForCenter(ID);
-            //Checking if the returned center object has null values which occurs if there is a problem with a SQL database.
-            //If center object has a null value like Name, then display an error message and hide the save button in the View.
-            if (foundCenter.Name != null)
+            //Checking the User's account type. If the User is an Admin, then the User can continue.
+            //If the User is Director or Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin")
             {
-                success = true;
-                model.ID = foundCenter.ID;
-                model.Name = foundCenter.Name;
-                model.Address = foundCenter.Address;
-                model.Location = foundCenter.Location;
-                model.CenterType = foundCenter.CenterType;
-                model.DirectorName = foundCenter.DirectorName;
-                model.OfficeNumber = foundCenter.OfficeNumber;
-                model.URL = foundCenter.URL;
-                model.Description = foundCenter.Description;
-                model.ImageURL = foundCenter.ImageURL;
+                Boolean success = false;
+                Models.Center foundCenter = new Models.Center();
+                EditCenterViewModel model = new EditCenterViewModel();
+                //Getting User information based on User ID
+                foundCenter = SQLManager.sqlConnectionForCenter(ID);
+                //Checking if the returned center object has null values which occurs if there is a problem with the SQL database.
+                //If center object has a null value like Name, then display an error message and hide the save button in the View.
+                if (foundCenter.Name != null)
+                {
+                    success = true;
+                    model.ID = foundCenter.ID;
+                    model.Name = foundCenter.Name;
+                    model.Address = foundCenter.Address;
+                    model.Location = foundCenter.Location;
+                    model.CenterType = foundCenter.CenterType;
+                    model.DirectorName = foundCenter.DirectorName;
+                    model.OfficeNumber = foundCenter.OfficeNumber;
+                    model.URL = foundCenter.URL;
+                    model.Description = foundCenter.Description;
+                    model.ImageURL = foundCenter.ImageURL;
+                }
+                if (success == false)
+                {
+                    ViewBag.Message = "Database error. Could not load center information. Please refresh the page. If the problem persists, contact the Administrator.";
+                }
+                //Passing success value into the View. If the Center could not be found, the 'Save' button will be hidden.
+                ViewData["success"] = success;
+                return View(model);
             }
-            if (success == false)
-            {
-                ViewBag.Message = "Database error. Could not load center information. Please refresh the page. If the problem persists, contact the Administrator.";
-            }
-            //Passing success value into the View. If the Center could not be found, the 'Save' button will be hidden to prevent the User from
-            //possibly updating the Center anyway.
-            ViewData["success"] = success;
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         //This method allows the Admin to saves changes in the SQL database and redirects the Admin to Manage Accounts
@@ -1259,40 +1340,39 @@ namespace MESACCA.Controllers
         [ValidateUser]
         public ActionResult DeleteCenter(int ID)
         {
-            Boolean success = false;
-            Models.Center foundCenter = new Models.Center();
-            DeleteCenterViewModel model = new DeleteCenterViewModel();
-            foundCenter = SQLManager.sqlConnectionForCenter(ID);
-            //Checking if the returned center object has null values which occurs if there is a problem with a SQL database.
-            //If center object does not have a null value like 'Name', then update the 'success' boolean, display an error message and hide the save button in the View.
-            if (foundCenter.Name != null)
+            //Checking the User's account type. If the User is an Admin, then the User can continue.
+            //If the User is Staff, then the User is redirected to the home page.
+            if (userAccountType == "Admin")
             {
-                success = true;
-                model.ID = foundCenter.ID;
-                model.Name = foundCenter.Name;
-                model.Address = foundCenter.Address;
-                model.Location = foundCenter.Location;
-                model.CenterType = foundCenter.CenterType;
-                model.DirectorName = foundCenter.DirectorName;
-                model.OfficeNumber = foundCenter.OfficeNumber;
-                model.URL = foundCenter.URL;
-                model.Description = foundCenter.Description;
-                model.ImageURL = foundCenter.ImageURL;
-                //Trimming the Center's ImageURL of the URL to get the file name and passing the result into the ViewModel.
-                //The file name is used to access the Center's logo in the BLOB and delete it from the BLOB.
-                /*String trimName;
-                String fileName = foundCenter.ImageURL;
-                trimName = fileName.Substring(fileName.LastIndexOf("/") + 1);
-                model.ImageURL = trimName;*/
+                Boolean success = false;
+                Models.Center foundCenter = new Models.Center();
+                DeleteCenterViewModel model = new DeleteCenterViewModel();
+                foundCenter = SQLManager.sqlConnectionForCenter(ID);
+                //Checking if the returned center object has null values which occurs if there is a problem with a SQL database.
+                //If center object does not have a null value like 'Name', then update the 'success' boolean, display an error message and hide the save button in the View.
+                if (foundCenter.Name != null)
+                {
+                    success = true;
+                    model.ID = foundCenter.ID;
+                    model.Name = foundCenter.Name;
+                    model.Address = foundCenter.Address;
+                    model.Location = foundCenter.Location;
+                    model.CenterType = foundCenter.CenterType;
+                    model.DirectorName = foundCenter.DirectorName;
+                    model.OfficeNumber = foundCenter.OfficeNumber;
+                    model.URL = foundCenter.URL;
+                    model.Description = foundCenter.Description;
+                    model.ImageURL = foundCenter.ImageURL;
+                }
+                if (success == false)
+                {
+                    ViewBag.Message = "Database error. Could not load center. Please refresh the page. If the problem persists, contact the Administrator.";
+                }
+                //Passing success value into the View. If the Center could not be found, the 'Delete' button will be hidden.
+                ViewData["success"] = success;
+                return View(model);
             }
-            if (success == false)
-            {
-                ViewBag.Message = "Database error. Could not load center. Please refresh the page. If the problem persists, contact the Administrator.";
-            }
-            //Passing success value into the View. If the Center could not be found, the 'Delete' button will be hidden to prevent the Use from
-            //possibly deleting the Center anyway.
-            ViewData["success"] = success;
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         //This method deletes the Center from the database if the delete button in the DeleteCenter View is clicked on and 
@@ -1338,7 +1418,7 @@ namespace MESACCA.Controllers
         {
             User foundUser = new User();
             //Getting SQL table entry based on User ID
-            foundUser = SQLManager.sqlConnectionForUser(adminID);
+            foundUser = SQLManager.sqlConnectionForUser(userID);
             return View(foundUser);
         }
 
@@ -1384,7 +1464,7 @@ namespace MESACCA.Controllers
             User foundUser = new User();
             ManagePersonalAccountViewModel model = new ManagePersonalAccountViewModel();
             //Getting SQL table entry based on User ID
-            foundUser = SQLManager.sqlConnectionForUser(adminID);
+            foundUser = SQLManager.sqlConnectionForUser(userID);
             if (foundUser.FirstName != null)
             {
                 model.FirstName = foundUser.FirstName;
@@ -1476,7 +1556,7 @@ namespace MESACCA.Controllers
                     if (userNameFound == false || (updatedUser.Username.Equals(model.CurrentUsername) == true))
                     {
                         //Getting Boolean result of SQL entry information update
-                        success = SQLManager.sqlConnectionUpdateUser(adminID, updatedUser);
+                        success = SQLManager.sqlConnectionUpdateUser(userID, updatedUser);
                         //If the update was successful, create a confirmation message for the User.
                         if (success == true)
                         {
@@ -1519,7 +1599,7 @@ namespace MESACCA.Controllers
         public ActionResult DeletePersonalAccountConfirmed()
         {
             Boolean success = false;
-            success = SQLManager.sqlConnectionDeleteUser(adminID);
+            success = SQLManager.sqlConnectionDeleteUser(userID);
             if (success == true)
             {
                 SecurityUtility.baseLogOut();

@@ -27,11 +27,11 @@ namespace MESACCA.DataBaseManagers
         #region User
 
         //This method attempts to connect to the SQL database and returns a User object
-        public static Users sqlConnection(String username, String password)
+        public static User sqlConnection(String username, String password)
         {
             String _username = username;
             String _password = password;
-            Users foundUser = null;
+            User foundUser = null;
             int totalNumberOfTimesToTry = 3;
             int retryIntervalSeconds = 5;
 
@@ -62,11 +62,11 @@ namespace MESACCA.DataBaseManagers
 
         //This method connects to the database, reads the database and finding an entry with the same information
         //as the provided username and password and returns a User object with some information 
-        private static Users accessDatabase(string username, string password)
+        private static User accessDatabase(string username, string password)
         {
             String _username = username;
             String _password = password;
-            Users foundUser = null;
+            User foundUser = null;
             using (var sqlConnection = new S.SqlConnection(GetSqlConnectionString()))
             {
                 using (var dbCommand = sqlConnection.CreateCommand())
@@ -83,8 +83,7 @@ namespace MESACCA.DataBaseManagers
                     dataReader.Read();
                     //Storing information from found sql entry into a User object and returning it
                     //I trim all of the found User data because the SQL server seems to add spaces.
-
-                    foundUser = new Users();
+                    foundUser = new User();
                     foundUser.ID = dataReader.GetInt32(0);
                     foundUser.FirstName = dataReader.GetString(1).TrimEnd(' ');
                     foundUser.LastName = dataReader.GetString(2).TrimEnd(' ');
@@ -93,6 +92,14 @@ namespace MESACCA.DataBaseManagers
                     foundUser.Email = dataReader.GetString(5).TrimEnd();
                     foundUser.Username = dataReader.GetString(7).TrimEnd(' ');
                     foundUser.Password = dataReader.GetString(8).TrimEnd();
+                    foundUser.Home = dataReader.GetString(9).TrimEnd(' ');
+                    foundUser.About_Us = dataReader.GetString(10).TrimEnd(' ');
+                    foundUser.MESA_Schools_Program = dataReader.GetString(11).TrimEnd(' ');
+                    foundUser.MESA_Community_College_Program = dataReader.GetString(12).TrimEnd(' ');
+                    foundUser.MESA_Engineering_Program = dataReader.GetString(13).TrimEnd(' ');
+                    foundUser.News = dataReader.GetString(14).TrimEnd(' ');
+                    foundUser.Donate = dataReader.GetString(15).TrimEnd(' ');
+                    foundUser.Collaborations = dataReader.GetString(16).TrimEnd(' ');
                     //Closing SQL connectioon
                     sqlConnection.Close();
                 }

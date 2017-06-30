@@ -14,7 +14,7 @@ namespace MESACCA.Utilities
 
         public bool IsInRole(string role) { return false; }
 
-        public CustomPrincipal(Users user)
+        public CustomPrincipal(User user)
         {
             this.Identity = new GenericIdentity(Guid.NewGuid().ToString());
 
