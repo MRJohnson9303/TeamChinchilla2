@@ -23,7 +23,7 @@ namespace MESACCA.Controllers
         //This method is a simple hello to the user when he or she signs in as well as saving the ID for personal account
         //management as well as other information.
         [ValidateUser]
-        public ActionResult Index() //int ID, String firstName, String lastName
+        public ActionResult Index()
         {
             User = MyUserManager.GetUser();
             userID = User.ID;
@@ -248,7 +248,7 @@ namespace MESACCA.Controllers
                 {
                     ViewBag.Message = "Database error. Could not load center list for account creation. Please refresh the page. If the problem persists, contact the Administrator.";
                 }
-                //Display or hide the submit button based on the value of "success".
+                //Display or hide the submit button as well as the Center drop box list based on the value of "success".
                 ViewData["success"] = success;
                 return View(model);
             }
@@ -363,7 +363,7 @@ namespace MESACCA.Controllers
                 TempData["Message"] = "Database error. Could not load user list for username comparison. Please try again and if the problem persists, contact the Administrator.";
                 return RedirectToAction("ManageAccounts");
             }
-            //To make the submit button appear for the User to try again in the event of non-SQL database error.
+            //To make the submit button and Center drop box list appear for the User to try again in the event of non-SQL database error.
             ViewData["success"] = true;
             return View(model);
         }
@@ -422,7 +422,7 @@ namespace MESACCA.Controllers
                 {
                     ViewBag.Message = "Database error. Could not load center list for account creation. Please refresh the page. If the problem persists, contact the Administrator.";
                 }
-                //Display or hide the submit button based on the value of "success".
+                //Display or hide the submit button as well as the Center drop box list based on the value of "success".
                 ViewData["success"] = success;
                 return View(model);
             }
@@ -644,8 +644,7 @@ namespace MESACCA.Controllers
                     success = false;
                     ViewBag.Message = "Database error. Could not load user information. Please refresh the page. If the problem persists, contact the Administrator.";
                 }
-                //Passing success value into the View. If the account could not be found, the 'Save' button will be hidden to prevent the User from
-                //possibly updating the account anyway.
+                //Display or hide the submit button as well as the Center drop box list based on the value of "success".
                 ViewData["success"] = success;
                 return View(model);
             }
@@ -778,7 +777,7 @@ namespace MESACCA.Controllers
                 TempData["Message"] = "Database error. Could not load user list for username comparison. Please try again and if the problem persists, contact the Administrator.";
                 return RedirectToAction("ManageAccounts");
             }
-            //To make the submit button appear for the User to try again in the event of an error.
+            //To make the submit button and Center drop box list appear for the User to try again in the event of a non SQL error.
             ViewData["success"] = true;
             return View(model);
         }
