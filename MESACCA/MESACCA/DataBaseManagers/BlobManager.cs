@@ -11,7 +11,9 @@ namespace MESACCA.DataBaseManagers
 {
     public static class BlobManager
     {
-        static BlobService blobService = new BlobService();
+        private static BlobService blobService = new BlobService();
+
+        //Uploads a given file into BLOB storage and returns the URI where it is located.
         public static String uploadAndGetImageBLOBURI(HttpPostedFileBase File)
         {
             String blobURI = "";
@@ -20,9 +22,9 @@ namespace MESACCA.DataBaseManagers
             blob.UploadFromStream(File.InputStream);
             return blobURI = blob.Uri.ToString();
         }
-
+        //Deletes a file from BLOB storage using the provided string.
         public static void deleteBlob(string fileURI)
-        {     
+        {
             // Retrieve reference to a previously created container.
             CloudBlobContainer blobContainer = blobService.GetCloudBlobContainer();
             //get the last part of the URI
