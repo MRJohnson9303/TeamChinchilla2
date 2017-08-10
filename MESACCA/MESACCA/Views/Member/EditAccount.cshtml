@@ -73,7 +73,11 @@ if (ViewData["EditorAccountType"].Equals("Admin"))
             <div class="form-inline">
                 @Html.LabelFor(model => model.Center, new { @class = "col-md-2 control-label" })
                 <div class="form-control">
-                    @Html.DropDownList("Center", (SelectList)ViewData["centerNamesList"])
+                    @*If no error was found, then a list of selectable centers will appear*@
+                    @if (ViewData["success"].Equals(true))
+                    {
+                        @Html.DropDownList("Center", (SelectList)ViewData["centerNamesList"])
+                    }
                 </div>
             </div>
             <div class="col-md-offset-2">

@@ -1658,32 +1658,28 @@ namespace MESACCA.Controllers
             return centerNameFound;
         }
 
-        //This method does a first name comparison between all Center objects in a List and null.
+        //This method checks if the user list is more than zero.
         //Returns a Boolean value based on comparisons.
+        //If truee, then the user list did not load properly from the SQL database.
         private Boolean ErrorUserListCheck(List<User> userList)
         {
             Boolean errorUserList = false;
-            foreach (var item in userList)
+            if (userList.Count <= 0)
             {
-                if (item.FirstName == null)
-                {
-                    errorUserList = true;
-                }
+                errorUserList = true;
             }
             return errorUserList;
         }
 
-        //This method does a center name comparison between all Center objects in a List and null.
-        //Returns a Boolean value based on comparisons.
+        //This method checks if the center list is more than zero.
+        //Returns a Boolean value based on the comparison.
+        //If true, then the center list did not load properly from the SQL database.
         private Boolean ErrorCenterListCheck(List<Models.Center> centerList)
         {
             Boolean errorCenterList = false;
-            foreach (var item in centerList)
+            if (centerList.Count <= 0)
             {
-                if (item.Name == null)
-                {
-                    errorCenterList = true;
-                }
+                errorCenterList = true;
             }
             return errorCenterList;
         }

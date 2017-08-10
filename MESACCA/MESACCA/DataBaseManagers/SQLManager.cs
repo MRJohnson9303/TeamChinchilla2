@@ -51,10 +51,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return foundUser;
@@ -130,17 +130,17 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return foundUser;
         }
 
         //This method connects to the database, reads the database and finding an entry with the same information
-        //as the provided username and password and returns a User object with all information of the User
+        //as the provided ID number and returns a User object with all information of the User
         private static User accessDatabaseForUser(int ID)
         {
             User foundUser = new User();
@@ -205,10 +205,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return success;
@@ -330,17 +330,17 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return userList;
         }
 
         //This method connects to the database, collects all the entries in the Users table into a list
-        //based on Users' account type and returns the list.
+        //and returns the list.
         private static List<User> accessDatabaseForUsers()
         {
             List<User> userList = new List<User>();
@@ -400,10 +400,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return success;
@@ -504,10 +504,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return success;
@@ -571,10 +571,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return foundCenter;
@@ -640,10 +640,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return foundCenter;
@@ -709,10 +709,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return centerList;
@@ -780,10 +780,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return success;
@@ -851,10 +851,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return success;
@@ -951,10 +951,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return success;
@@ -1018,10 +1018,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return na;
@@ -1082,10 +1082,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return newsList;
@@ -1096,39 +1096,32 @@ namespace MESACCA.DataBaseManagers
         private static List<Models.NewsArticleExtension> accessDatabaseForNews()
         {
             List<Models.NewsArticleExtension> returnValue = new List<Models.NewsArticleExtension>();
-            try
+            using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
             {
-                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
+                using (var dbCommand = sqlConnection.CreateCommand())
                 {
-                    using (var dbCommand = sqlConnection.CreateCommand())
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query that updates the SQL table entry and returns the updated table entry
+                    dbCommand.CommandText = @"SELECT n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL  FROM (SELECT top 100 * FROM NewsArticles order by DateOfArticle desc) as n INNER JOIN Users as u on u.ID = n.CreatedByUser";
+                    var dataReader = dbCommand.ExecuteReader();
+                    var iterator = dataReader.GetEnumerator();
+                    while (iterator.MoveNext())
                     {
-                        //Opening SQL connection
-                        sqlConnection.Open();
-                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                        dbCommand.CommandText = @"SELECT n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL  FROM (SELECT top 100 * FROM NewsArticles order by DateOfArticle desc) as n INNER JOIN Users as u on u.ID = n.CreatedByUser";
-                        var dataReader = dbCommand.ExecuteReader();
-                        var iterator = dataReader.GetEnumerator();
-                        while (iterator.MoveNext())
-                        {
-                            Models.NewsArticleExtension article = new Models.NewsArticleExtension();
-                            //Getting the SQL entry information 
-                            //I trim all of the found User data because the SQL server seems to add spaces.
-                            article.ArticleTitle = dataReader.GetString(0).TrimEnd(' ');
-                            article.ArticleBody = dataReader.GetString(1).TrimEnd(' ');
-                            article.DateOfArticle = dataReader.GetDateTime(2);
-                            article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
-                            article.Attach1URL = dataReader.GetString(5).TrimEnd(' ');
-                            article.fileName = article.Attach1URL.Split('/').Last();
-                            returnValue.Add(article);
-                        }
-                        //Closing SQL connection
-                        sqlConnection.Close();
+                        Models.NewsArticleExtension article = new Models.NewsArticleExtension();
+                        //Getting the SQL entry information 
+                        //I trim all of the found User data because the SQL server seems to add spaces.
+                        article.ArticleTitle = dataReader.GetString(0).TrimEnd(' ');
+                        article.ArticleBody = dataReader.GetString(1).TrimEnd(' ');
+                        article.DateOfArticle = dataReader.GetDateTime(2);
+                        article.AuthorName = dataReader.GetString(3).TrimEnd(' ') + " " + dataReader.GetString(4).TrimEnd(' ');
+                        article.Attach1URL = dataReader.GetString(5).TrimEnd(' ');
+                        article.fileName = article.Attach1URL.Split('/').Last();
+                        returnValue.Add(article);
                     }
+                    //Closing SQL connection
+                    sqlConnection.Close();
                 }
-            }
-            catch (Exception ex)
-            {
-
             }
             return returnValue;
         }
@@ -1157,10 +1150,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return newsList;
@@ -1170,44 +1163,37 @@ namespace MESACCA.DataBaseManagers
         private static List<Models.NewsArticleExtension> accessDatabaseForNewsForUser()
         {
             List<Models.NewsArticleExtension> returnValue = new List<Models.NewsArticleExtension>();
-            try
+            using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
             {
-                using (var sqlConnection = new S.SqlConnection(Common.GetSqlConnectionString()))
+                using (var dbCommand = sqlConnection.CreateCommand())
                 {
-                    using (var dbCommand = sqlConnection.CreateCommand())
+
+                    //Opening SQL connection
+                    sqlConnection.Open();
+                    //Creating SQL query that updates the SQL table entry and returns the updated table entry
+                    dbCommand.CommandText = @"SELECT n.ArticleID, n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL FROM NewsArticles as n INNER JOIN Users as u on u.ID = n.CreatedByUser order by DateOfArticle desc";
+                    var dataReader = dbCommand.ExecuteReader();
+                    var iterator = dataReader.GetEnumerator();
+                    while (iterator.MoveNext())
                     {
-
-                        //Opening SQL connection
-                        sqlConnection.Open();
-                        //Creating SQL query that updates the SQL table entry and returns the updated table entry
-                        dbCommand.CommandText = @"SELECT n.ArticleID, n.ArticleTitle, n.ArticleBody, n.DateOfArticle, u.FirstName, u.LastName, n.Attach1URL FROM NewsArticles as n INNER JOIN Users as u on u.ID = n.CreatedByUser order by DateOfArticle desc";
-                        var dataReader = dbCommand.ExecuteReader();
-                        var iterator = dataReader.GetEnumerator();
-                        while (iterator.MoveNext())
-                        {
-                            Models.NewsArticleExtension article = new Models.NewsArticleExtension();
-                            //Getting the SQL entry information 
-                            //I trim all of the found User data because the SQL server seems to add spaces.
-                            article.ArticleID = dataReader.GetInt32(0);
-                            article.ArticleTitle = dataReader.GetString(1);
-                            //if article body text is less than 50 chars long return that, else return the first 50
-                            string articleBodyFormatted = dataReader.GetString(2);
-                            articleBodyFormatted = Regex.Replace(articleBodyFormatted, "<.*?>", string.Empty);
-                            article.ArticleBody = articleBodyFormatted.Length < 50 ? articleBodyFormatted : articleBodyFormatted.Substring(0, 50) + "...";
-                            article.DateOfArticle = dataReader.GetDateTime(3);
-                            article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
-                            article.Attach1URL = dataReader.GetString(6).TrimEnd(' ');
-                            article.fileName = article.Attach1URL.Split('/').Last();
-                            returnValue.Add(article);
-                        }
-                        //Closing SQL connection
-                        sqlConnection.Close();
+                        Models.NewsArticleExtension article = new Models.NewsArticleExtension();
+                        //Getting the SQL entry information 
+                        //I trim all of the found User data because the SQL server seems to add spaces.
+                        article.ArticleID = dataReader.GetInt32(0);
+                        article.ArticleTitle = dataReader.GetString(1);
+                        //if article body text is less than 50 chars long return that, else return the first 50
+                        string articleBodyFormatted = dataReader.GetString(2);
+                        articleBodyFormatted = Regex.Replace(articleBodyFormatted, "<.*?>", string.Empty);
+                        article.ArticleBody = articleBodyFormatted.Length < 50 ? articleBodyFormatted : articleBodyFormatted.Substring(0, 50) + "...";
+                        article.DateOfArticle = dataReader.GetDateTime(3);
+                        article.AuthorName = dataReader.GetString(4) + " " + dataReader.GetString(5);
+                        article.Attach1URL = dataReader.GetString(6).TrimEnd(' ');
+                        article.fileName = article.Attach1URL.Split('/').Last();
+                        returnValue.Add(article);
                     }
+                    //Closing SQL connection
+                    sqlConnection.Close();
                 }
-            }
-            catch (Exception ex)
-            {
-
             }
             return returnValue;
         }
@@ -1235,10 +1221,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return success;
@@ -1300,10 +1286,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return success;
@@ -1432,10 +1418,10 @@ namespace MESACCA.DataBaseManagers
                         break;
                     }
                 }
-                //Break if there is an exception
+                //Continue if there is an exception
                 catch (Exception Exc)
                 {
-                    break;
+                    continue;
                 }
             }
             return na;
